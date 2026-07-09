@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlético Grau · Dossier de Rendimiento y Scouting 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#0a1f3c;        /* azul profundo Grau */
+    --navy2:#0f294d;
+    --panel:#132f57;
+    --celeste:#33c1f0;     /* celeste Grau */
+    --celeste-d:#1e93bd;
+    --white:#f4f8ff;
+    --muted:#9fb6d6;
+    --line:rgba(255,255,255,.10);
+    --green:#37d38a; --amber:#ffcf5c; --red:#ff6b6b;
+    --shadow:0 8px 30px rgba(0,0,0,.35);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(160deg,#071730 0%,#0a1f3c 45%,#0c2242 100%);
+    color:var(--white);line-height:1.55;-webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--celeste);text-decoration:none}
+  /* ---------- NAV ---------- */
+  header.top{
+    position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
+    background:rgba(7,20,40,.82);border-bottom:1px solid var(--line);
+  }
+  .nav-inner{max-width:1200px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px}
+  .crest{width:34px;height:34px;border-radius:50%;background:
+     conic-gradient(from 220deg,var(--celeste),#fff 40%,var(--celeste) 70%,#fff);
+     border:2px solid #fff;box-shadow:0 0 0 2px var(--navy),0 0 14px rgba(51,193,240,.6)}
+  nav.links{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+  nav.links a{color:var(--muted);font-size:13px;padding:6px 10px;border-radius:8px;font-weight:600}
+  nav.links a:hover{color:#fff;background:var(--panel)}
+  .modewrap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .switch{position:relative;width:52px;height:26px;background:var(--panel);border-radius:20px;cursor:pointer;border:1px solid var(--line)}
+  .switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--celeste);transition:.25s}
+  .switch.on .knob{left:28px;background:var(--amber)}
+  /* ---------- LAYOUT ---------- */
+  main{max-width:1200px;margin:0 auto;padding:0 18px 80px}
+  section{padding:44px 0 10px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(26px,4vw,42px);margin:.2em 0;line-height:1.1}
+  h2{font-size:22px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:6px;height:22px;background:var(--celeste);border-radius:3px;display:inline-block}
+  h3{font-size:15px;color:var(--celeste);margin:22px 0 6px;text-transform:uppercase;letter-spacing:.6px}
+  p{color:#dbe6f7}
+  .sub{color:var(--muted);font-size:14px;margin-top:2px}
+  .lead{font-size:17px;color:#eaf1ff;max-width:80ch}
+  /* ---------- HERO ---------- */
+  .hero{padding:54px 0 30px;border:none}
+  .hero .tag{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--celeste);
+     border:1px solid var(--celeste-d);border-radius:20px;padding:4px 12px;text-transform:uppercase;font-weight:700}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:26px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--navy2));border:1px solid var(--line);
+       border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-20px;top:-20px;width:70px;height:70px;border-radius:50%;background:rgba(51,193,240,.08)}
+  .kpi .v{font-size:30px;font-weight:800}
+  .kpi .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .kpi .d{font-size:12px;margin-top:4px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .g{background:var(--green)} .a{background:var(--amber)} .r{background:var(--red)}
+  /* ---------- CARDS / GRID ---------- */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--navy2));border:1px solid var(--line);
+        border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .card h4{margin:0 0 2px;font-size:15px}
+  .card .q{font-size:12px;color:var(--celeste);margin-bottom:10px}
+  .chart-wrap{position:relative;height:300px}
+  .chart-wrap.tall{height:360px}
+  canvas{max-width:100%}
+  /* ---------- badges / callouts ---------- */
+  .badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.4px}
+  .b-dato{background:rgba(55,211,138,.16);color:var(--green);border:1px solid rgba(55,211,138,.4)}
+  .b-inf{background:rgba(255,207,92,.16);color:var(--amber);border:1px solid rgba(255,207,92,.4)}
+  .b-hip{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
+  .callout{border-left:4px solid var(--celeste);background:rgba(51,193,240,.07);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14px}
+  .callout.warn{border-color:var(--amber);background:rgba(255,207,92,.07)}
+  .callout.danger{border-color:var(--red);background:rgba(255,107,107,.07)}
+  .tecnica{display:none}
+  body.tec .tecnica{display:block}
+  body.tec .exec-only{opacity:.55}
+  /* ---------- table ---------- */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .filters button{background:var(--navy2);border:1px solid var(--line);color:var(--muted);
+     padding:6px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600}
+  .filters button.active{background:var(--celeste);color:var(--navy);border-color:var(--celeste)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:8px 9px;text-align:right;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;user-select:none}
+  tr:hover td{background:rgba(51,193,240,.06)}
+  .pos-tag{font-size:10px;font-weight:800;padding:2px 6px;border-radius:5px}
+  .p-GK{background:#5a3fb0}.p-DEF{background:#1e6fb8}.p-MID{background:#149a7a}.p-FWD{background:#c0562e}
+  .hl{color:var(--amber);font-weight:800}
+  /* ---------- lists ---------- */
+  ul.clean{list-style:none;padding:0;margin:10px 0}
+  ul.clean li{padding:8px 0 8px 26px;position:relative;border-bottom:1px solid var(--line);font-size:14px}
+  ul.clean li::before{content:"▸";position:absolute;left:4px;color:var(--celeste)}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .foot{color:var(--muted);font-size:12px;padding:30px 0 0}
+  .src{font-size:12px;color:var(--muted)}
+  .pill-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .pill{font-size:12px;padding:5px 10px;border-radius:20px;border:1px solid var(--line);background:var(--navy2)}
+  .win{color:var(--green)}.draw{color:var(--amber)}.loss{color:var(--red)}
+  code{background:#071730;padding:2px 6px;border-radius:5px;font-size:12px;color:var(--celeste)}
+  pre{background:#071730;border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto;font-size:12px;color:#cfe3ff}
+  .scroll-x{overflow-x:auto}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="nav-inner">
+    <div class="brand"><span class="crest"></span> ATLÉTICO GRAU · <span style="color:var(--celeste)">DOSSIER 2026</span></div>
+    <nav class="links">
+      <a href="#resumen">Resumen</a>
+      <a href="#plantel">Plantel</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#ofensivo">Ofensivo</a>
+      <a href="#defensivo">Defensivo</a>
+      <a href="#arquero">Arquero</a>
+      <a href="#disciplina">Disciplina</a>
+      <a href="#tercios">Tiempos</a>
+      <a href="#proyeccion">Proyección</a>
+      <a href="#conclusiones">Conclusiones</a>
+    </nav>
+    <div class="modewrap">
+      <span>Ejecutiva</span>
+      <div class="switch" id="modeSwitch"><div class="knob"></div></div>
+      <span>Técnica</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== HERO / RESUMEN ===================== -->
+  <section class="hero" id="resumen">
+    <span class="tag">Scouting &amp; Rendimiento · Liga 1 Perú</span>
+    <h1>Atlético Grau — estado competitivo y proyección</h1>
+    <p class="lead">Diagnóstico integral del plantel y del rendimiento a 2026 bajo Gerardo Ameli. Lectura de scouting orientada a decisiones: qué produce el equipo, de qué depende y dónde es frágil. Cada gráfico responde a una pregunta táctica, no decora.</p>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="callout warn" style="margin-top:22px">
+      <strong>Nota de datos (honestidad metodológica).</strong> Las métricas de jugador provienen de <strong>ESPN (plantel 2026, agregado de temporada)</strong> y los resultados de prensa deportiva. Los <em>match logs</em> granulares de FBref (remates, xG, atajadas y tarjetas <em>por partido</em>) no pudieron extraerse automáticamente y aún no están cargados: por eso el panel de <a href="#tercios">tiempos y tercios</a> muestra el <em>método</em> y la plantilla de carga, no gráficos inventados. Todo lo demás usa datos reales verificables.
+    </div>
+
+    <h3>Diagnóstico en una frase</h3>
+    <p class="lead" id="diag"></p>
+  </section>
+
+  <!-- ===================== PLANTEL ===================== -->
+  <section id="plantel">
+    <h2>Estado actual del plantel</h2>
+    <p class="sub">Composición, equilibrio, profundidad, dependencia y perfiles diferenciales. <span class="badge b-dato">DATO</span> ESPN 2026.</p>
+
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><h4>Composición por posición</h4><div class="q">¿Está equilibrado el plantel por líneas?</div><div class="chart-wrap"><canvas id="chPos"></canvas></div></div>
+      <div class="card"><h4>Distribución de edad</h4><div class="q">¿Es un plantel veterano o con recambio?</div><div class="chart-wrap"><canvas id="chEdad"></canvas></div></div>
+      <div class="card"><h4>Nacionalidades</h4><div class="q">¿Cuánto peso tiene el jugador extranjero?</div><div class="chart-wrap"><canvas id="chNac"></canvas></div></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h4>Edad vs. continuidad (apariciones)</h4><div class="q">¿Quién sostiene el equipo y con qué madurez? Burbuja = remates.</div><div class="chart-wrap tall"><canvas id="chScatterEdad"></canvas></div></div>
+      <div class="card"><h4>Dependencia de titulares</h4><div class="q">¿De cuántos jugadores depende realmente el once?</div><div class="chart-wrap tall"><canvas id="chDep"></canvas></div></div>
+    </div>
+
+    <div class="cols" style="margin-top:18px">
+      <div class="callout"><span class="badge b-dato">DATO</span> Núcleo de altísima continuidad: <strong>R. Tapia (17), Acevedo, Rodas, Guarderas, Benites, R. Ruidíaz (16)</strong>. El bloque titular es muy estable.</div>
+      <div class="callout warn"><span class="badge b-inf">INFERENCIA</span> Plantel <strong>envejecido en las zonas decisivas</strong>: eje defensivo (Acevedo 34, R. Tapia 31, Rodas 32), creación (Lavandeira 36, Guarderas 32) y ataque (R. Ruidíaz 35). Recambio joven existe pero suma pocos minutos.</div>
+      <div class="callout danger"><span class="badge b-inf">INFERENCIA</span> <strong>Profundidad ofensiva corta y dependiente</strong>: si Ruidíaz o Benites faltan, cae el volumen de remate del equipo.</div>
+    </div>
+
+    <h3>Roster completo</h3>
+    <div class="filters" id="posFilters">
+      <button data-f="ALL" class="active">Todos</button>
+      <button data-f="GK">Arqueros</button>
+      <button data-f="DEF">Defensas</button>
+      <button data-f="MID">Medios</button>
+      <button data-f="FWD">Delanteros</button>
+    </div>
+    <div class="scroll-x">
+      <table id="rosterTable">
+        <thead><tr>
+          <th data-k="n">Jugador</th><th data-k="pos">Pos</th><th data-k="edad">Edad</th><th data-k="nac">Nac</th>
+          <th data-k="ap">PJ</th><th data-k="g">G</th><th data-k="a">A</th><th data-k="sh">Rem</th><th data-k="sot">RA</th>
+          <th data-k="ta">TA</th><th data-k="tr">TR</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="src">RA = remates al arco. Arqueros: G incluye el penal convertido por P. Álvarez. Orden: clic en encabezado.</p>
+  </section>
+
+  <!-- ===================== RESULTADOS ===================== -->
+  <section id="resultados">
+    <h2>Rendimiento y tendencias</h2>
+    <p class="sub">Secuencia competitiva, forma y sostenibilidad. <span class="badge b-dato">DATO</span> resultados confirmados (subconjunto) · <span class="badge b-inf">INFERENCIA</span> lectura.</p>
+
+    <div class="pill-row" id="formRow"></div>
+
+    <div class="grid g2" style="margin-top:8px">
+      <div class="card"><h4>Línea de resultados (GF vs GC)</h4><div class="q">¿Cómo evoluciona el equipo y de dónde salen los puntos?</div><div class="chart-wrap tall"><canvas id="chLine"></canvas></div></div>
+      <div class="card"><h4>Balance por tipo de resultado</h4><div class="q">¿Gana con solvencia o vive de partidos sueltos?</div><div class="chart-wrap tall"><canvas id="chWDL"></canvas></div></div>
+    </div>
+
+    <div class="callout"><span class="badge b-dato">DATO</span> Cierre del Apertura: <strong>16º de 18, 16 pts, DG −6</strong>. Arranque muy pobre (≈4 pts en las primeras 6 fechas) y cambio de DT (Comizzo → Ameli).</div>
+    <div class="callout warn"><span class="badge b-inf">INFERENCIA</span> Perfil <strong>volátil</strong>: conviven goleadas puntuales a favor (4-1 a Sporting Cristal) con rachas de derrotas por marcador corto (0-1 / 0-2). El equipo <strong>depende de picos</strong>, no de un piso de rendimiento sostenido.</div>
+    <div class="tecnica callout danger"><span class="badge b-hip">HIPÓTESIS</span> El 4-1 a Cristal parece un <strong>outlier</strong> más que la media real. Sin xG por partido no se puede confirmar; con FBref cargado se valida comparando remates/xG generados vs goles.</div>
+  </section>
+
+  <!-- ===================== OFENSIVO ===================== -->
+  <section id="ofensivo">
+    <h2>Análisis ofensivo</h2>
+    <p class="sub">Volumen, generación y eficiencia de remate. <span class="badge b-dato">DATO</span> agregados de jugador.</p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Volumen de remate por jugador</h4><div class="q">¿Quién dispara y cuán concentrada está la generación?</div><div class="chart-wrap tall"><canvas id="chShots"></canvas></div></div>
+      <div class="card"><h4>Remates vs. goles (eficiencia)</h4><div class="q">¿Se convierte lo que se genera? Diagonal = referencia de conversión.</div><div class="chart-wrap tall"><canvas id="chConv"></canvas></div></div>
+    </div>
+    <div class="callout danger"><span class="badge b-dato">DATO</span> <strong>Monopolio de remate en Ruidíaz: 56 remates, 23 al arco, 3 goles</strong> (~5% de conversión sobre remate). Concentra buena parte del disparo del equipo con rendimiento por debajo de lo esperable para ese volumen.</div>
+    <div class="callout warn"><span class="badge b-inf">INFERENCIA</span> <strong>Lavandeira (16 remates, 0 goles)</strong> y <strong>P. de la Cruz (16, 0)</strong> también acumulan disparo sin retorno. La generación existe; el problema es <strong>eficacia y calidad de la ocasión</strong> (a validar con xG).</div>
+    <div class="callout"><span class="badge b-inf">INFERENCIA</span> <strong>Benites (3 goles, 11 al arco desde el banco/medio)</strong> es el perfil de mayor retorno por remate: candidato a más minutos y a rol más liberado.</div>
+  </section>
+
+  <!-- ===================== DEFENSIVO ===================== -->
+  <section id="defensivo">
+    <h2>Análisis defensivo</h2>
+    <p class="sub">Solidez, riesgo y disciplina de la última línea. <span class="badge b-inf">INFERENCIA</span> desde agregados; el detalle por partido requiere FBref.</p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Carga de faltas por jugador</h4><div class="q">¿Dónde se acumula el riesgo de tarjeta y de falta peligrosa?</div><div class="chart-wrap tall"><canvas id="chFaltas"></canvas></div></div>
+      <div class="card"><h4>Tarjetas por jugador</h4><div class="q">¿Quién compromete al equipo por disciplina?</div><div class="chart-wrap tall"><canvas id="chCards"></canvas></div></div>
+    </div>
+    <div class="callout warn"><span class="badge b-inf">INFERENCIA</span> Defensa <strong>de mucho duelo y falta</strong>: Acevedo (26 faltas, 3 TA, 1 TR) y Guarderas (21 faltas, 4 TA) lideran. Un eje veterano que resuelve con contacto → riesgo en balón parado en contra y en suspensiones.</div>
+    <div class="callout"><span class="badge b-dato">DATO</span> DG −6 con 16º puesto: la fragilidad es tanto de <strong>eficacia ofensiva</strong> como de <strong>concesión</strong>. Separar ambas exige goles concedidos por partido y xG en contra (FBref).</div>
+  </section>
+
+  <!-- ===================== ARQUERO ===================== -->
+  <section id="arquero">
+    <h2>Rendimiento del arquero</h2>
+    <p class="sub">Patricio Álvarez como titular. <span class="badge b-dato">DATO</span> ESPN 2026.</p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Atajadas vs. goles concedidos</h4><div class="q">¿Cuánto trabajo tiene el arco y con qué rendimiento?</div><div class="chart-wrap"><canvas id="chGK"></canvas></div></div>
+      <div class="card">
+        <h4>Lectura del arquero</h4><div class="q">¿Sostiene resultados o solo acompaña?</div>
+        <div id="gkStats"></div>
+        <div class="callout"><span class="badge b-dato">DATO</span> Álvarez suma <strong>52 atajadas en 15 PJ</strong> (~3.5/partido) y hasta anotó un penal decisivo. <span class="badge b-inf">INFERENCIA</span> volumen de atajadas alto = arco muy expuesto; el arquero <strong>sostiene</strong> más de lo que el bloque lo protege.</div>
+      </div>
+    </div>
+    <div class="tecnica callout warn"><span class="badge b-hip">HIPÓTESIS</span> Un % de atajadas alto con muchos goles recibidos sugiere <strong>concesión de ocasiones claras</strong>, no errores del arquero. Confirmar con <em>PSxG−GA</em> (post-shot xG) de FBref keeper log si estuviera disponible.</div>
+  </section>
+
+  <!-- ===================== DISCIPLINA / MISC ===================== -->
+  <section id="disciplina">
+    <h2>Disciplina y misceláneos</h2>
+    <p class="sub">Impacto competitivo de la indisciplina y del juego de faltas.</p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Faltas cometidas vs. recibidas (equipo)</h4><div class="q">¿El equipo sufre o comete? ¿Gana o cede el juego de faltas?</div><div class="chart-wrap"><canvas id="chFC"></canvas></div></div>
+      <div class="card"><h4>Semáforo de indicadores</h4><div class="q">Estado sintético de cada área.</div><div id="semaforo"></div></div>
+    </div>
+  </section>
+
+  <!-- ===================== TIEMPOS Y TERCIOS ===================== -->
+  <section id="tercios">
+    <h2>Lectura por tiempos y tercios</h2>
+    <p class="sub">Segmentos 0-15 / 16-30 / 31-45+ y 46-60 / 61-75 / 76-90+.</p>
+
+    <div class="callout danger">
+      <strong>Límite metodológico declarado.</strong> Los match logs de FBref entregan <em>totales por partido</em>, no remates ni xG minuto a minuto. La segmentación por tercios <strong>honesta</strong> se construye con el <strong>timing de goles</strong> (minuto de cada gol a favor y en contra), que sí se puede cargar. Aún no está cargado, así que <strong>no se dibujan barras por tercio</strong> para no inventar una tendencia.
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h4>Qué SÍ se puede afirmar hoy</h4>
+        <ul class="clean">
+          <li>El equipo <strong>encaja goles tempranos</strong> en al menos un caso confirmado (ADT, gol al minuto ~1). <span class="badge b-inf">INFERENCIA</span> señal de arranques frágiles a vigilar.</li>
+          <li>Perfil de resultados por marcador corto → los <strong>tramos de cierre (76-90+)</strong> son decisivos; hay que medir goles concedidos tardíos.</li>
+        </ul>
+        <h4 style="margin-top:14px">Qué NO se puede afirmar aún</h4>
+        <ul class="clean">
+          <li>Caídas físicas por tramo, picos de control o dominio por cuartos de hora: <span class="badge b-hip">HIPÓTESIS</span> sin timing de eventos.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Panel de tercios (se activa al cargar datos)</h4>
+        <div class="q">Goles a favor y en contra por franja de 15'.</div>
+        <div class="chart-wrap"><canvas id="chTercios"></canvas></div>
+        <div id="terciosMsg" class="src"></div>
+      </div>
+    </div>
+
+    <h3>Plantilla de carga (pegar en <code>data.js</code> → <code>GRAU.matchLogs</code>)</h3>
+    <pre>{ fecha: 11, rival:"Los Chankas", local:false, res:"L",
+  sh:9, sot:3, xg:0.8,
+  shConcedidos:14, sotConcedidos:6, xgConcedido:1.9,
+  saves:4, gcArquero:2, ta:2, tr:0, faltas:13,
+  golesAFavorMin:[], golesEnContraMin:[22,78] }</pre>
+    <p class="src">Con solo el <code>golesEnContraMin</code> / <code>golesAFavorMin</code> por partido, el gráfico de tercios se genera automáticamente y de forma honesta.</p>
+  </section>
+
+  <!-- ===================== PROYECCIÓN ===================== -->
+  <section id="proyeccion">
+    <h2>Tendencia futura</h2>
+    <p class="sub">Escenarios. <span class="badge b-hip">HIPÓTESIS</span> proyección condicional, no predicción.</p>
+    <div class="grid g3" style="margin-top:12px">
+      <div class="card" style="border-top:3px solid var(--red)">
+        <h4>1 · Si mantiene el patrón</h4>
+        <p>Dependencia de picos + eje veterano + baja conversión → <strong>lucha por permanencia</strong> y resultados oscilantes. Riesgo alto en tramos de calendario exigente.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--amber)">
+        <h4>2 · Si mejora la conversión</h4>
+        <p>Subir la eficacia de remate (mejor selección de tiro, ocasiones de mayor xG) transforma volumen ya existente en puntos. <strong>Salto de tabla media</strong> sin cambiar de plantel.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--green)">
+        <h4>3 · Si corrige la fragilidad inicial/estructural</h4>
+        <p>Evitar goles tempranos + repartir carga de remate + gestionar minutos del eje veterano → <strong>piso competitivo estable</strong> y proyección de crecimiento en el Clausura.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONCLUSIONES ===================== -->
+  <section id="conclusiones">
+    <h2>Conclusiones operativas</h2>
+    <div class="cols">
+      <div class="card" style="border-top:3px solid var(--red)">
+        <h4>🔴 5 Alertas</h4>
+        <ul class="clean">
+          <li>Sobredependencia de remate en Ruidíaz con baja conversión.</li>
+          <li>Eje del equipo envejecido en zonas decisivas.</li>
+          <li>Perfil volátil: sin piso de rendimiento sostenido.</li>
+          <li>Arco muy expuesto (volumen alto de atajadas).</li>
+          <li>Indisciplina/falta concentrada (Acevedo, Guarderas).</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid var(--green)">
+        <h4>🟢 5 Oportunidades</h4>
+        <ul class="clean">
+          <li>Elevar conversión: el volumen de ocasión ya existe.</li>
+          <li>Dar más rol a Benites (mejor retorno por remate).</li>
+          <li>Repartir la carga de disparo (menos monopolio).</li>
+          <li>Blindar los primeros 15' de cada tiempo.</li>
+          <li>Integrar recambio joven para gestionar minutos veteranos.</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid var(--celeste)">
+        <h4>🔵 5 Decisiones técnicas</h4>
+        <ul class="clean">
+          <li>Trabajo específico de finalización y selección de tiro.</li>
+          <li>Plan de balón parado defensivo (eje que comete faltas).</li>
+          <li>Rotación planificada del eje 30+.</li>
+          <li>Rutina de arranque (concentración 0-15').</li>
+          <li>Cargar FBref para medir xG y validar hipótesis.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Recomendaciones por rol</h3>
+    <div class="cols">
+      <div class="callout"><strong>Cuerpo técnico:</strong> priorizar eficacia sobre volumen y proteger tramos de arranque; gestionar minutos del eje veterano.</div>
+      <div class="callout"><strong>Scouting:</strong> buscar delantero de área eficiente (bajo dependencia de Ruidíaz) y central joven de proyección; perfiles de recambio para mediocampo 30+.</div>
+      <div class="callout"><strong>Preparación de partido:</strong> plan defensivo de balón parado y de primeros minutos; explotar que el rival puede ceder ocasiones si se sube la calidad de tiro.</div>
+      <div class="callout"><strong>Seguimiento de jugadores:</strong> monitorear conversión de Ruidíaz/Benites y carga física del eje veterano por tramos.</div>
+      <div class="callout"><strong>Base de datos interna:</strong> cargar match logs FBref con el esquema provisto; añadir xG, home/away y timing de goles para activar el análisis por tercios.</div>
+    </div>
+
+    <p class="foot">
+      <strong>Fuentes.</strong> Roster y métricas de jugador: ESPN (plantel Atlético Grau 2026). Resultados y posición: Infobae, Depor, Bolavip, TVPerú. Marco de scouting: metodología interna del proyecto. Datos agregados de temporada 2026; los match logs por partido de FBref (shooting/keeper/misc/schedule) deben cargarse para completar el análisis granular y de tercios. Actualizado 2026-07-09.
+    </p>
+  </section>
+
+</main>
+
+<script src="data.js"></script>
+<script>
+/* ---------- helpers ---------- */
+const C={navy:'#0a1f3c',cel:'#33c1f0',celD:'#1e93bd',white:'#f4f8ff',mut:'#9fb6d6',
+  green:'#37d38a',amber:'#ffcf5c',red:'#ff6b6b',grid:'rgba(255,255,255,.08)'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="'Segoe UI',system-ui,sans-serif";
+Chart.defaults.plugins.legend.labels.boxWidth=12;
+const $=s=>document.querySelector(s);
+const posColor={GK:'#5a3fb0',DEF:'#1e6fb8',MID:'#149a7a',FWD:'#c0562e'};
+const field=GRAU.roster.filter(p=>p.pos!=='GK');
+
+/* ---------- KPIs ---------- */
+const totG=GRAU.roster.reduce((s,p)=>s+p.g,0);
+const totSh=GRAU.roster.reduce((s,p)=>s+p.sh,0);
+const totSot=GRAU.roster.reduce((s,p)=>s+p.sot,0);
+const conv=(totG/totSh*100).toFixed(1);
+const kpis=[
+  {v:'16º',l:'Apertura 2026',d:'<span class="dot r"></span>16 pts · DG −6',cls:''},
+  {v:totG,l:'Goles (plantel)',d:'<span class="dot a"></span>'+conv+'% conversión',cls:''},
+  {v:totSh,l:'Remates totales',d:'<span class="dot a"></span>'+totSot+' al arco',cls:''},
+  {v:'56',l:'Remates de Ruidíaz',d:'<span class="dot r"></span>3 goles · dependencia',cls:''},
+  {v:'52',l:'Atajadas P. Álvarez',d:'<span class="dot a"></span>arco muy exigido',cls:''}
+];
+$('#kpis').innerHTML=kpis.map(k=>`<div class="kpi"><div class="v">${k.v}</div><div class="l">${k.l}</div><div class="d">${k.d}</div></div>`).join('');
+$('#diag').innerHTML='Equipo <span class="hl">volátil y dependiente</span>: genera volumen de remate pero <span class="hl">convierte poco</span>, se apoya en un <span class="hl">eje veterano</span> y en picos aislados. Fortaleza principal: <span class="hl">generación de ocasión y un arquero que sostiene</span>. Alerta principal: <span class="hl">eficacia ofensiva y fragilidad estructural/inicial</span>.';
+
+/* ---------- form pills ---------- */
+$('#formRow').innerHTML=GRAU.resultados.map(r=>{
+  const c=r.res==='V'?'win':r.res==='E'?'draw':'loss';
+  return `<span class="pill">F${r.fecha} ${r.rival} <b class="${c}">${r.gf}-${r.gc}</b></span>`;
+}).join('');
+
+/* ---------- PLANTEL charts ---------- */
+const byPos={GK:0,DEF:0,MID:0,FWD:0};GRAU.roster.forEach(p=>byPos[p.pos]++);
+new Chart($('#chPos'),{type:'doughnut',data:{labels:['Arqueros','Defensas','Medios','Delanteros'],
+  datasets:[{data:[byPos.GK,byPos.DEF,byPos.MID,byPos.FWD],backgroundColor:[posColor.GK,posColor.DEF,posColor.MID,posColor.FWD],borderColor:C.navy,borderWidth:2}]},
+  options:{plugins:{legend:{position:'bottom'}},cutout:'58%'}});
+
+const buckets={'≤22':0,'23-27':0,'28-32':0,'33+':0};
+GRAU.roster.forEach(p=>{p.edad<=22?buckets['≤22']++:p.edad<=27?buckets['23-27']++:p.edad<=32?buckets['28-32']++:buckets['33+']++;});
+new Chart($('#chEdad'),{type:'bar',data:{labels:Object.keys(buckets),
+  datasets:[{data:Object.values(buckets),backgroundColor:[C.green,C.cel,C.amber,C.red],borderRadius:6}]},
+  options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid},ticks:{precision:0}}}}});
+
+const nac={};GRAU.roster.forEach(p=>nac[p.nac]=(nac[p.nac]||0)+1);
+new Chart($('#chNac'),{type:'bar',data:{labels:Object.keys(nac),
+  datasets:[{data:Object.values(nac),backgroundColor:C.cel,borderRadius:6}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:C.grid},ticks:{precision:0}},y:{grid:{display:false}}}}});
+
+/* edad vs apariciones (bubble = remates) */
+new Chart($('#chScatterEdad'),{type:'bubble',data:{datasets:GRAU.roster.filter(p=>p.ap>0).map(p=>({
+  label:p.n,data:[{x:p.edad,y:p.ap,r:Math.max(4,Math.sqrt(p.sh)*2.2)}],
+  backgroundColor:posColor[p.pos]+'cc',borderColor:'#fff',borderWidth:.5}))},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw.x}a · ${c.raw.y} PJ`}}},
+  scales:{x:{title:{display:true,text:'Edad'},grid:{color:C.grid}},y:{title:{display:true,text:'Apariciones'},grid:{color:C.grid}}}}});
+
+/* dependencia: apariciones ordenadas */
+const dep=[...GRAU.roster].filter(p=>p.ap>0).sort((a,b)=>b.ap-a.ap);
+new Chart($('#chDep'),{type:'bar',data:{labels:dep.map(p=>p.n),
+  datasets:[{data:dep.map(p=>p.ap),backgroundColor:dep.map(p=>posColor[p.pos]),borderRadius:5}]},
+  options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:C.grid},title:{display:true,text:'Apariciones'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+/* ---------- RESULTADOS ---------- */
+new Chart($('#chLine'),{data:{labels:GRAU.resultados.map(r=>'F'+r.fecha),
+  datasets:[
+   {type:'line',label:'GF',data:GRAU.resultados.map(r=>r.gf),borderColor:C.cel,backgroundColor:C.cel,tension:.3,pointRadius:4},
+   {type:'line',label:'GC',data:GRAU.resultados.map(r=>r.gc),borderColor:C.red,backgroundColor:C.red,tension:.3,pointRadius:4,borderDash:[5,4]}
+  ]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid},ticks:{precision:0}}}}});
+
+const wdl={V:0,E:0,L:0};GRAU.resultados.forEach(r=>wdl[r.res]++);
+new Chart($('#chWDL'),{type:'bar',data:{labels:['Victorias','Empates','Derrotas'],
+  datasets:[{data:[wdl.V,wdl.E,wdl.L],backgroundColor:[C.green,C.amber,C.red],borderRadius:8}]},
+  options:{plugins:{legend:{display:false},subtitle:{display:true,text:'(subconjunto confirmado)',color:C.mut}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid},ticks:{precision:0}}}}});
+
+/* ---------- OFENSIVO ---------- */
+const shooters=field.filter(p=>p.sh>0).sort((a,b)=>b.sh-a.sh);
+new Chart($('#chShots'),{type:'bar',data:{labels:shooters.map(p=>p.n),
+  datasets:[
+   {label:'Remates',data:shooters.map(p=>p.sh),backgroundColor:C.celD,borderRadius:4},
+   {label:'Al arco',data:shooters.map(p=>p.sot),backgroundColor:C.cel,borderRadius:4},
+   {label:'Goles',data:shooters.map(p=>p.g),backgroundColor:C.amber,borderRadius:4}
+  ]},options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:false,grid:{color:C.grid}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+new Chart($('#chConv'),{type:'scatter',data:{datasets:field.filter(p=>p.sh>0).map(p=>({
+  label:p.n,data:[{x:p.sh,y:p.g}],backgroundColor:(p.n==='Raúl Ruidíaz'?C.red:posColor[p.pos])+'dd',
+  pointRadius:p.n==='Raúl Ruidíaz'?9:6,borderColor:'#fff',borderWidth:.6}))},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw.x} rem · ${c.raw.y} g`}}},
+  scales:{x:{title:{display:true,text:'Remates'},grid:{color:C.grid}},y:{title:{display:true,text:'Goles'},grid:{color:C.grid},ticks:{precision:0}}}}});
+
+/* ---------- DEFENSIVO ---------- */
+const foulers=[...GRAU.roster].filter(p=>p.fc>0).sort((a,b)=>b.fc-a.fc).slice(0,12);
+new Chart($('#chFaltas'),{type:'bar',data:{labels:foulers.map(p=>p.n),
+  datasets:[{label:'Cometidas',data:foulers.map(p=>p.fc),backgroundColor:C.red,borderRadius:4},
+            {label:'Recibidas',data:foulers.map(p=>p.fs),backgroundColor:C.green,borderRadius:4}]},
+  options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{grid:{color:C.grid}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+const carded=[...GRAU.roster].filter(p=>p.ta+p.tr>0).sort((a,b)=>(b.ta+b.tr*2)-(a.ta+a.tr*2));
+new Chart($('#chCards'),{type:'bar',data:{labels:carded.map(p=>p.n),
+  datasets:[{label:'Amarillas',data:carded.map(p=>p.ta),backgroundColor:C.amber,borderRadius:4},
+            {label:'Rojas',data:carded.map(p=>p.tr),backgroundColor:C.red,borderRadius:4}]},
+  options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{color:C.grid},ticks:{precision:0}},y:{stacked:true,grid:{display:false},ticks:{font:{size:10}}}}}});
+
+/* ---------- ARQUERO ---------- */
+const gk=GRAU.roster.find(p=>p.n==='Patricio Álvarez');
+new Chart($('#chGK'),{type:'doughnut',data:{labels:['Atajadas','Goles concedidos'],
+  datasets:[{data:[gk.saves,gk.gc],backgroundColor:[C.green,C.red],borderColor:C.navy,borderWidth:2}]},
+  options:{cutout:'62%',plugins:{legend:{position:'bottom'}}}});
+const savePct=(gk.saves/(gk.saves+gk.gc)*100).toFixed(1);
+$('#gkStats').innerHTML=`<div class="kpis" style="margin-top:0">
+  <div class="kpi"><div class="v">${savePct}%</div><div class="l">Save % aprox.</div></div>
+  <div class="kpi"><div class="v">${(gk.saves/gk.ap).toFixed(1)}</div><div class="l">Atajadas / PJ</div></div>
+  <div class="kpi"><div class="v">${(gk.gc/gk.ap).toFixed(2)}</div><div class="l">Goles conc. / PJ</div></div></div>`;
+
+/* ---------- DISCIPLINA ---------- */
+const teamFC=GRAU.roster.reduce((s,p)=>s+p.fc,0),teamFS=GRAU.roster.reduce((s,p)=>s+p.fs,0);
+new Chart($('#chFC'),{type:'bar',data:{labels:['Cometidas','Recibidas'],
+  datasets:[{data:[teamFC,teamFS],backgroundColor:[C.red,C.green],borderRadius:8}]},
+  options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid}}}}});
+
+const sem=[
+  {a:'Generación ofensiva',s:'a',t:'Volumen alto, calidad media'},
+  {a:'Eficacia / conversión',s:'r',t:conv+'% — bajo'},
+  {a:'Solidez defensiva',s:'r',t:'DG −6, arco expuesto'},
+  {a:'Arquero',s:'g',t:'Sostiene, alto volumen de atajada'},
+  {a:'Disciplina',s:'a',t:'Faltas concentradas en el eje'},
+  {a:'Profundidad de plantel',s:'a',t:'Corta en ataque'},
+  {a:'Edad / recambio',s:'r',t:'Eje veterano en zonas clave'},
+  {a:'Consistencia',s:'r',t:'Volátil, depende de picos'}
+];
+$('#semaforo').innerHTML='<ul class="clean">'+sem.map(x=>`<li><span class="dot ${x.s}"></span><b>${x.a}</b> — <span class="src">${x.t}</span></li>`).join('')+'</ul>';
+
+/* ---------- TERCIOS (honesto: solo si hay datos) ---------- */
+(function(){
+  const labels=GRAU.tercios.labels;
+  let af=Array(6).fill(0),ec=Array(6).fill(0),has=false;
+  const bin=m=>m<=15?0:m<=30?1:m<=45?2:m<=60?3:m<=75?4:5;
+  GRAU.matchLogs.forEach(ml=>{
+    (ml.golesAFavorMin||[]).forEach(m=>{af[bin(m)]++;has=true;});
+    (ml.golesEnContraMin||[]).forEach(m=>{ec[bin(m)]++;has=true;});
+  });
+  const ctx=$('#chTercios');
+  if(!has){
+    $('#terciosMsg').innerHTML='⚠️ Sin timing de goles cargado. Carga <code>golesAFavorMin</code>/<code>golesEnContraMin</code> en <code>data.js</code> y este gráfico se genera solo.';
+    new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'(sin datos)',data:Array(6).fill(0),backgroundColor:C.grid}]},
+      options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid},suggestedMax:3}}}});
+  }else{
+    new Chart(ctx,{type:'bar',data:{labels,datasets:[
+      {label:'Goles a favor',data:af,backgroundColor:C.green,borderRadius:5},
+      {label:'Goles en contra',data:ec,backgroundColor:C.red,borderRadius:5}]},
+      options:{plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid},ticks:{precision:0}}}}});
+    $('#terciosMsg').innerHTML='Gráfico generado desde el timing de goles cargado.';
+  }
+})();
+
+/* ---------- ROSTER TABLE ---------- */
+let curFilter='ALL',sortK='ap',sortDir=-1;
+function renderTable(){
+  let rows=GRAU.roster.filter(p=>curFilter==='ALL'||p.pos===curFilter);
+  rows.sort((a,b)=>{let x=a[sortK],y=b[sortK];return (typeof x==='string'?x.localeCompare(y):x-y)*sortDir;});
+  $('#rosterTable tbody').innerHTML=rows.map(p=>`<tr>
+    <td>${p.n}</td><td><span class="pos-tag p-${p.pos}">${p.pos}</span></td><td>${p.edad}</td><td>${p.nac}</td>
+    <td>${p.ap}</td><td>${p.g||0}</td><td>${p.a||0}</td><td>${p.sh||0}</td><td>${p.sot||0}</td>
+    <td>${p.ta||0}</td><td>${p.tr?('<b class="loss">'+p.tr+'</b>'):0}</td></tr>`).join('');
+}
+document.querySelectorAll('#posFilters button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#posFilters button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');curFilter=b.dataset.f;renderTable();});
+document.querySelectorAll('#rosterTable th').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;if(k===sortK)sortDir*=-1;else{sortK=k;sortDir=-1;}renderTable();});
+renderTable();
+
+/* ---------- MODE SWITCH ---------- */
+$('#modeSwitch').onclick=function(){this.classList.toggle('on');document.body.classList.toggle('tec');};
+</script>
+</body>
+</html>
