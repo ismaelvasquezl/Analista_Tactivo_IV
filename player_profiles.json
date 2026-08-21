@@ -1,0 +1,537 @@
+[
+ {
+  "player": "Benjamin Gazzolo",
+  "roles": [
+   "CB",
+   "DFC"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2020",
+    "min": 36
+   },
+   {
+    "s": "2021",
+    "min": 1512
+   },
+   {
+    "s": "2022",
+    "min": 1939
+   },
+   {
+    "s": "2023",
+    "min": 2183
+   },
+   {
+    "s": "2024",
+    "min": 3196
+   },
+   {
+    "s": "2025",
+    "min": 1458
+   },
+   {
+    "s": "2026",
+    "min": 1842
+   }
+  ],
+  "seasons": 7,
+  "clubs": 2,
+  "career_min": 12166,
+  "career_mp": 154,
+  "career_gls": 4,
+  "career_ast": 1,
+  "career_crdy": 36,
+  "career_crdr": 4,
+  "cards_y_per90": 0.27,
+  "red_per_season": 0.57,
+  "y2026": {
+   "mp": 21,
+   "min": 1842,
+   "age": "28",
+   "gls": 0,
+   "ast": 0,
+   "crdy": 8,
+   "crdr": 1
+  }
+ },
+ {
+  "player": "Diego Sanchez",
+  "roles": [
+   "GK"
+  ],
+  "is_gk": true,
+  "minutes_by_season": [
+   {
+    "s": "2017",
+    "min": 1254
+   },
+   {
+    "s": "2018",
+    "min": 1980
+   },
+   {
+    "s": "2019",
+    "min": 2640
+   },
+   {
+    "s": "2020",
+    "min": 2790
+   },
+   {
+    "s": "2021",
+    "min": 2115
+   },
+   {
+    "s": "2022",
+    "min": 2190
+   },
+   {
+    "s": "2023",
+    "min": 2610
+   },
+   {
+    "s": "2024",
+    "min": 2970
+   },
+   {
+    "s": "2025",
+    "min": 2610
+   },
+   {
+    "s": "2026",
+    "min": 1900
+   }
+  ],
+  "seasons": 14,
+  "clubs": 3,
+  "career_min": 30169,
+  "career_mp": 335,
+  "career_saves": 714,
+  "career_ga": 313,
+  "career_save_pct": 69.5,
+  "career_cs": 84,
+  "y2026": {
+   "mp": 21,
+   "min": 1900,
+   "age": "38",
+   "saves": 48,
+   "ga": 23,
+   "save_pct": 67.6,
+   "cs": 6
+  }
+ },
+ {
+  "player": "Elvis Hernandez",
+  "roles": [
+   "CB"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2024",
+    "min": 1389
+   },
+   {
+    "s": "2025",
+    "min": 676
+   },
+   {
+    "s": "2026",
+    "min": 745
+   }
+  ],
+  "seasons": 3,
+  "clubs": 1,
+  "career_min": 2810,
+  "career_mp": 52,
+  "career_gls": 1,
+  "career_ast": 0,
+  "career_crdy": 9,
+  "career_crdr": 1,
+  "cards_y_per90": 0.29,
+  "red_per_season": 0.33,
+  "y2026": {
+   "mp": 9,
+   "min": 745,
+   "age": "26",
+   "gls": 0,
+   "ast": 0,
+   "crdy": 1,
+   "crdr": 1
+  }
+ },
+ {
+  "player": "Francisco Salinas",
+  "roles": [
+   "RB",
+   "DFD"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2023",
+    "min": 1767
+   },
+   {
+    "s": "2024",
+    "min": 163
+   },
+   {
+    "s": "2025",
+    "min": 2602
+   },
+   {
+    "s": "2026",
+    "min": 1970
+   }
+  ],
+  "seasons": 4,
+  "clubs": 2,
+  "career_min": 6502,
+  "career_mp": 80,
+  "career_gls": 8,
+  "career_ast": 9,
+  "career_crdy": 16,
+  "career_crdr": 1,
+  "cards_y_per90": 0.22,
+  "red_per_season": 0.25,
+  "y2026": {
+   "mp": 22,
+   "min": 1970,
+   "age": "26",
+   "gls": 0,
+   "ast": 2,
+   "crdy": 6,
+   "crdr": 1
+  }
+ },
+ {
+  "player": "Juan Cornejo",
+  "roles": [
+   "LB",
+   "DFI"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2017-2018",
+    "min": 2187
+   },
+   {
+    "s": "2018-2019",
+    "min": 943
+   },
+   {
+    "s": "2019",
+    "min": 1903
+   },
+   {
+    "s": "2020",
+    "min": 1128
+   },
+   {
+    "s": "2021",
+    "min": 1063
+   },
+   {
+    "s": "2022",
+    "min": 1897
+   },
+   {
+    "s": "2023",
+    "min": 2609
+   },
+   {
+    "s": "2024",
+    "min": 1592
+   },
+   {
+    "s": "2025",
+    "min": 2289
+   },
+   {
+    "s": "2026",
+    "min": 1872
+   }
+  ],
+  "seasons": 13,
+  "clubs": 5,
+  "career_min": 24171,
+  "career_mp": 306,
+  "career_gls": 15,
+  "career_ast": 32,
+  "career_crdy": 65,
+  "career_crdr": 1,
+  "cards_y_per90": 0.24,
+  "red_per_season": 0.08,
+  "y2026": {
+   "mp": 21,
+   "min": 1872,
+   "age": "35",
+   "gls": 0,
+   "ast": 7,
+   "crdy": 2,
+   "crdr": 1
+  }
+ },
+ {
+  "player": "Manuel Fernandez",
+  "roles": [
+   "CB",
+   "DFC"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2017",
+    "min": 1147
+   },
+   {
+    "s": "2018",
+    "min": 1752
+   },
+   {
+    "s": "2019",
+    "min": 1521
+   },
+   {
+    "s": "2020",
+    "min": 2526
+   },
+   {
+    "s": "2021",
+    "min": 705
+   },
+   {
+    "s": "2022",
+    "min": 2233
+   },
+   {
+    "s": "2023",
+    "min": 1129
+   },
+   {
+    "s": "2024",
+    "min": 2306
+   },
+   {
+    "s": "2025",
+    "min": 2486
+   },
+   {
+    "s": "2026",
+    "min": 1780
+   }
+  ],
+  "seasons": 10,
+  "clubs": 3,
+  "career_min": 17585,
+  "career_mp": 215,
+  "career_gls": 12,
+  "career_ast": 2,
+  "career_crdy": 73,
+  "career_crdr": 14,
+  "cards_y_per90": 0.37,
+  "red_per_season": 1.4,
+  "y2026": {
+   "mp": 21,
+   "min": 1780,
+   "age": "37",
+   "gls": 3,
+   "ast": 0,
+   "crdy": 10,
+   "crdr": 2
+  }
+ },
+ {
+  "player": "Salvador Cordero",
+  "roles": [
+   "CB",
+   "DFI",
+   "MC"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2015-2016",
+    "min": 2
+   },
+   {
+    "s": "2016-2017",
+    "min": 32
+   },
+   {
+    "s": "2018",
+    "min": 1610
+   },
+   {
+    "s": "2019",
+    "min": 535
+   },
+   {
+    "s": "2020",
+    "min": 2120
+   },
+   {
+    "s": "2021",
+    "min": 2601
+   },
+   {
+    "s": "2022",
+    "min": 2809
+   },
+   {
+    "s": "2025",
+    "min": 709
+   },
+   {
+    "s": "2026",
+    "min": 918
+   }
+  ],
+  "seasons": 9,
+  "clubs": 2,
+  "career_min": 11336,
+  "career_mp": 166,
+  "career_gls": 3,
+  "career_ast": 5,
+  "career_crdy": 27,
+  "career_crdr": 0,
+  "cards_y_per90": 0.21,
+  "red_per_season": 0.0,
+  "y2026": {
+   "mp": 18,
+   "min": 918,
+   "age": "29",
+   "gls": 0,
+   "ast": 0,
+   "crdy": 5,
+   "crdr": 0
+  }
+ },
+ {
+  "player": "Sebastian CAbrera",
+  "roles": [
+   "DFI",
+   "LI",
+   "EI"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2019",
+    "min": 1468
+   },
+   {
+    "s": "2020",
+    "min": 594
+   },
+   {
+    "s": "2021",
+    "min": 568
+   },
+   {
+    "s": "2022",
+    "min": 12
+   },
+   {
+    "s": "2023",
+    "min": 987
+   },
+   {
+    "s": "2024",
+    "min": 2165
+   },
+   {
+    "s": "2025",
+    "min": 671
+   },
+   {
+    "s": "2026",
+    "min": 410
+   }
+  ],
+  "seasons": 8,
+  "clubs": 3,
+  "career_min": 6875,
+  "career_mp": 116,
+  "career_gls": 5,
+  "career_ast": 8,
+  "career_crdy": 21,
+  "career_crdr": 1,
+  "cards_y_per90": 0.27,
+  "red_per_season": 0.12,
+  "y2026": {
+   "mp": 7,
+   "min": 410,
+   "age": "27",
+   "gls": 0,
+   "ast": 0,
+   "crdy": 2,
+   "crdr": 0
+  }
+ },
+ {
+  "player": "Sebastian Galani",
+  "roles": [
+   "MCD",
+   "MC"
+  ],
+  "is_gk": false,
+  "minutes_by_season": [
+   {
+    "s": "2019",
+    "min": 2085
+   },
+   {
+    "s": "2020",
+    "min": 1101
+   },
+   {
+    "s": "2021",
+    "min": 1697
+   },
+   {
+    "s": "2022",
+    "min": 1594
+   },
+   {
+    "s": "2023",
+    "min": 2334
+   },
+   {
+    "s": "2024",
+    "min": 1985
+   },
+   {
+    "s": "2025",
+    "min": 1991
+   },
+   {
+    "s": "2026",
+    "min": 1768
+   }
+  ],
+  "seasons": 8,
+  "clubs": 3,
+  "career_min": 14555,
+  "career_mp": 193,
+  "career_gls": 2,
+  "career_ast": 3,
+  "career_crdy": 43,
+  "career_crdr": 0,
+  "cards_y_per90": 0.27,
+  "red_per_season": 0.0,
+  "y2026": {
+   "mp": 21,
+   "min": 1768,
+   "age": "28",
+   "gls": 1,
+   "ast": 0,
+   "crdy": 5,
+   "crdr": 0
+  }
+ }
+]

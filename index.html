@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Análisis · Coquimbo Unido</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{--navy:#0a0a0a;--navy2:#1c1c1c;--panel:#191919;--gold:#ffd200;--gold2:#f5c400;--white:#f7f7f5;--mut:#b9b9b0;
+    --line:rgba(255,210,0,.14);--green:#4ad991;--amber:#ffcf5c;--red:#ff6b6b;--sh:0 8px 30px rgba(0,0,0,.55);--r:16px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;line-height:1.55;color:var(--white);
+    background:linear-gradient(160deg,#000000,#111111 55%,#0a0a0a)}
+  a{color:var(--gold);text-decoration:none}
+  header.top{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(8,8,8,.9);border-bottom:2px solid var(--gold)}
+  .nav{max-width:1180px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px}
+  .crest{width:32px;height:32px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,var(--navy) 0 50%);border:2px solid var(--gold)}
+  .links{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+  .links a{color:var(--mut);font-size:13px;padding:6px 10px;border-radius:8px;font-weight:600}
+  .links a:hover{color:var(--navy);background:var(--gold)}
+  main{max-width:1180px;margin:0 auto;padding:0 18px 80px}
+  section{padding:40px 0 8px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(24px,4vw,38px);margin:.2em 0}
+  h2{font-size:21px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:6px;height:20px;background:var(--gold);border-radius:3px;display:inline-block}
+  h3{font-size:14px;color:var(--gold);margin:18px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+  p{color:#dbe6f7}.sub{color:var(--mut);font-size:14px}.lead{font-size:16px;color:#eaf1ff;max-width:82ch}
+  .tag{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--navy);background:var(--gold);border-radius:20px;padding:4px 12px;text-transform:uppercase;font-weight:800}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--navy2));border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh)}
+  .kpi .v{font-size:26px;font-weight:800;color:var(--gold)}.kpi .l{font-size:11px;color:var(--mut);text-transform:uppercase}
+  .grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--navy2));border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+  .card h4{margin:0 0 8px;font-size:15px}
+  .chart-wrap{position:relative;height:320px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+  th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .b-dato{background:rgba(58,212,148,.16);color:var(--green);border:1px solid rgba(58,212,148,.4)}
+  .b-ver{background:rgba(255,207,92,.16);color:var(--amber);border:1px solid rgba(255,207,92,.4)}
+  .b-hip{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
+  .b-clave{background:rgba(255,210,0,.18);color:var(--gold);border:1px solid rgba(255,210,0,.45)}
+  .b-alerta{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
+  .b-forma{background:rgba(58,212,148,.16);color:var(--green);border:1px solid rgba(58,212,148,.4)}
+  .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.07);padding:11px 15px;border-radius:0 10px 10px 0;margin:12px 0;font-size:14px}
+  .callout.warn{border-color:var(--amber);background:rgba(255,207,92,.07)}
+  .callout.danger{border-color:var(--red);background:rgba(255,107,107,.08)}
+  ul.clean{list-style:none;padding:0;margin:8px 0}ul.clean li{padding:7px 0 7px 24px;position:relative;border-bottom:1px solid var(--line);font-size:14px}
+  ul.clean li::before{content:"▸";position:absolute;left:3px;color:var(--gold)}
+  .pill{display:inline-block;font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--line);background:var(--navy2);margin:3px 4px 0 0}
+  .foot{color:var(--mut);font-size:12px;padding:26px 0 0}
+  .rival-hd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  details{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:rgba(255,255,255,.02)}
+  details summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:16px;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .rbody{padding:14px 16px}
+  .how{background:rgba(255,210,0,.06);border:1px dashed rgba(255,210,0,.4);border-radius:12px;padding:14px 16px;font-size:13px;color:#e9f0ff}
+  code{background:#071d40;padding:2px 6px;border-radius:5px;color:var(--gold);font-size:12px}
+</style>
+</head>
+<body>
+<header class="top"><div class="nav">
+  <div class="brand"><span class="crest"></span> CENTRO DE ANÁLISIS · <span style="color:var(--gold)">COQUIMBO UNIDO</span></div>
+  <div class="links">
+    <a href="#resumen">Resumen</a><a href="#defensa">Defensa & Intensidad</a><a href="#jugadores">Jugadores</a>
+    <a href="#rivales">Rivales / Pre-partido</a><a href="#bitacora">Bitácora</a>
+  </div>
+</div></header>
+<main>
+  <section id="resumen">
+    <span class="tag">Informe vivo · actualizable</span>
+    <h1 id="coqTitular"></h1>
+    <p class="lead" id="coqPerfilLead"></p>
+    <div class="kpis" id="kpis"></div>
+    <div id="coqPerfil"></div>
+    <p class="sub">Datos de Coquimbo: export FBref 2026 (25 partidos, validado). Actualizado: <span id="fecha"></span>.</p>
+  </section>
+
+  <section id="defensa">
+    <h2>Defensa &amp; Intensidad de juego</h2>
+    <p class="sub">Estadísticas defensivas relevantes y proxy de intensidad (Liga 2026). <span class="badge b-dato">DATO</span></p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Estadísticas defensivas</h4><table id="tblDef"></table></div>
+      <div class="card"><h4>Frecuencia e intensidad</h4><table id="tblInt"></table></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h4>🗺️ Proxy de mapa de calor — intensidad por partido</h4>
+      <p class="sub">Los mapas de calor posicionales no están disponibles públicamente por mis fuentes (requieren tracking Sofascore/WhoScored). Este proxy muestra <b>dónde y cómo</b> juega Coquimbo con eventos reales: centros (ataque lateral), tiros concedidos (exposición) y rojas (indisciplina).</p>
+      <div class="chart-wrap"><canvas id="chInt"></canvas></div>
+    </div>
+  </section>
+
+  <section id="jugadores">
+    <h2>Jugadores importantes de Coquimbo</h2>
+    <div class="grid g3" id="jugCards" style="margin-top:12px"></div>
+  </section>
+
+  <section id="rivales">
+    <h2>Rivales analizados / Pre-partidos</h2>
+    <p class="sub">Se amplía solo al añadir objetos en <code>reportes.js → REPORTES.rivales[]</code>.</p>
+    <div id="rivales"></div>
+  </section>
+
+  <section id="bitacora">
+    <h2>Bitácora de avances</h2>
+    <ul class="clean" id="bitacora"></ul>
+    <div class="how" style="margin-top:14px">
+      <b>Cómo actualizar este informe.</b> Edita <code>reportes.js</code> (contenido narrativo/rivales) y recarga este archivo.
+      Para añadir un rival o pre-partido, copia el objeto de "Deportes Concepción" dentro de <code>REPORTES.rivales[]</code>.
+      Los gráficos de Coquimbo se alimentan de <code>coquimbo_data.js</code> (dato 2026). Los tres archivos deben estar en la misma carpeta.
+    </div>
+    <p class="foot">Fuentes: export FBref Coquimbo Unido 2026 (validado). Datos de rivales marcados <span class="badge b-ver">REQUIERE_VERIFICACION</span> hasta cargar su export.</p>
+  </section>
+</main>
+
+<script src="coquimbo_data.js"></script>
+<script src="reportes.js"></script>
+<script>
+const C={navy:'#0a0a0a',gold:'#ffd200',mut:'#b9b9b0',green:'#4ad991',amber:'#ffcf5c',red:'#ff6b6b',grid:'rgba(255,210,0,.10)'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="'Segoe UI',sans-serif";Chart.defaults.plugins.legend.labels.boxWidth=12;
+const $=s=>document.querySelector(s);
+const R=REPORTES, hasM=typeof MATCHES!=='undefined';
+
+$('#coqTitular').textContent='Coquimbo Unido — '+R.coquimbo.titular;
+$('#fecha').textContent=R.actualizado;
+$('#coqPerfilLead').textContent=R.coquimbo.perfil[0];
+$('#coqPerfil').innerHTML='<ul class="clean">'+R.coquimbo.perfil.slice(1).map(x=>`<li>${x}</li>`).join('')+'</ul>';
+
+/* KPIs desde MATCHES (Liga) */
+if(hasM){
+  const lig=MATCHES.filter(m=>m.comp==='LIG');
+  const w=lig.filter(m=>m.res==='W').length,d=lig.filter(m=>m.res==='D').length,l=lig.filter(m=>m.res==='L').length;
+  const gf=lig.reduce((s,m)=>s+m.gf,0),ga=lig.reduce((s,m)=>s+m.ga,0);
+  $('#kpis').innerHTML=[
+    {v:`${w}-${d}-${l}`,l:'Liga 2026 (V-E-D)'},
+    {v:(gf/lig.length).toFixed(2),l:'Goles a favor /PJ'},
+    {v:(ga/lig.length).toFixed(2),l:'Goles contra /PJ'},
+    {v:'8',l:'Rojas (Liga)'},
+    {v:'24,9',l:'Centros /PJ'}
+  ].map(k=>`<div class="kpi"><div class="v">${k.v}</div><div class="l">${k.l}</div></div>`).join('');
+}
+
+/* tablas defensa/intensidad */
+const rowTbl=(arr)=>'<tr><th>Métrica</th><th>Valor</th><th>Lectura</th></tr>'+arr.map(x=>`<tr><td>${x.k}</td><td><b style="color:var(--gold)">${x.v}</b></td><td class="sub">${x.nota}</td></tr>`).join('');
+$('#tblDef').innerHTML=rowTbl(R.coquimbo.defensa);
+$('#tblInt').innerHTML=rowTbl(R.coquimbo.intensidad);
+
+/* proxy heatmap: intensidad por partido */
+if(hasM){
+  const d=MATCHES;const labels=d.map(m=>m.date+(m.comp==='LIB'?'·L':''));
+  new Chart($('#chInt'),{data:{labels,datasets:[
+    {type:'bar',label:'Centros (ataque lateral)',data:d.map(m=>m.crs),backgroundColor:C.gold,yAxisID:'y'},
+    {type:'line',label:'Tiros concedidos',data:d.map(m=>m.sha),borderColor:C.red,backgroundColor:C.red,tension:.3,pointRadius:2,yAxisID:'y'},
+    {type:'line',label:'Rojas',data:d.map(m=>m.cr),borderColor:'#fff',backgroundColor:'#fff',stepped:true,pointRadius:d.map(m=>m.cr?5:0),yAxisID:'y2'}
+  ]},options:{plugins:{legend:{position:'bottom'}},scales:{
+    x:{grid:{display:false},ticks:{font:{size:8},maxRotation:90}},
+    y:{grid:{color:C.grid},title:{display:true,text:'centros / tiros'}},
+    y2:{position:'right',grid:{display:false},min:0,max:2,ticks:{stepSize:1},title:{display:true,text:'rojas'}}
+  }}});
+}
+
+/* jugadores importantes */
+$('#jugCards').innerHTML=R.coquimbo.jugadores.map(j=>{
+  const bg=j.tag==='clave'?'b-clave':j.tag==='alerta'?'b-alerta':j.tag==='forma'?'b-forma':'';
+  return `<div class="card"><div class="rival-hd"><h4 style="margin:0">${j.n}</h4>${j.tag?`<span class="badge ${bg}">${j.tag}</span>`:''}</div>
+    <div class="sub" style="margin:2px 0 6px">${j.rol} · <b style="color:var(--gold)">${j.aporte}</b></div>
+    <div style="font-size:13px">${j.nota}</div></div>`;
+}).join('');
+
+/* rivales / pre-partidos */
+$('#rivales').innerHTML=R.rivales.map((r,i)=>{
+  const ficha=r.ficha.map(f=>`<tr><td>${f.k}</td><td>${f.v}</td><td><span class="badge ${f.estado==='DATO'?'b-dato':'b-ver'}">${f.estado}</span></td></tr>`).join('');
+  const h2h=r.h2h.map(h=>`<tr><td>${h.fecha}</td><td>${h.comp}</td><td>${h.sede}</td><td><b>${h.gc} (${h.res})</b></td><td class="sub">${h.detalle}</td></tr>`).join('');
+  const pred=r.prediccion.map(p=>`<tr><td>${p.esc}</td><td><b style="color:var(--gold)">${p.p}</b></td></tr>`).join('');
+  return `<details ${i===0?'open':''}><summary>${r.nombre} <span class="badge b-clave">${r.tipo}</span></summary>
+    <div class="rbody">
+      <h3>Ficha técnica</h3><table><tr><th>Campo</th><th>Info</th><th>Estado</th></tr>${ficha}</table>
+      <h3>Head-to-Head (dato real)</h3><table><tr><th>Fecha</th><th>Comp</th><th>Sede Coq.</th><th>Result.</th><th>Detalle</th></tr>${h2h}</table>
+      <div class="callout"><b>Resumen:</b> ${r.resumenH2H}</div>
+      <div class="callout warn"><b>Lectura:</b> ${r.lecturaH2H}</div>
+      <h3>Predicción estadística <span class="sub">(confianza: ${r.confianza})</span></h3>
+      <table><tr><th>Escenario</th><th>Prob.</th></tr>${pred}</table>
+      <p><b>Marcador más probable:</b> <span style="color:var(--gold)">${r.marcador}</span></p>
+      <h3>3 claves tácticas</h3><ul class="clean">${r.claves.map(c=>`<li>${c}</li>`).join('')}</ul>
+      <div class="callout danger"><b>Pendiente de cargar (rival):</b> ${r.pendientes.join(' · ')} <span class="badge b-ver">REQUIERE_VERIFICACION</span></div>
+    </div></details>`;
+}).join('');
+
+/* bitácora */
+$('#bitacora').innerHTML=R.bitacora.map(b=>`<li><b>${b.fecha}</b> — ${b.nota}</li>`).join('');
+</script>
+</body>
+</html>
