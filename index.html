@@ -85,7 +85,7 @@
   <div class="links">
     <a href="#resumen">Reporte</a><a href="#estilo">Identidad</a><a href="#tendencia">Tendencia</a>
     <a href="#cancha">Cancha</a><a href="#jugadores">Plantel</a><a href="#defensa">Defensa</a>
-    <a href="#fixture">Fixture</a><a href="#rivales">Rivales</a><a href="#informe7">Informe 7Q</a><a href="#bitacora">Bitácora</a>
+    <a href="#fixture">Fixture</a><a href="#ultimo">Último partido</a><a href="#rivales">Rivales</a><a href="#informe7">Informe 7Q</a><a href="#bitacora">Bitácora</a>
   </div>
   <div class="modewrap"><span>Ejecutiva</span><div class="switch" id="modeSwitch"><div class="knob"></div></div><span>Técnica</span></div>
 </div></header>
@@ -178,6 +178,17 @@
     <div class="callout" id="refNote"></div>
   </section>
 
+  <!-- ===== ÚLTIMO PARTIDO ===== -->
+  <section id="ultimo">
+    <h2 id="ultTitulo"></h2>
+    <p class="sub" id="ultMeta"></p>
+    <div class="callout" id="ultGoles" style="margin-top:10px"></div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Coquimbo Unido · rendimiento individual</h4><div class="scroll-x"><table id="ultCoq"></table></div></div>
+      <div class="card"><h4>Claves del partido</h4><div id="ultDest"></div></div>
+    </div>
+  </section>
+
   <!-- ===== RIVALES ===== -->
   <section id="rivales">
     <h2>Rivales analizados / Pre-partido</h2>
@@ -210,6 +221,7 @@
 
 <script src="coquimbo_data.js"></script>
 <script src="fixtures.js"></script>
+<script src="ultimo_partido.js"></script>
 <script src="reportes.js"></script>
 <script>
 const C={gold:'#ffd200',blue:'#7fb0ff',mut:'#b7b7ad',green:'#4ad991',amber:'#ffcf5c',red:'#ff6b6b',grid:'rgba(255,210,0,.10)'};
@@ -396,6 +408,32 @@ R.rivales.forEach((r,i)=>{ if(!r.charts)return; const rd=r.charts;
     {label:'Entradas ganadas',data:rd.defensores.map(d=>d.tklw),backgroundColor:C.blue,borderRadius:4}]},
     options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{color:C.grid}},y:{stacked:true,grid:{display:false}}}}});
 });
+
+/* ---- Último partido (detalle individual) ---- */
+(function(){
+  if(typeof ULT==='undefined') return;
+  $('#ultTitulo').innerHTML=`Último partido — ${ULT.rival} <span class="draw">${ULT.marcador}</span> Coquimbo`;
+  $('#ultMeta').textContent=`${ULT.ronda} · ${ULT.fecha} · ${ULT.sede} · Árbitro: ${ULT.arbitro}`;
+  $('#ultGoles').innerHTML='<b>Goles:</b> '+ULT.goles.map(g=>`<span class="badge ${g.eq==='COQ'?'b-clave':'b-alerta'}">${g.min}</span> ${g.jug} (${g.eq}) — ${g.nota}`).join(' &nbsp;·&nbsp; ');
+  $('#ultCoq').innerHTML='<tr><th>Jugador</th><th>Pos</th><th>Min</th><th>Tiros</th><th>AP</th><th>G</th><th>Centr</th><th>TklW</th><th>Int</th><th>Faltas</th><th>Tarj</th></tr>'+
+    ULT.coq.map(p=>`<tr><td>${p.n}${p.g?' <span class="badge b-clave">⚽</span>':''}</td><td>${p.pos}</td><td>${p.min}</td><td>${p.sh}</td><td>${p.sot}</td><td>${p.g||''}</td><td>${p.crs||''}</td><td>${p.tklw||''}</td><td>${p.intc||''}</td><td>${p.fls||''}</td><td>${p.cy?'<span class="draw">🟨</span>':''}${p.cr?'🟥':''}</td></tr>`).join('');
+  // destacados
+  const top=(arr,k,n=1)=>[...arr].sort((a,b)=>b[k]-a[k]).slice(0,n);
+  const soza=ULT.coq.find(p=>p.n.includes('Soza'));
+  const cac=ULT.dco.find(p=>p.n.includes('Cáceres'));
+  const cav=ULT.dco.find(p=>p.n.includes('Cavalleri'));
+  const esp=ULT.dco.find(p=>p.n.includes('Espinoza'));
+  const yellows=ULT.coq.filter(p=>p.cy).map(p=>p.n.split(' ').slice(-1)[0]);
+  $('#ultDest').innerHTML=`
+    <ul class="clean">
+      <li><b>Alejandro Camargo (COQ)</b> — gol a los 7', 90' completos y 3 entradas ganadas + 2 intercepciones. El capitán del medio marcó y equilibró.</li>
+      <li><b>Lukas Soza (COQ, RB)</b> — jornada defensiva descomunal: <b>7 entradas ganadas y 6 intercepciones</b> (además de 5 faltas y amarilla). El costado derecho aguantó ahí.</li>
+      <li><b>Ariel Cáceres (DCo, RB)</b> — el lateral que empató: gol, 6 entradas ganadas y 4 centros. Su banda fue la más activa del rival.</li>
+      <li><b>Matías Cavalleri (DCo)</b> — entró en el descanso y cambió el partido: <b>asistencia del 1-1</b> y 5 centros en 45'.</li>
+      <li><b>Ethan Espinoza (DCo)</b> — 6 remates, el más incisivo; Coquimbo le concedió volumen (19 tiros rivales).</li>
+    </ul>
+    <div class="callout warn"><span class="badge b-dato">DATO</span> 5 amarillas de Coquimbo (${yellows.join(', ')}). <span class="badge b-hip">LECTURA</span> defendió la ventaja con faltas (17) y duelo (22 entradas ganadas), pero apenas atacó (5 tiros, 38% balón). Cedió el empate en una jugada elaborada, no en un error suelto.</div>`;
+})();
 
 /* ---- Informe táctico 7 preguntas ---- */
 (function(){

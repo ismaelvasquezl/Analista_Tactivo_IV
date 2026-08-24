@@ -16,23 +16,23 @@ const REPORTES = {
   coquimbo: {
     titular: "Campeón vigente 2025 · reactivo, intenso y de ataque lateral",
     perfil: [
-      "Equipo REACTIVO, no dominador: posesión ~50% y correlación posesión→goles negativa (−0,20). Rinde mejor sin la obligación de tener el balón.",
-      "Ataque muy LATERAL: 24,9 centros/partido (rango 14–47). Es su sello y su límite: si le cierran las bandas, se vuelve previsible.",
-      "Defensa permeable para un campeón (1,24 GC/PJ) y muy expuesta: concede 10,3 tiros/PJ; corr(tiros concedidos→goles)=+0,71.",
-      "Indisciplina severa y doméstica: 8 rojas en 17 de Liga (0 en Libertadores)."
+      "Equipo REACTIVO, no dominador: posesión ~49% y correlación posesión→goles negativa. Rinde mejor sin la obligación de tener el balón (último caso: empató 1-1 en Concepción con solo 38% de balón).",
+      "Ataque muy LATERAL: 24,2 centros/partido (rango 11–47). Es su sello y su límite: si le cierran las bandas, se vuelve previsible.",
+      "Defensa permeable para un campeón (1,22 GC/PJ) y muy expuesta: concede 10,8 tiros/PJ; corr(tiros concedidos→goles)=+0,71.",
+      "Indisciplina severa y doméstica: 8 rojas en 18 de Liga (0 en Libertadores)."
     ],
-    defensa: [   // {k, v, nota}
-      { k: "Goles en contra", v: "1,24 /PJ", nota: "Permeable" },
-      { k: "Tiros concedidos", v: "10,3 /PJ (SoT 3,7)", nota: "Concede volumen" },
-      { k: "Atajadas · Save%", v: "2,4 /PJ · 66%", nota: "Arco exigido" },
-      { k: "Clean sheets", v: "3/17 (18%)", nota: "Poca portería a cero" },
-      { k: "Entradas+intercepciones", v: "20,9 /PJ", nota: "Recuperación activa" }
+    defensa: [   // {k, v, nota}  — Liga 2026, 18 PJ
+      { k: "Goles en contra", v: "1,22 /PJ", nota: "Permeable" },
+      { k: "Tiros concedidos", v: "10,8 /PJ (SoT 3,6)", nota: "Concede volumen" },
+      { k: "Atajadas · Save%", v: "2,4 /PJ · 67%", nota: "Arco exigido" },
+      { k: "Clean sheets", v: "3/18 (17%)", nota: "Poca portería a cero" },
+      { k: "Entradas+intercepciones", v: "≈20,8 /PJ", nota: "Recuperación activa" }
     ],
     intensidad: [
-      { k: "Centros", v: "24,9 /PJ (14–47)", nota: "Frecuencia de ataque lateral, muy alta" },
-      { k: "Faltas", v: "11,5 /PJ (7–18)", nota: "Intensidad de duelo media-alta" },
-      { k: "Tarjetas", v: "50A · 8R", nota: "Intensidad que se le va de las manos" },
-      { k: "Posesión", v: "49,9%", nota: "Reactivo" }
+      { k: "Centros", v: "24,2 /PJ (11–47)", nota: "Frecuencia de ataque lateral, muy alta" },
+      { k: "Faltas", v: "11,8 /PJ (7–18)", nota: "Intensidad de duelo media-alta" },
+      { k: "Tarjetas", v: "55A · 8R", nota: "Intensidad que se le va de las manos" },
+      { k: "Posesión", v: "49,2%", nota: "Reactivo" }
     ],
     jugadores: [ // {n, rol, aporte, nota, tag}
       { n: "Nicolás Johansen", rol: "Delantero", aporte: "6 goles", nota: "Máximo goleador (26% del total); de él depende el gol", tag: "clave" },
@@ -111,35 +111,36 @@ const REPORTES = {
     },
     {
       nombre: "Deportes Concepción",
-      tipo: "PRE-PARTIDO",
+      tipo: "H2H · JUGADO 23-AGO",
       ficha: [
         { k: "Ciudad / Región", v: "Concepción, Biobío", estado: "DATO" },
         { k: "Apodo / colores", v: "El León de Collao · lila y blanco", estado: "DATO" },
-        { k: "Estadio", v: "Ester Roa Rebolledo (Collao)", estado: "REQUIERE_VERIFICACION" },
-        { k: "Participación Liga 2026", v: "A confirmar en fuente oficial", estado: "REQUIERE_VERIFICACION" },
-        { k: "Entrenador / goleador 2026", v: "—", estado: "REQUIERE_VERIFICACION" }
+        { k: "Estadio", v: "Ester Roa Rebolledo (Collao)", estado: "DATO" },
+        { k: "Liga 2026 (al MW20)", v: "8-3-9 · DT Fernando Díaz · capitán Mario Sandoval", estado: "DATO" },
+        { k: "Sistema usado vs Coquimbo", v: "4-4-2", estado: "DATO" }
       ],
-      h2h: [ // enfrentamientos con dato real
-        { fecha: "2026-02-28", comp: "Liga", sede: "Local", res: "L", gc: "0-1",
-          detalle: "66% posesión, 17-8 en tiros, 3 SoT c/u, 36 centros, 1 roja Coquimbo" }
+      h2h: [ // enfrentamientos con dato real (2 en 2026)
+        { fecha: "2026-02-28", comp: "Liga (MW5)", sede: "Local", res: "L", gc: "0-1",
+          detalle: "66% posesión, 17-8 en tiros, 36 centros, 1 roja: dominó y perdió." },
+        { fecha: "2026-08-23", comp: "Liga (MW20)", sede: "Visita", res: "D", gc: "1-1",
+          detalle: "Se adelantó (Camargo 7'), cedió el empate (Cáceres 62'). Solo 38% posesión y 5 tiros; 5 amarillas defendiendo la ventaja." }
       ],
-      resumenH2H: "1 partido (dato): 0V-0E-1D, 0-1. Muestra mínima (n=1): sin tendencia, solo lectura.",
-      lecturaH2H: "El partido más ilustrativo del patrón aurinegro: dominó balón (66%) y tiros (17-8) y perdió en casa, con una roja y 36 centros. Prototipo de rival incómodo: le ceden la pelota y lo castigan en pocas acciones.",
-      prediccion: [ // baja confianza
-        { esc: "Victoria Coquimbo", p: "~42%" },
-        { esc: "Empate", p: "~30%" },
-        { esc: "Victoria D. Concepción", p: "~28%" },
-        { esc: "Over 2.5 goles", p: "~50%" },
-        { esc: "Ambos marcan", p: "~60%" }
+      resumenH2H: "2 partidos 2026: 0V-1E-1D · goles 1-2. Coquimbo todavía sin ganarle: perdió dominando y empató cediendo el balón.",
+      lecturaH2H: "Rival espejo del problema aurinegro. En febrero tuvo el balón (66%) y cayó; en agosto renunció al balón (38%), pegó primero y aguantó a base de faltas (17) e intercepciones (13) para rescatar el 1-1. Dos formas de no ganarle: cuando propone se expone, y cuando aguanta se le escapa el punto tarde.",
+      prediccion: [ // histórico (partidos ya jugados)
+        { esc: "Partidos 2026", p: "2" },
+        { esc: "Coquimbo V-E-D", p: "0-1-1" },
+        { esc: "Goles (Coq–DCo)", p: "1–2" },
+        { esc: "Patrón repetido", p: "Coquimbo no domina y sobrevive" }
       ],
-      marcador: "1-1 o 1-0 Coquimbo",
-      confianza: "BAJA (n=1 en H2H; rival sin datos cargados)",
+      marcador: "Resultados reales: 0-1 (feb) y 1-1 (ago)",
+      confianza: "HISTÓRICO · 2 partidos reales (no es pronóstico)",
       claves: [
-        "No enamorarse del centro: alternar ataque interior (tercer hombre por half-space) para no ser previsible.",
-        "Disciplina en el eje: evitar la falta de último recurso; quedar con diez ya costó el 0-1.",
-        "Cortar el volumen de tiro rival (su talón, corr +0,71 con goles)."
+        "Contra su 4-4-2, atacar el intervalo entre línea y volante en vez de sólo centrar (36 centros y 0 goles en el 1er duelo).",
+        "Cuando se juega con ventaja, sostenerla sin caer en 5 amarillas: gestionar la falta táctica.",
+        "Cortar su transición: el empate llegó de una jugada elaborada (asistencia de Cavalleri a Cáceres)."
       ],
-      pendientes: ["Jugadores clave / goleadores", "Estadísticas defensivas", "Forma últimos 5-10", "Lesiones / suspensiones"]
+      pendientes: ["Ficha de jugadores del rival (opcional, para próximos cruces)"]
     }
   ],
 
@@ -188,6 +189,7 @@ const REPORTES = {
 
   // ---- Bitácora de avances (AÑADIR líneas nuevas arriba) ----
   bitacora: [
+    { fecha: "2026-08-23", nota: "Cargado el partido D. Concepción 1-1 Coquimbo (MW20): gol de Camargo (7'), empate de Cáceres (62'). Coquimbo con 38% de balón y 5 tiros. Actualizados totales de Liga a 18 PJ (7-5-6, 26 pts, GF 25 / GC 22) y el H2H vs D. Concepción a 2 partidos (0-1-1). Nota: el reporte lista a Héctor Caputto como DT de Coquimbo." },
     { fecha: "2026-08-21", nota: "Añadido informe táctico de 7 preguntas de U. Católica (organización, construcción, peligro, transición, defensa, balón parado y plan propio) con dato real + inferencia marcada." },
     { fecha: "2026-08-21", nota: "Añadido pre-partido U. Católica (26-ago) con dato FBref real: perfil, jugadores, arquero y predicción actualizada. Nuevos gráficos futboleros: radar comparativo, dispersión volumen-vs-eficacia de tiro y líderes defensivos. Paleta amarillo/negro." },
     { fecha: "2026-08-21", nota: "Creado el Centro de Análisis. Cargado perfil Coquimbo 2026 (25 partidos), defensa/intensidad y pre-partido vs Deportes Concepción." }
