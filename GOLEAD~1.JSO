@@ -1,0 +1,18 @@
+{
+  "metadata": {
+    "fecha_extraccion": "2026-08-21",
+    "nota": "Máximos goleadores por temporada. Completar con fuente oficial ANFP/Soccerway."
+  },
+  "goleadores": [
+    {
+      "temporada": "2024",
+      "id_equipo": "UCA",
+      "nombre_jugador": "Fernando Zampedri",
+      "goles": null,
+      "partidos": null,
+      "goles_por_partido": null,
+      "tipo_goleador": "maximo_goleador",
+      "estado_validacion": "REQUIERE_VERIFICACION"
+    }
+  ]
+}

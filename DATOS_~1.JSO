@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "fecha": "2026-08-21"
+  },
+  "pendientes": [
+    "rendimiento_temporadas: tablas numéricas completas (PJ,PG,PE,PP,GF,GC,Pts) de 2022,2023,2024 y filas 5-16 de 2025",
+    "metricas_avanzadas: posesión %, precisión de pases, tiros/partido, faltas/partido — no publicadas de forma consistente para Primera Chile",
+    "rachas: invicta/ganadora/perdedora/sin ganar por equipo-temporada",
+    "asistencias: promedio/total/máx/mín por equipo-temporada",
+    "goleadores: goles y partidos por temporada (2022,2023,2025) y asistidores",
+    "enfrentamientos_directos: todos los partidos con fecha, marcador, asistencia y estadio",
+    "capacidad_estadio/ano_fundacion nulos en equipos_base (Limache y verificación puntual)"
+  ],
+  "como_completar": "Subir/pegar las tablas oficiales (ANFP/FBref/ESPN) por temporada como .xls o CSV; src/ingest_standings.py las modela y valida (PJ=PG+PE+PP, DG=GF-GC, rendimiento=Pts/(PJ*3)*100)."
+}

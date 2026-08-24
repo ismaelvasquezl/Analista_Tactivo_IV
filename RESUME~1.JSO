@@ -1,0 +1,41 @@
+{
+  "analisis_general": {
+    "equipos_analizados": 21,
+    "temporadas_cubiertas": 4,
+    "total_partidos_registrados": 0,
+    "total_goles_registrados": null,
+    "promedio_goles_por_partido": null,
+    "equipo_mas_goleador": null,
+    "equipo_menos_goleador": null,
+    "equipo_mejor_defensa": null,
+    "equipo_peor_defensa": null,
+    "campeones_por_temporada": {
+      "2022": "Colo-Colo",
+      "2023": "Huachipato",
+      "2024": "Colo-Colo",
+      "2025": "Coquimbo Unido"
+    },
+    "maximo_goleador_historico_4anos": {
+      "nombre": null,
+      "goles_totales": null,
+      "equipos": []
+    },
+    "datos_verificados": {
+      "campeones": "2022 Colo-Colo, 2023 Huachipato, 2024 Colo-Colo (34° título), 2025 Coquimbo Unido (1er título)",
+      "descensos_2024": [
+        "Cobreloa",
+        "Deportes Copiapó"
+      ],
+      "descensos_2025": [
+        "Unión Española",
+        "Deportes Iquique"
+      ],
+      "top4_2025": {
+        "1": "Coquimbo Unido (75)",
+        "2": "U. Católica (58)",
+        "3": "O'Higgins (56)",
+        "4": "U. de Chile (55)"
+      }
+    }
+  }
+}

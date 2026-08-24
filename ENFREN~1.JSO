@@ -1,0 +1,8 @@
+{
+  "metadata": {
+    "fecha_extraccion": "2026-08-21",
+    "nota": "Head-to-head partido a partido 2022-2025 (~1000+ partidos). No extraíble de forma fiable en este entorno; cargar vía fixtures oficiales/FBref con src/ingest_standings.py.",
+    "total_partidos_registrados": 0
+  },
+  "enfrentamientos": []
+}

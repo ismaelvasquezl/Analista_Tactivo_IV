@@ -1,0 +1,331 @@
+{
+  "metadata": {
+    "fuente": "Conocimiento estable de clubes (verificable en sitios oficiales/Wikipedia)",
+    "fecha_extraccion": "2026-08-21",
+    "temporadas_cubiertas": [
+      "2022",
+      "2023",
+      "2024",
+      "2025"
+    ],
+    "total_equipos": 21,
+    "nota": "Datos maestros de clubes que participaron en Primera 2022-2025. Capacidades y fundaciones puntuales marcadas null requieren verificación oficial."
+  },
+  "equipos": [
+    {
+      "id_equipo": "COL",
+      "nombre_completo": "Colo-Colo",
+      "nombre_abreviado": "Colo-Colo",
+      "ciudad": "Macul, Santiago",
+      "region": "Metropolitana",
+      "estadio": "Estadio Monumental David Arellano",
+      "capacidad_estadio": 47347,
+      "ano_fundacion": 1925,
+      "colores": [
+        "blanco",
+        "negro"
+      ],
+      "apodo": "El Cacique / Los Albos"
+    },
+    {
+      "id_equipo": "UCH",
+      "nombre_completo": "Universidad de Chile",
+      "nombre_abreviado": "U. de Chile",
+      "ciudad": "Santiago",
+      "region": "Metropolitana",
+      "estadio": "Estadio Nacional Julio Martínez",
+      "capacidad_estadio": 48018,
+      "ano_fundacion": 1927,
+      "colores": [
+        "azul",
+        "blanco"
+      ],
+      "apodo": "La U / El Bulla"
+    },
+    {
+      "id_equipo": "UCA",
+      "nombre_completo": "Universidad Católica",
+      "nombre_abreviado": "U. Católica",
+      "ciudad": "Las Condes, Santiago",
+      "region": "Metropolitana",
+      "estadio": "Estadio San Carlos de Apoquindo",
+      "capacidad_estadio": 20000,
+      "ano_fundacion": 1937,
+      "colores": [
+        "blanco",
+        "azul"
+      ],
+      "apodo": "Los Cruzados"
+    },
+    {
+      "id_equipo": "COQ",
+      "nombre_completo": "Coquimbo Unido",
+      "nombre_abreviado": "Coquimbo U.",
+      "ciudad": "Coquimbo",
+      "region": "Coquimbo",
+      "estadio": "Estadio Francisco Sánchez Rumoroso",
+      "capacidad_estadio": 18750,
+      "ano_fundacion": 1958,
+      "colores": [
+        "amarillo",
+        "azul"
+      ],
+      "apodo": "Los Piratas / El Pirata"
+    },
+    {
+      "id_equipo": "HUA",
+      "nombre_completo": "Huachipato",
+      "nombre_abreviado": "Huachipato",
+      "ciudad": "Talcahuano",
+      "region": "Biobío",
+      "estadio": "Estadio CAP",
+      "capacidad_estadio": 10500,
+      "ano_fundacion": 1947,
+      "colores": [
+        "azul",
+        "negro"
+      ],
+      "apodo": "Los Acereros"
+    },
+    {
+      "id_equipo": "PAL",
+      "nombre_completo": "Palestino",
+      "nombre_abreviado": "Palestino",
+      "ciudad": "La Cisterna, Santiago",
+      "region": "Metropolitana",
+      "estadio": "Estadio Municipal de La Cisterna",
+      "capacidad_estadio": 12000,
+      "ano_fundacion": 1920,
+      "colores": [
+        "verde",
+        "blanco",
+        "rojo"
+      ],
+      "apodo": "Los Árabes / El Tricolor"
+    },
+    {
+      "id_equipo": "AUD",
+      "nombre_completo": "Audax Italiano",
+      "nombre_abreviado": "Audax",
+      "ciudad": "La Florida, Santiago",
+      "region": "Metropolitana",
+      "estadio": "Estadio Bicentenario Municipal de La Florida",
+      "capacidad_estadio": 12000,
+      "ano_fundacion": 1910,
+      "colores": [
+        "verde",
+        "blanco"
+      ],
+      "apodo": "Los Itálicos / Los Tanos"
+    },
+    {
+      "id_equipo": "EVE",
+      "nombre_completo": "Everton",
+      "nombre_abreviado": "Everton",
+      "ciudad": "Viña del Mar",
+      "region": "Valparaíso",
+      "estadio": "Estadio Sausalito",
+      "capacidad_estadio": 22340,
+      "ano_fundacion": 1909,
+      "colores": [
+        "azul",
+        "amarillo"
+      ],
+      "apodo": "Los Ruleteros / Oro y Cielo"
+    },
+    {
+      "id_equipo": "UES",
+      "nombre_completo": "Unión Española",
+      "nombre_abreviado": "U. Española",
+      "ciudad": "Independencia, Santiago",
+      "region": "Metropolitana",
+      "estadio": "Estadio Santa Laura-Universidad SEK",
+      "capacidad_estadio": 19000,
+      "ano_fundacion": 1897,
+      "colores": [
+        "rojo"
+      ],
+      "apodo": "Los Hispanos / La Furia Roja"
+    },
+    {
+      "id_equipo": "ULC",
+      "nombre_completo": "Unión La Calera",
+      "nombre_abreviado": "U. La Calera",
+      "ciudad": "La Calera",
+      "region": "Valparaíso",
+      "estadio": "Estadio Nicolás Chahuán Nazar",
+      "capacidad_estadio": 8000,
+      "ano_fundacion": 1954,
+      "colores": [
+        "rojo",
+        "blanco",
+        "azul"
+      ],
+      "apodo": "Los Cementeros"
+    },
+    {
+      "id_equipo": "OHI",
+      "nombre_completo": "O'Higgins",
+      "nombre_abreviado": "O'Higgins",
+      "ciudad": "Rancagua",
+      "region": "O'Higgins",
+      "estadio": "Estadio El Teniente",
+      "capacidad_estadio": 14450,
+      "ano_fundacion": 1955,
+      "colores": [
+        "celeste",
+        "azul"
+      ],
+      "apodo": "El Capo de Provincia / Los Celestes"
+    },
+    {
+      "id_equipo": "NUB",
+      "nombre_completo": "Ñublense",
+      "nombre_abreviado": "Ñublense",
+      "ciudad": "Chillán",
+      "region": "Ñuble",
+      "estadio": "Estadio Municipal Nelson Oyarzún Arenas",
+      "capacidad_estadio": 12000,
+      "ano_fundacion": 1916,
+      "colores": [
+        "rojo",
+        "azul"
+      ],
+      "apodo": "Los Diablos Rojos"
+    },
+    {
+      "id_equipo": "COB",
+      "nombre_completo": "Cobresal",
+      "nombre_abreviado": "Cobresal",
+      "ciudad": "El Salvador",
+      "region": "Atacama",
+      "estadio": "Estadio El Cobre",
+      "capacidad_estadio": 20752,
+      "ano_fundacion": 1979,
+      "colores": [
+        "naranja",
+        "blanco"
+      ],
+      "apodo": "Los Mineros"
+    },
+    {
+      "id_equipo": "IQQ",
+      "nombre_completo": "Deportes Iquique",
+      "nombre_abreviado": "D. Iquique",
+      "ciudad": "Iquique",
+      "region": "Tarapacá",
+      "estadio": "Estadio Tierra de Campeones",
+      "capacidad_estadio": 10000,
+      "ano_fundacion": 1978,
+      "colores": [
+        "celeste",
+        "blanco"
+      ],
+      "apodo": "Los Dragones Celestes"
+    },
+    {
+      "id_equipo": "LSE",
+      "nombre_completo": "Deportes La Serena",
+      "nombre_abreviado": "D. La Serena",
+      "ciudad": "La Serena",
+      "region": "Coquimbo",
+      "estadio": "Estadio La Portada",
+      "capacidad_estadio": 18243,
+      "ano_fundacion": 1955,
+      "colores": [
+        "rojo",
+        "blanco"
+      ],
+      "apodo": "Los Papayeros"
+    },
+    {
+      "id_equipo": "LIM",
+      "nombre_completo": "Deportes Limache",
+      "nombre_abreviado": "D. Limache",
+      "ciudad": "Limache",
+      "region": "Valparaíso",
+      "estadio": "Estadio Lucio Fariña Fernández",
+      "capacidad_estadio": null,
+      "ano_fundacion": null,
+      "colores": [
+        "verde",
+        "blanco"
+      ],
+      "apodo": "Los Tomateros"
+    },
+    {
+      "id_equipo": "CBL",
+      "nombre_completo": "Cobreloa",
+      "nombre_abreviado": "Cobreloa",
+      "ciudad": "Calama",
+      "region": "Antofagasta",
+      "estadio": "Estadio Zorros del Desierto",
+      "capacidad_estadio": 12346,
+      "ano_fundacion": 1977,
+      "colores": [
+        "naranja"
+      ],
+      "apodo": "Los Zorros del Desierto / Los Naranjas"
+    },
+    {
+      "id_equipo": "COP",
+      "nombre_completo": "Deportes Copiapó",
+      "nombre_abreviado": "D. Copiapó",
+      "ciudad": "Copiapó",
+      "region": "Atacama",
+      "estadio": "Estadio Luis Valenzuela Hermosilla",
+      "capacidad_estadio": 9000,
+      "ano_fundacion": 1999,
+      "colores": [
+        "rojo",
+        "blanco"
+      ],
+      "apodo": "El Chuncho del Norte"
+    },
+    {
+      "id_equipo": "CUR",
+      "nombre_completo": "Curicó Unido",
+      "nombre_abreviado": "Curicó U.",
+      "ciudad": "Curicó",
+      "region": "Maule",
+      "estadio": "Estadio La Granja",
+      "capacidad_estadio": 8278,
+      "ano_fundacion": 1973,
+      "colores": [
+        "blanco",
+        "rojo"
+      ],
+      "apodo": "Los Torteros"
+    },
+    {
+      "id_equipo": "MAG",
+      "nombre_completo": "Magallanes",
+      "nombre_abreviado": "Magallanes",
+      "ciudad": "San Bernardo",
+      "region": "Metropolitana",
+      "estadio": "Estadio Municipal de San Bernardo",
+      "capacidad_estadio": 5000,
+      "ano_fundacion": 1897,
+      "colores": [
+        "celeste",
+        "blanco"
+      ],
+      "apodo": "La Academia"
+    },
+    {
+      "id_equipo": "ANT",
+      "nombre_completo": "Deportes Antofagasta",
+      "nombre_abreviado": "D. Antofagasta",
+      "ciudad": "Antofagasta",
+      "region": "Antofagasta",
+      "estadio": "Estadio Calvo y Bascuñán",
+      "capacidad_estadio": 21178,
+      "ano_fundacion": 1966,
+      "colores": [
+        "morado",
+        "blanco"
+      ],
+      "apodo": "Los Pumas"
+    }
+  ]
+}
