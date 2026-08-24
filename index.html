@@ -386,6 +386,7 @@ $('#rivales').innerHTML=R.rivales.map((r,i)=>{
     ${jug}
     <h3>Head-to-Head (dato real)</h3><table><tr><th>Fecha</th><th>Comp</th><th>Sede Coq.</th><th>Result.</th><th>Detalle</th></tr>${h2h}</table>
     <div class="callout"><b>Resumen:</b> ${r.resumenH2H}</div><div class="callout warn"><b>Lectura:</b> ${r.lecturaH2H}</div>
+    ${r.ultimoRival?`<div class="callout danger"><b>Último partido del rival:</b> ${r.ultimoRival}</div>`:''}
     ${charts}
     <h3>Predicción <span class="sub">(confianza: ${r.confianza})</span></h3><table><tr><th>Escenario</th><th>Prob.</th></tr>${pred}</table>
     <p><b>Marcador más probable:</b> <span style="color:var(--gold)">${r.marcador}</span></p>

@@ -50,13 +50,14 @@ const REPORTES = {
       nombre: "Universidad Católica",
       tipo: "PRE-PARTIDO · 26 AGO",
       ficha: [
-        { k: "Ciudad / Región", v: "Las Condes, Santiago (RM)", estado: "DATO" },
-        { k: "Liga 2026", v: "19 PJ · 9-3-7 · 30 pts · DG +13", estado: "DATO" },
-        { k: "Perfil", v: "Ofensivo y de posesión (55,8%): 2,16 GF/PJ pero 1,47 GC/PJ", estado: "DATO" },
+        { k: "Ciudad / Región", v: "Las Condes, Santiago (RM) · DT Daniel Garnero · capitán Zampedri", estado: "DATO" },
+        { k: "Liga 2026 (al MW20)", v: "20 PJ · 9-3-8 · 30 pts · GF 42 / GC 30", estado: "DATO" },
+        { k: "Perfil", v: "Ofensivo y de posesión (~55%): 2,10 GF/PJ pero 1,50 GC/PJ", estado: "DATO" },
         { k: "Formaciones", v: "4-2-3-1 / 4-1-4-1 / 4-3-3 (flexible)", estado: "DATO" },
-        { k: "Forma últimos 5", v: "L-W-D-L-L (4 GF / 9 GC) — bache defensivo", estado: "DATO" },
-        { k: "Arquero", v: "V. Bernedo: 70,4% atajadas, 7 CS, pero 98 SoT recibidos", estado: "DATO" }
+        { k: "Forma reciente", v: "En caída: perdió 4 de sus últimos 6; venía de L-W-D-L-L y sumó otra derrota", estado: "DATO" },
+        { k: "Último (MW20)", v: "PERDIÓ 1-2 vs Ñublense EN CASA (42% posesión, 1 de 10 al arco, único gol de penal)", estado: "DATO" }
       ],
+      ultimoRival: "22-ago, San Carlos: U. Católica 1-2 Ñublense. El equipo de posesión fue dominado en su casa (42% de balón, superado 14-10 en tiros y 7-1 en tiros al arco). Su único gol fue un penal de Zampedri (75'); de juego abierto no marcó. Ñublense (3-5-2) le ganó el balón, atacó por fuera (21 centros) y lo liquidó en el 88'. Es el 'cómo' para hacerle daño.",
       jugadores: [
         { n: "Fernando Zampedri", rol: "Delantero", aporte: "23 goles", nota: "Letal: 50% SoT y 0,31 g/tiro. LA amenaza; reducirle servicios.", tag: "alerta" },
         { n: "Justo Giani", rol: "MF/FW", aporte: "9G · 5A", nota: "Mucho volumen (83 tiros) pero baja eficiencia (0,11 g/tiro)", tag: "" },
@@ -69,28 +70,28 @@ const REPORTES = {
           detalle: "En San Carlos; UCA 59% posesión. Coquimbo cayó ante el rival más goleador." }
       ],
       resumenH2H: "1 partido (dato): 0V-0E-1D, 1-3 en contra. Muestra mínima; el regreso sería en Coquimbo (a confirmar sede).",
-      lecturaH2H: "UCA es lo opuesto a Coquimbo: quiere el balón y ataca con volumen y un killer (Zampedri). Pero concede mucho, sobre todo de visita (1,56 GC/PJ) y llega en mala racha. El duelo enfrenta al reactivo local (Coquimbo) contra un proponente en horas bajas.",
+      lecturaH2H: "En febrero UCA ganó 3-1 con su versión buena. Pero llega en CRISIS: acaba de perder 1-2 en casa con Ñublense, dominado y con su ataque apagado (1 tiro al arco de 10; solo marcó de penal). El manual quedó a la vista: negarle el balón y atacar sus transiciones lo desarma. Coquimbo, reactivo por naturaleza, encaja con ese plan mejor que nadie — y juega en casa.",
       prediccion: [
-        { esc: "Victoria Coquimbo", p: "~38%" },
+        { esc: "Victoria Coquimbo", p: "~44%" },
         { esc: "Empate", p: "~28%" },
-        { esc: "Victoria U. Católica", p: "~34%" },
-        { esc: "Over 2.5 goles", p: "~62%" },
-        { esc: "Ambos marcan", p: "~65%" }
+        { esc: "Victoria U. Católica", p: "~28%" },
+        { esc: "Over 2.5 goles", p: "~58%" },
+        { esc: "Ambos marcan", p: "~60%" }
       ],
-      marcador: "1-1 o 2-1 (partido abierto)",
-      confianza: "MEDIA (ambos equipos con dato real 2026; 1 H2H)",
+      marcador: "1-1 o 2-1 Coquimbo (rival en horas bajas)",
+      confianza: "MEDIA-ALTA (dato real de ambos + forma reciente del rival)",
       claves: [
-        "Contener a Zampedri: es clínico con pocas ocasiones (0,31 g/tiro). Reducir el servicio interior y el volumen de tiro (talón de Coquimbo: +0,71 tiros→goles).",
-        "Atacar la fragilidad visitante de UCA (1,56 GC/PJ y 9 goles en sus últimos 5): presionar su salida y aprovechar transiciones.",
-        "Disciplina: con 8 rojas en Liga, no regalar superioridad a un rival que promedia 2,16 goles."
+        "Negarle el balón y golpear en transición: Ñublense le ganó la posesión (58-42) y lo mató a la contra. Es la vía, y es el ADN de Coquimbo.",
+        "Contener a Zampedri: sin penal, UCA casi no crea (1 tiro al arco de 10). Marca de referencia y cortar el servicio = ataque rival neutralizado.",
+        "Disciplina y balón parado: no regalar penales (su único gol reciente fue de penal) ni superioridades; Coquimbo llega con 8 rojas en Liga."
       ],
       pendientes: ["Sede y parte de lesiones/suspensiones del 26-ago (confirmar en fuente oficial)"],
       // Datos para gráficos futboleros (índices 0-100 donde aplica)
       charts: {
         radar: {
           labels: ["Ataque (GF/PJ)","Solidez (inv. GC)","Posesión","Over 2.5%","Ambos marcan%","Vallas invictas%"],
-          coq: [54, 38, 50, 53, 65, 18],
-          riv: [83, 27, 56, 74, 63, 21]
+          coq: [54, 39, 49, 50, 67, 17],
+          riv: [81, 25, 55, 74, 63, 20]
         },
         shooters: [ // x=tiros, y=g/tiro, r~goles
           { n:"Zampedri", sh:74, gsh:0.31, g:23 },
@@ -106,7 +107,7 @@ const REPORTES = {
           { n:"S. Arancibia", int:8, tklw:20 },
           { n:"D. González", int:15, tklw:20 }
         ],
-        form5_riv: [0,3,1,0,0] // L-W-D-L-L en puntos
+        form5_riv: [3,1,0,0,0] // W-D-L-L-L: la última derrota (1-2 vs Ñublense) confirma la caída
       }
     },
     {
@@ -148,7 +149,7 @@ const REPORTES = {
   informe7: {
     rival: "Universidad Católica",
     partido: "Coquimbo Unido vs U. Católica · 26 ago",
-    resumen: "U. Católica llega como el equipo más ofensivo de la Liga (2,16 goles/PJ, 30 pts) pero también permeable (1,47 GC/PJ; 98 remates al arco recibidos). Propone con posesión (55,8%) y sistemas flexibles (4-2-3-1 / 4-1-4-1 / 4-3-3). Su peligro se concentra en Fernando Zampedri (23 goles, letal con pocas ocasiones) y en la creación por izquierda (Cuevas, 101 centros; Montes y Palavecino, 6 asistencias cada uno). Cruza un bache: L-W-D-L-L con 9 goles encajados en 5, y de visita concede 1,56/PJ. Es el opuesto natural de Coquimbo: quiere el balón, nosotros somos reactivos. La clave no es quitarle la pelota, sino castigar sus transiciones y su fragilidad defensiva, y negar servicio a Zampedri.",
+    resumen: "U. Católica es de los equipos más ofensivos de la Liga (2,10 goles/PJ, 30 pts) pero permeable (1,50 GC/PJ). Propone con posesión (~55%) y sistemas flexibles (4-2-3-1 / 4-1-4-1 / 4-3-3). Su peligro se concentra en Zampedri (letal con pocas ocasiones) y en la creación por izquierda (Cuevas, 101 centros; Montes y Palavecino, 6 asistencias cada uno). ACTUALIZACIÓN (MW20): perdió 1-2 EN CASA con Ñublense, dominado (42% de balón, superado 14-10 en tiros) y con el ataque apagado — 1 de 10 al arco y su único gol de penal. Llega tocado y con la fórmula para batirlo expuesta: negarle el balón y golpear en transición. Es el opuesto natural de Coquimbo (reactivo), que además juega de local.",
     // 7 preguntas: dato real + inferencia marcada
     preguntas: [
       { n:1, t:"¿Cómo se organiza?",
@@ -159,13 +160,13 @@ const REPORTES = {
         inf:"Construye desde atrás con posesión y progresa sobre todo por izquierda (Cuevas como carrilero-creador); conectores interiores Montes/Palavecino entre líneas (INFERENCIA). Riesgo: si se le presiona la primera línea, pierde fluidez." },
       { n:3, t:"¿Cómo genera peligro?",
         dato:"2,16 goles/PJ; Zampedri 23 goles (50% SoT, 0,31 g/tiro); Giani 9 goles con 83 tiros (0,11); Over 2,5 en 74% (DATO).",
-        inf:"Dos vías: el finalizador de área (Zampedri, remata poco y mata) y el volumen exterior (centros de Cuevas, tiros de Giani). Zona de llegada probable: área y segundo palo por centro (INFERENCIA; sin shot-map público)." },
+        inf:"Dos vías: el finalizador de área (Zampedri) y el volumen exterior (centros de Cuevas, tiros de Giani). ALERTA: vs Ñublense generó 10 tiros pero solo 1 al arco y 0 goles de juego abierto — dependencia extrema de Zampedri y del balón parado/penal (INFERENCIA)." },
       { n:4, t:"¿Qué hace tras pérdida?",
-        dato:"De visita concede 1,56 GC/PJ y encajó 9 goles en sus últimos 5; Valencia acumula 48 faltas (DATO).",
-        inf:"Al jugar alto queda expuesto a la contra; recurre a falta táctica (Valencia) para frenar transiciones. Es su mayor vulnerabilidad y encaja con el ADN reactivo de Coquimbo (INFERENCIA)." },
+        dato:"Encaja mucho a la contra; vs Ñublense recibió el 1-2 en el 88' de una transición (asist. Ovelar). Valencia acumula 48 faltas tácticas (DATO).",
+        inf:"Al jugar alto queda expuesto: Ñublense le ganó el balón (58%) y lo mató a la contra. Es su mayor vulnerabilidad y calza con el juego reactivo de Coquimbo (INFERENCIA)." },
       { n:5, t:"¿Cómo defiende?",
-        dato:"1,47 GC/PJ, 98 remates al arco recibidos, solo 21% de vallas invictas; Bernedo 70,4% de atajadas (DATO).",
-        inf:"Defensa adelantada y agresiva pero permeable: concede muchos remates. El arquero sostiene, pero el bloque deja llegar. Marca de área y comportamiento aéreo: sin dato público → verificar en vídeo (HIPÓTESIS)." },
+        dato:"1,50 GC/PJ y solo 20% de vallas invictas; acaba de conceder 14 tiros (7 al arco) y 2 goles EN CASA vs Ñublense (DATO).",
+        inf:"Defensa adelantada y agresiva pero permeable, hoy en crisis de confianza. El arquero Bernedo sostiene (5 atajadas ese día), pero el bloque deja llegar. Marca de área/aérea: verificar en vídeo (HIPÓTESIS)." },
       { n:6, t:"¿Qué hace en balón parado?",
         dato:"Cuevas es el gran lanzador desde banda (101 centros); Zampedri, referencia de área (DATO parcial).",
         inf:"Probable amenaza en córner/falta lateral con servicio de Cuevas a la cabeza de Zampedri; especialista de falta frontal sin confirmar (HIPÓTESIS; requiere vídeo)." }
@@ -180,15 +181,16 @@ const REPORTES = {
       { p:"Mala racha (9 goles en contra en 5)", i:"Confianza defensiva baja", x:"Golpear temprano para profundizar la duda y obligarlos a exponerse aún más", ev:"media" }
     ],
     top3: [
-      "Plan de transición: recuperar y atacar en pocos segundos el espacio a la espalda de su línea alta. Es donde más sufre y donde Coquimbo es mejor.",
-      "Neutralizar a Zampedri: marca de referencia y corte del servicio (centros/pase interior). Aceptar el tiro lejano de Giani como 'mal menor'.",
-      "Explotar su fragilidad visitante y su banda izquierda con llegadas de segunda línea — y máxima disciplina (nuestras 8 rojas) ante un rival que promedia 2,16 goles."
+      "Copiar el plan de Ñublense: negarle el balón y golpear en transición al espacio de su línea alta. Ya quedó demostrado (1-2) y es el ADN reactivo de Coquimbo, que además juega de local.",
+      "Neutralizar a Zampedri: sin penal, UCA casi no crea (1 tiro al arco de 10). Marca de referencia + corte del servicio deja su ataque sin salida.",
+      "No regalar nada de balón parado/penal (su único gol reciente fue de penal) y sostener la disciplina (8 rojas propias). Aprovechar su crisis de confianza pegando temprano."
     ],
-    limitaciones: "Sin StatsBomb/tracking público para Chile: no hay mapas de pases, PPDA ni posiciones promedio. Las respuestas de organización, presión y balón parado combinan dato agregado (FBref) con inferencia táctica marcada; confirmar con vídeo."
+    limitaciones: "Sin StatsBomb/tracking público para Chile: no hay mapas de pases, PPDA ni posiciones promedio. Las respuestas combinan dato agregado y de partido (FBref) con inferencia táctica marcada; confirmar con vídeo."
   },
 
   // ---- Bitácora de avances (AÑADIR líneas nuevas arriba) ----
   bitacora: [
+    { fecha: "2026-08-24", nota: "Actualizado el rival U. Católica con su MW20: PERDIÓ 1-2 EN CASA vs Ñublense, dominado (42% posesión, 1 tiro al arco de 10, gol solo de penal). Nueva forma 9-3-8; predicción a favor de Coquimbo revisada al alza (~44%). Informe 7 preguntas actualizado con la fórmula de Ñublense (negar balón + transición). Validado con player stats del partido." },
     { fecha: "2026-08-23", nota: "Cargado el partido D. Concepción 1-1 Coquimbo (MW20): gol de Camargo (7'), empate de Cáceres (62'). Coquimbo con 38% de balón y 5 tiros. Actualizados totales de Liga a 18 PJ (7-5-6, 26 pts, GF 25 / GC 22) y el H2H vs D. Concepción a 2 partidos (0-1-1). Nota: el reporte lista a Héctor Caputto como DT de Coquimbo." },
     { fecha: "2026-08-21", nota: "Añadido informe táctico de 7 preguntas de U. Católica (organización, construcción, peligro, transición, defensa, balón parado y plan propio) con dato real + inferencia marcada." },
     { fecha: "2026-08-21", nota: "Añadido pre-partido U. Católica (26-ago) con dato FBref real: perfil, jugadores, arquero y predicción actualizada. Nuevos gráficos futboleros: radar comparativo, dispersión volumen-vs-eficacia de tiro y líderes defensivos. Paleta amarillo/negro." },

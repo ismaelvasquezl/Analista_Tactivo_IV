@@ -1,0 +1,19 @@
+{
+  "date": "2026-08-26",
+  "time": "20:00",
+  "comp": "LIG",
+  "ronda": "Matchweek 21",
+  "ven": "H",
+  "opp": "U. Católica",
+  "ref": "Nombre del árbitro",
+  "poss": 45.0,
+  "att": null,
+  "cap": "Diego Sánchez Carvajal",
+  "form": "4-1-4-1",
+  "oppForm": "4-1-4-1",
+  "venueName": "Est. Francisco Sánchez Rumoroso, Coquimbo",
+  "goles": [
+    {"min": "10'", "jug": "Nombre Jugador", "eq": "COQ", "nota": "1-0"},
+    {"min": "70'", "jug": "Fernando Zampedri", "eq": "UCA", "nota": "1-1"}
+  ]
+}
