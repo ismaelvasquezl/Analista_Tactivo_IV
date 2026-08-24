@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coquimbo Unido · Centro de Alto Rendimiento</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{--bg0:#000;--bg1:#0d0d0d;--panel:#161616;--panel2:#1e1e1e;--gold:#ffd200;--gold2:#f5c400;
+    --white:#f7f7f4;--mut:#b7b7ad;--line:rgba(255,210,0,.14);--blue:#7fb0ff;
+    --green:#4ad991;--amber:#ffcf5c;--red:#ff6b6b;--sh:0 8px 30px rgba(0,0,0,.55);--r:16px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;line-height:1.55;color:var(--white);
+    background:radial-gradient(1200px 600px at 50% -5%,#1a1a10 0,#0b0b0b 55%,#000 100%)}
+  a{color:var(--gold);text-decoration:none}
+  ::selection{background:var(--gold);color:#000}
+  header.top{position:sticky;top:0;z-index:60;backdrop-filter:blur(12px);background:rgba(6,6,6,.92);border-bottom:2px solid var(--gold)}
+  .nav{max-width:1200px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.5px;font-size:15px}
+  .crest{width:34px;height:34px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);box-shadow:0 0 14px rgba(255,210,0,.4)}
+  .links{display:flex;gap:2px;flex-wrap:wrap;margin-left:auto}
+  .links a{color:var(--mut);font-size:12.5px;padding:6px 9px;border-radius:8px;font-weight:600}
+  .links a:hover{color:#000;background:var(--gold)}
+  main{max-width:1200px;margin:0 auto;padding:0 18px 90px}
+  section{padding:42px 0 8px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(26px,4.5vw,44px);margin:.15em 0;line-height:1.05}
+  h2{font-size:22px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:6px;height:22px;background:var(--gold);border-radius:3px}
+  h3{font-size:14px;color:var(--gold);margin:20px 0 6px;text-transform:uppercase;letter-spacing:.6px}
+  h4{margin:0 0 8px;font-size:15px}
+  p{color:#e7e7df}.sub{color:var(--mut);font-size:14px}.lead{font-size:17px;color:#f2f2ea;max-width:82ch}
+  .tag{display:inline-block;font-size:12px;letter-spacing:2px;color:#000;background:var(--gold);border-radius:20px;padding:4px 12px;text-transform:uppercase;font-weight:800}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:22px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;box-shadow:var(--sh);position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-18px;top:-18px;width:60px;height:60px;border-radius:50%;background:rgba(255,210,0,.06)}
+  .kpi .v{font-size:28px;font-weight:800;color:var(--gold)}.kpi .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+  .kpi .d{font-size:12px;margin-top:3px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.g{background:var(--green)}.a{background:var(--amber)}.r{background:var(--red)}
+  .grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+  .chart-wrap{position:relative;height:320px}.chart-wrap.tall{height:380px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+  th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase;cursor:pointer}
+  tr:hover td{background:rgba(255,210,0,.05)}
+  .win{color:var(--green);font-weight:800}.draw{color:var(--amber);font-weight:800}.loss{color:var(--red);font-weight:800}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .b-dato{background:rgba(74,217,145,.16);color:var(--green);border:1px solid rgba(74,217,145,.4)}
+  .b-ver{background:rgba(255,207,92,.16);color:var(--amber);border:1px solid rgba(255,207,92,.4)}
+  .b-hip{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
+  .b-clave{background:rgba(255,210,0,.18);color:var(--gold);border:1px solid rgba(255,210,0,.45)}
+  .b-alerta{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
+  .b-forma{background:rgba(74,217,145,.16);color:var(--green);border:1px solid rgba(74,217,145,.4)}
+  .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.06);padding:11px 15px;border-radius:0 10px 10px 0;margin:12px 0;font-size:14px}
+  .callout.warn{border-color:var(--amber);background:rgba(255,207,92,.06)}
+  .callout.danger{border-color:var(--red);background:rgba(255,107,107,.07)}
+  .callout.info{border-color:var(--blue);background:rgba(127,176,255,.07)}
+  .glos{font-size:12.5px;color:var(--mut);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin:6px 0}
+  .glos b{color:var(--gold)}
+  ul.clean{list-style:none;padding:0;margin:8px 0}ul.clean li{padding:7px 0 7px 24px;position:relative;border-bottom:1px solid var(--line);font-size:14px}
+  ul.clean li::before{content:"▸";position:absolute;left:3px;color:var(--gold)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .filters button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:6px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600}
+  .filters button.active{background:var(--gold);color:#000;border-color:var(--gold)}
+  .foot{color:var(--mut);font-size:12px;padding:26px 0 0}
+  details{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:rgba(255,255,255,.015)}
+  summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:16px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .rbody{padding:14px 16px}
+  .scroll-x{overflow-x:auto}
+  code{background:#0b0b0b;padding:2px 6px;border-radius:5px;color:var(--gold);font-size:12px}
+  .modewrap{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--mut)}
+  .switch{position:relative;width:46px;height:24px;background:var(--panel2);border-radius:20px;cursor:pointer;border:1px solid var(--line)}
+  .switch .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--gold);transition:.25s}
+  .switch.on .knob{left:25px;background:var(--amber)}
+  .tecnica{display:none}body.tec .tecnica{display:block}
+  /* pitch */
+  .pitch{width:100%;max-width:420px;margin:0 auto;display:block}
+</style>
+</head>
+<body>
+<header class="top"><div class="nav">
+  <div class="brand"><span class="crest"></span> COQUIMBO UNIDO <span style="color:var(--gold)">· ALTO RENDIMIENTO</span></div>
+  <div class="links">
+    <a href="#resumen">Reporte</a><a href="#estilo">Identidad</a><a href="#tendencia">Tendencia</a>
+    <a href="#cancha">Cancha</a><a href="#jugadores">Plantel</a><a href="#defensa">Defensa</a>
+    <a href="#fixture">Fixture</a><a href="#rivales">Rivales</a><a href="#bitacora">Bitácora</a>
+  </div>
+  <div class="modewrap"><span>Ejecutiva</span><div class="switch" id="modeSwitch"><div class="knob"></div></div><span>Técnica</span></div>
+</div></header>
+<main>
+
+  <!-- ===== REPORTE / RESUMEN ===== -->
+  <section id="resumen">
+    <span class="tag">Reporte de rendimiento · Temporada 2026</span>
+    <h1 id="titular"></h1>
+    <div class="kpis" id="kpis"></div>
+    <h3>Informe ejecutivo</h3>
+    <div id="reporte"></div>
+    <div class="glos" id="comoLeer"></div>
+    <p class="sub">Dato: export FBref 2026 (25 partidos, validado contra totales). Actualizado <span id="fecha"></span>.</p>
+  </section>
+
+  <!-- ===== IDENTIDAD / ESTILO ===== -->
+  <section id="estilo">
+    <h2>Identidad y estilo de juego</h2>
+    <p class="sub">Cómo compite el equipo, leído en cifras. <span class="badge b-dato">DATO</span> + <span class="badge b-hip">INTERPRETACIÓN</span></p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Posesión vs. puntos por partido</h4><div class="sub" style="margin-bottom:6px">Cada punto es un partido. Si la nube no sube hacia la derecha, tener más balón <b>no</b> le da más puntos.</div><div class="chart-wrap"><canvas id="chPossPts"></canvas></div></div>
+      <div class="card"><h4>Tiros concedidos vs. goles recibidos</h4><div class="sub" style="margin-bottom:6px">Sube hacia la derecha: cuantos más remates permite, más goles encaja. Es su palanca defensiva.</div><div class="chart-wrap"><canvas id="chShotGa"></canvas></div></div>
+    </div>
+    <div class="cols" style="margin-top:6px">
+      <div class="callout"><span class="badge b-dato">DATO</span> Posesión media ~50% · <b>correlación posesión→puntos ≈ 0</b>. <span class="badge b-hip">LECTURA</span> equipo <b>reactivo</b>: rinde mejor sin la obligación de tener el balón.</div>
+      <div class="callout warn"><span class="badge b-dato">DATO</span> 24,9 centros/partido (14–47). <span class="badge b-hip">LECTURA</span> ataque muy <b>lateral</b>; si le cierran las bandas se vuelve previsible (le pasó en el 0-1 con 36 centros).</div>
+    </div>
+  </section>
+
+  <!-- ===== TENDENCIA ===== -->
+  <section id="tendencia">
+    <h2>Rendimiento y tendencia</h2>
+    <div class="filters" id="compFilters"><button data-c="ALL" class="active">Todo</button><button data-c="LIG">Liga</button><button data-c="LIB">Libertadores</button></div>
+    <div class="grid g2">
+      <div class="card"><h4>Goles a favor / en contra por partido</h4><div class="chart-wrap tall"><canvas id="chTrend"></canvas></div></div>
+      <div class="card"><h4>Local vs. Visita (Liga)</h4><div class="chart-wrap tall"><canvas id="chHA"></canvas></div></div>
+    </div>
+    <div class="callout"><span class="badge b-dato">DATO</span> Liga: <b>7V-4E-6L, 25 pts, GF 24 / GC 21 (DG +3)</b>. De local controla pero empata mucho (3V-3E-2L); de visita es letal y frágil (GA 14 en 9).</div>
+  </section>
+
+  <!-- ===== CANCHA / HEATMAP ===== -->
+  <section id="cancha">
+    <h2>Cancha: formación y mapa de calor</h2>
+    <p class="sub">Formación tipo (4-2-3-1) y proxy de calor por zonas. <span class="badge b-ver">PROXY</span> el calor es por <b>eventos</b> (centros, tiros, recuperaciones), no tracking posicional — no disponible públicamente para esta liga.</p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card">
+        <h4>Formación tipo · 4-2-3-1</h4>
+        <div class="sub" style="margin-bottom:6px">Once por minutos jugados. Color del dorsal = contribución (goles+asistencias); número = G+A.</div>
+        <svg id="svgForm" class="pitch" viewBox="0 0 300 420"></svg>
+      </div>
+      <div class="card">
+        <h4>Mapa de calor por zonas (proxy de eventos)</h4>
+        <div class="sub" style="margin-bottom:6px">Ataque hacia arriba. Más intenso = más actividad: bandas altas (centros), zona central alta (tiros), zona propia (recuperaciones).</div>
+        <svg id="svgHeat" class="pitch" viewBox="0 0 300 420"></svg>
+      </div>
+    </div>
+    <div class="callout info"><span class="badge b-hip">CÓMO LEERLO</span> El calor confirma el estilo: <b>bandas encendidas</b> (ataque lateral, 24,9 centros/PJ), <b>centro alto tibio</b> (llega, pero remata con poca claridad) y <b>zona propia activa</b> (mucha recuperación: 20,9 entradas+intercepciones/PJ).</div>
+  </section>
+
+  <!-- ===== PLANTEL ===== -->
+  <section id="jugadores">
+    <h2>Plantel y contribución</h2>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Aporte ofensivo (goles + asistencias)</h4><div class="chart-wrap tall"><canvas id="chAporte"></canvas></div></div>
+      <div class="card"><h4>Jugadores clave</h4><div id="jugCards"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== DEFENSA & INTENSIDAD ===== -->
+  <section id="defensa">
+    <h2>Defensa e intensidad</h2>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Estadísticas defensivas</h4><table id="tblDef"></table></div>
+      <div class="card"><h4>Frecuencia e intensidad</h4><table id="tblInt"></table></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h4>Intensidad por partido (centros · tiros concedidos · rojas)</h4><div class="chart-wrap"><canvas id="chInt"></canvas></div></div>
+  </section>
+
+  <!-- ===== FIXTURE ===== -->
+  <section id="fixture">
+    <h2>Fixture 2026 — resultado, formación, árbitro, tarjetas</h2>
+    <div class="filters" id="fxFilters">
+      <button data-f="ALL" class="active">Todos</button><button data-f="LIG">Liga</button><button data-f="LIB">Libertadores</button>
+      <button data-f="H">Local</button><button data-f="A">Visita</button><button data-f="W">Ganados</button><button data-f="L">Perdidos</button>
+    </div>
+    <div class="scroll-x"><table id="fxTable"><thead><tr>
+      <th>Fecha</th><th>Hora</th><th>Comp</th><th>Sede</th><th>Rival</th><th>Res.</th><th>Pos%</th><th>Form.</th><th>Árbitro</th><th>🟨</th><th>🟥</th>
+    </tr></thead><tbody></tbody></table></div>
+    <div class="callout" id="refNote"></div>
+  </section>
+
+  <!-- ===== RIVALES ===== -->
+  <section id="rivales">
+    <h2>Rivales analizados / Pre-partido</h2>
+    <p class="sub">Se amplía al añadir objetos en <code>reportes.js → REPORTES.rivales[]</code>.</p>
+    <div id="rivales"></div>
+  </section>
+
+  <!-- ===== BITÁCORA ===== -->
+  <section id="bitacora">
+    <h2>Bitácora y actualización</h2>
+    <ul class="clean" id="bitacora"></ul>
+    <div class="glos" style="margin-top:12px"><b>Cómo actualizar.</b> Edita <code>reportes.js</code> (narrativa/rivales) y recarga. Los datos de partido viven en <code>fixtures.js</code> y <code>coquimbo_data.js</code>. Los cuatro archivos van en la misma carpeta.</div>
+    <p class="foot">Fuentes: export FBref Coquimbo Unido y rivales 2026 (validado). Rivales sin export van marcados <span class="badge b-ver">REQUIERE_VERIFICACION</span>. Mapas de calor = proxy de eventos, no tracking posicional.</p>
+  </section>
+</main>
+
+<script src="coquimbo_data.js"></script>
+<script src="fixtures.js"></script>
+<script src="reportes.js"></script>
+<script>
+const C={gold:'#ffd200',blue:'#7fb0ff',mut:'#b7b7ad',green:'#4ad991',amber:'#ffcf5c',red:'#ff6b6b',grid:'rgba(255,210,0,.10)'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="'Segoe UI',sans-serif";Chart.defaults.plugins.legend.labels.boxWidth=12;
+const $=s=>document.querySelector(s), R=REPORTES;
+const FX=(typeof FIXTURES!=='undefined')?FIXTURES:[];
+const LIG=FX.filter(x=>x.comp==='LIG');
+const av=(k,a=LIG)=>{const v=a.map(x=>x[k]).filter(x=>x!=null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:0;};
+
+/* ---- KPIs + titular ---- */
+$('#titular').textContent='Coquimbo Unido — '+R.coquimbo.titular;
+$('#fecha').textContent=R.actualizado;
+(function(){
+  const w=LIG.filter(x=>x.res==='W').length,d=LIG.filter(x=>x.res==='D').length,l=LIG.filter(x=>x.res==='L').length;
+  const gf=LIG.reduce((s,x)=>s+x.gf,0),ga=LIG.reduce((s,x)=>s+x.ga,0);
+  $('#kpis').innerHTML=[
+    {v:`${w}-${d}-${l}`,l:'Liga 2026 (V-E-D)',d:`<span class="dot a"></span>${w*3+d} pts`},
+    {v:(gf/LIG.length).toFixed(2),l:'Goles a favor /PJ',d:`<span class="dot g"></span>${gf} en ${LIG.length}`},
+    {v:(ga/LIG.length).toFixed(2),l:'Goles contra /PJ',d:`<span class="dot r"></span>${ga} recibidos`},
+    {v:av('poss').toFixed(0)+'%',l:'Posesión media',d:'<span class="dot a"></span>reactivo'},
+    {v:'8',l:'Rojas (Liga)',d:'<span class="dot r"></span>indisciplina'}
+  ].map(k=>`<div class="kpi"><div class="v">${k.v}</div><div class="l">${k.l}</div><div class="d">${k.d}</div></div>`).join('');
+})();
+
+/* ---- Reporte escrito ---- */
+$('#reporte').innerHTML=`
+<p class="lead">Coquimbo Unido, <b>campeón vigente 2025</b>, atraviesa 2026 con un perfil claro y medible: es un equipo <b>reactivo</b> —no busca dominar el balón— que <b>ataca por las bandas</b> y compite con alta intensidad de duelo. Gana por golpes de eficacia más que por control sostenido, y su gran deuda es <b>defensiva y disciplinaria</b>.</p>
+<p>En Liga suma <b>25 puntos (7-4-6)</b> con <b>+3</b> de diferencia: marca 1,41 por partido y recibe 1,24. La lectura fina importa más que el número: su <b>posesión (~50%) no se traduce en puntos</b> —la correlación es prácticamente cero—, señal de que rinde mejor cuando el rival propone y él golpea al espacio. Su firma ofensiva son los <b>24,9 centros por partido</b>; cuando el rival cierra las bandas, el ataque se vuelve previsible.</p>
+<p>Atrás concede volumen: <b>10,3 remates por partido</b>, y la relación entre tiros permitidos y goles recibidos es fuerte (+0,71). Es decir, <b>no defiende reduciendo el balón sino reduciendo remates</b>. El arco de Diego Sánchez sostiene (66% de atajadas), pero solo el <b>18% de los partidos termina con la valla invicta</b>. La otra alerta es propia: <b>8 rojas en Liga</b> (cero en Libertadores), un problema de gestión más que físico.</p>`;
+$('#comoLeer').innerHTML='<b>Cómo leer las cifras:</b> «1,24 goles en contra/PJ» = de media encaja algo más de un gol por partido. «Posesión→puntos ≈ 0» = tener más balón no le suma victorias. «+0,71 tiros→goles» = correlación alta: bajar remates concedidos es lo que más le baja los goles. «Valla invicta 18%» = deja el arco a cero en menos de 1 de cada 5 partidos.';
+
+/* ---- Identidad: scatters ---- */
+const ptsMap={W:3,D:1,L:0};
+new Chart($('#chPossPts'),{type:'scatter',data:{datasets:[{label:'Partido',data:LIG.filter(x=>x.poss!=null).map(x=>({x:x.poss,y:ptsMap[x.res]})),backgroundColor:C.gold+'dd',pointRadius:6,borderColor:'#000',borderWidth:.5}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Posesión ${c.raw.x}% → ${c.raw.y} pts`}}},scales:{x:{title:{display:true,text:'Posesión %'},grid:{color:C.grid}},y:{title:{display:true,text:'Puntos'},grid:{color:C.grid},ticks:{stepSize:1}}}}});
+new Chart($('#chShotGa'),{type:'scatter',data:{datasets:[{label:'Partido',data:LIG.filter(x=>x.sha!=null).map(x=>({x:x.sha,y:x.ga})),backgroundColor:C.red+'dd',pointRadius:6,borderColor:'#000',borderWidth:.5}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.x} tiros concedidos → ${c.raw.y} goles`}}},scales:{x:{title:{display:true,text:'Tiros concedidos'},grid:{color:C.grid}},y:{title:{display:true,text:'Goles recibidos'},grid:{color:C.grid},ticks:{stepSize:1}}}}});
+
+/* ---- Tendencia ---- */
+let compF='ALL',chT,chHA;
+function drawTrend(){
+  const d=FX.filter(x=>compF==='ALL'||x.comp===compF),labels=d.map(x=>x.date.slice(5)+(x.comp==='LIB'?'·L':''));
+  if(chT)chT.destroy();
+  chT=new Chart($('#chTrend'),{data:{labels,datasets:[
+    {type:'bar',label:'GF',data:d.map(x=>x.gf),backgroundColor:C.gold},
+    {type:'bar',label:'GC',data:d.map(x=>x.ga),backgroundColor:C.red}]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:90}},y:{grid:{color:C.grid},ticks:{precision:0}}}}});
+}
+drawTrend();
+const ha={H:{W:0,D:0,L:0},A:{W:0,D:0,L:0}};LIG.forEach(x=>ha[x.ven][x.res]++);
+chHA=new Chart($('#chHA'),{type:'bar',data:{labels:['Local','Visita'],datasets:[
+  {label:'V',data:[ha.H.W,ha.A.W],backgroundColor:C.green,borderRadius:4},
+  {label:'E',data:[ha.H.D,ha.A.D],backgroundColor:C.amber,borderRadius:4},
+  {label:'D',data:[ha.H.L,ha.A.L],backgroundColor:C.red,borderRadius:4}]},
+  options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:C.grid},ticks:{precision:0}}}}});
+document.querySelectorAll('#compFilters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#compFilters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');compF=b.dataset.c;drawTrend();});
+
+/* ---- CANCHA: formación 4-2-3-1 ---- */
+(function(){
+  const P=COQ.players;
+  const pick=(pos,n)=>P.filter(p=>p.pos===pos&&p.min>0).sort((a,b)=>b.min-a.min).slice(0,n);
+  const gk=pick('GK',1), df=pick('DEF',4), md=pick('MID',5), fw=pick('FWD',1);
+  const slots=[
+    ...(gk[0]?[[gk[0],150,392]]:[]),
+    ...df.map((p,i)=>[p,[45,115,185,255][i]||150,320]),
+    ...md.slice(0,2).map((p,i)=>[p,[105,195][i],250]),
+    ...md.slice(2,5).map((p,i)=>[p,[60,150,240][i],170]),
+    ...(fw[0]?[[fw[0],150,95]]:[])
+  ];
+  const maxGA=Math.max(1,...P.map(p=>p.gls+p.ast));
+  let svg=`<rect x="4" y="4" width="292" height="412" rx="8" fill="#0a1a0a" stroke="rgba(255,210,0,.35)"/>
+    <line x1="4" y1="210" x2="296" y2="210" stroke="rgba(255,210,0,.25)"/>
+    <circle cx="150" cy="210" r="34" fill="none" stroke="rgba(255,210,0,.25)"/>
+    <rect x="95" y="4" width="110" height="52" fill="none" stroke="rgba(255,210,0,.2)"/>
+    <rect x="95" y="364" width="110" height="52" fill="none" stroke="rgba(255,210,0,.2)"/>`;
+  slots.forEach(([p,x,y])=>{
+    const ga=p.gls+p.ast, t=ga/maxGA, fill=`rgba(255,210,0,${0.35+0.6*t})`;
+    const sur=p.n.split(' ').slice(-1)[0];
+    svg+=`<g><circle cx="${x}" cy="${y}" r="15" fill="${fill}" stroke="#000" stroke-width="1.5"/>
+      <text x="${x}" y="${y+4}" text-anchor="middle" font-size="12" font-weight="800" fill="#000">${ga}</text>
+      <text x="${x}" y="${y+27}" text-anchor="middle" font-size="9" fill="#f7f7f4">${sur}</text></g>`;
+  });
+  $('#svgForm').innerHTML=svg;
+})();
+
+/* ---- CANCHA: heatmap por zonas (proxy) ---- */
+(function(){
+  const crs=av('crs'),shf=av('shf'),def=av('intc')+av('tklw'),sha=av('sha');
+  // grid 3 col x 4 fila (fila0 = ataque arriba). Valores proxy 0..1
+  const norm=(v,mx)=>Math.max(.05,Math.min(1,v/mx));
+  const wing=norm(crs,30), cen=norm(shf,18), rec=norm(def,24), low=norm(sha,14);
+  // z[fila][col]
+  const z=[
+    [wing*0.9, cen, wing*0.9],       // ataque
+    [wing*0.6, cen*0.7, wing*0.6],   // medio-ofensivo
+    [rec*0.6, rec*0.7, rec*0.6],     // medio-defensivo
+    [low*0.7, rec*0.9, low*0.7]      // zona propia
+  ];
+  let svg=`<rect x="4" y="4" width="292" height="412" rx="8" fill="#0a1a0a" stroke="rgba(255,210,0,.35)"/>`;
+  const cw=292/3, ch=412/4;
+  for(let f=0;f<4;f++)for(let c=0;c<3;c++){
+    const v=z[f][c];const col=v>0.66?'255,210,0':v>0.4?'255,150,0':'120,90,0';
+    svg+=`<rect x="${4+c*cw}" y="${4+f*ch}" width="${cw}" height="${ch}" fill="rgba(${col},${0.15+0.6*v})" stroke="rgba(0,0,0,.3)"/>`;
+  }
+  svg+=`<line x1="4" y1="210" x2="296" y2="210" stroke="rgba(255,255,255,.15)"/>
+    <text x="150" y="20" text-anchor="middle" font-size="9" fill="rgba(0,0,0,.7)" font-weight="800">◄ ATAQUE</text>`;
+  $('#svgHeat').innerHTML=svg;
+})();
+
+/* ---- Plantel ---- */
+const ap=[...COQ.players].filter(p=>(p.gls+p.ast)>0).sort((a,b)=>(b.gls+b.ast)-(a.gls+a.ast));
+new Chart($('#chAporte'),{type:'bar',data:{labels:ap.map(p=>p.n),datasets:[
+  {label:'Goles',data:ap.map(p=>p.gls),backgroundColor:C.gold,borderRadius:4},
+  {label:'Asistencias',data:ap.map(p=>p.ast),backgroundColor:C.blue,borderRadius:4}]},
+  options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{color:C.grid},ticks:{precision:0}},y:{stacked:true,grid:{display:false},ticks:{font:{size:10}}}}}});
+$('#jugCards').innerHTML=R.coquimbo.jugadores.map(j=>{
+  const bg=j.tag==='clave'?'b-clave':j.tag==='alerta'?'b-alerta':j.tag==='forma'?'b-forma':'';
+  return `<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${j.n}</b> ${j.tag?`<span class="badge ${bg}">${j.tag}</span>`:''} <span style="color:var(--gold)">${j.aporte}</span><div class="sub">${j.rol} · ${j.nota}</div></div>`;
+}).join('');
+
+/* ---- Defensa & intensidad ---- */
+const rowTbl=(arr)=>'<tr><th>Métrica</th><th>Valor</th><th>Lectura</th></tr>'+arr.map(x=>`<tr><td>${x.k}</td><td><b style="color:var(--gold)">${x.v}</b></td><td class="sub">${x.nota}</td></tr>`).join('');
+$('#tblDef').innerHTML=rowTbl(R.coquimbo.defensa);
+$('#tblInt').innerHTML=rowTbl(R.coquimbo.intensidad);
+new Chart($('#chInt'),{data:{labels:FX.map(m=>m.date.slice(5)+(m.comp==='LIB'?'·L':'')),datasets:[
+  {type:'bar',label:'Centros',data:FX.map(m=>m.crs),backgroundColor:C.gold,yAxisID:'y'},
+  {type:'line',label:'Tiros concedidos',data:FX.map(m=>m.sha),borderColor:C.red,backgroundColor:C.red,tension:.3,pointRadius:2,yAxisID:'y'},
+  {type:'line',label:'Rojas',data:FX.map(m=>m.cr),borderColor:'#fff',pointRadius:FX.map(m=>m.cr?5:0),stepped:true,yAxisID:'y2'}]},
+  options:{plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:90}},y:{grid:{color:C.grid}},y2:{position:'right',min:0,max:2,grid:{display:false},ticks:{stepSize:1}}}}});
+
+/* ---- Fixture table ---- */
+let fxF='ALL';
+function drawFx(){
+  const rows=FX.filter(x=> fxF==='ALL'||x.comp===fxF||x.ven===fxF||x.res===fxF);
+  $('#fxTable tbody').innerHTML=rows.map(x=>{
+    const rc=x.res==='W'?'win':x.res==='D'?'draw':'loss';
+    return `<tr><td>${x.date}</td><td>${x.time||''}</td><td>${x.comp}</td><td>${x.ven==='H'?'Local':'Visita'}</td>
+      <td>${x.opp}</td><td class="${rc}">${x.gf}-${x.ga}</td><td>${x.poss!=null?x.poss+'%':''}</td>
+      <td>${x.form||''}</td><td class="sub">${x.ref||'—'}</td><td>${x.cy}</td><td>${x.cr?('<b class="loss">'+x.cr+'</b>'):0}</td></tr>`;
+  }).join('');
+}
+document.querySelectorAll('#fxFilters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#fxFilters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');fxF=b.dataset.f;drawFx();});
+drawFx();
+(function(){
+  const refs={};FX.forEach(x=>{if(x.ref){refs[x.ref]=refs[x.ref]||{n:0,cy:0,cr:0};refs[x.ref].n++;refs[x.ref].cy+=x.cy;refs[x.ref].cr+=x.cr;}});
+  const top=Object.entries(refs).sort((a,b)=>b[1].n-a[1].n)[0];
+  $('#refNote').innerHTML=`<span class="badge b-dato">DATO</span> Árbitro más frecuente: <b>${top[0]}</b> (${top[1].n} partidos, ${top[1].cy}🟨 ${top[1].cr}🟥). <span class="badge b-hip">LECTURA</span> útil para anticipar criterio disciplinario dado el problema de rojas del equipo.`;
+})();
+
+/* ---- Rivales (con gráficos) ---- */
+$('#rivales').innerHTML=R.rivales.map((r,i)=>{
+  const ficha=r.ficha.map(f=>`<tr><td>${f.k}</td><td>${f.v}</td><td><span class="badge ${f.estado==='DATO'?'b-dato':'b-ver'}">${f.estado}</span></td></tr>`).join('');
+  const h2h=r.h2h.map(h=>`<tr><td>${h.fecha}</td><td>${h.comp}</td><td>${h.sede}</td><td><b>${h.gc} (${h.res})</b></td><td class="sub">${h.detalle}</td></tr>`).join('');
+  const pred=r.prediccion.map(p=>`<tr><td>${p.esc}</td><td><b style="color:var(--gold)">${p.p}</b></td></tr>`).join('');
+  const jug=r.jugadores?`<h3>Jugadores importantes del rival</h3><table><tr><th>Jugador</th><th>Rol</th><th>Aporte</th><th>Nota</th></tr>${r.jugadores.map(j=>`<tr><td><b>${j.n}</b> ${j.tag?`<span class="badge ${j.tag==='alerta'?'b-alerta':j.tag==='clave'?'b-clave':'b-forma'}">${j.tag}</span>`:''}</td><td>${j.rol}</td><td style="color:var(--gold)">${j.aporte}</td><td class="sub">${j.nota}</td></tr>`).join('')}</table>`:'';
+  const charts=r.charts?`<h3>Gráficos de análisis</h3><div class="grid g2">
+    <div class="card"><h4>Radar de estilo — Coquimbo vs ${r.nombre}</h4><div class="chart-wrap"><canvas id="radar${i}"></canvas></div></div>
+    <div class="card"><h4>Volumen vs. eficacia de tiro (rival)</h4><div class="sub" style="margin-bottom:6px">X=tiros · Y=goles por tiro. Arriba-derecha = killer. Burbuja = goles.</div><div class="chart-wrap"><canvas id="shoot${i}"></canvas></div></div>
+    </div><div class="card" style="margin-top:16px"><h4>Líderes defensivos del rival (Int + Entradas ganadas)</h4><div class="chart-wrap"><canvas id="def${i}"></canvas></div></div>`:'';
+  return `<details ${i===0?'open':''}><summary>${r.nombre} <span class="badge b-clave">${r.tipo}</span></summary><div class="rbody">
+    <h3>Ficha técnica</h3><table><tr><th>Campo</th><th>Info</th><th>Estado</th></tr>${ficha}</table>
+    ${jug}
+    <h3>Head-to-Head (dato real)</h3><table><tr><th>Fecha</th><th>Comp</th><th>Sede Coq.</th><th>Result.</th><th>Detalle</th></tr>${h2h}</table>
+    <div class="callout"><b>Resumen:</b> ${r.resumenH2H}</div><div class="callout warn"><b>Lectura:</b> ${r.lecturaH2H}</div>
+    ${charts}
+    <h3>Predicción <span class="sub">(confianza: ${r.confianza})</span></h3><table><tr><th>Escenario</th><th>Prob.</th></tr>${pred}</table>
+    <p><b>Marcador más probable:</b> <span style="color:var(--gold)">${r.marcador}</span></p>
+    <h3>3 claves tácticas</h3><ul class="clean">${r.claves.map(c=>`<li>${c}</li>`).join('')}</ul>
+    <div class="callout danger"><b>Pendiente:</b> ${r.pendientes.join(' · ')} <span class="badge b-ver">REQUIERE_VERIFICACION</span></div>
+  </div></details>`;
+}).join('');
+R.rivales.forEach((r,i)=>{ if(!r.charts)return; const rd=r.charts;
+  const re=document.getElementById('radar'+i);
+  if(re&&rd.radar)new Chart(re,{type:'radar',data:{labels:rd.radar.labels,datasets:[
+    {label:'Coquimbo',data:rd.radar.coq,borderColor:C.gold,backgroundColor:'rgba(255,210,0,.18)',pointBackgroundColor:C.gold},
+    {label:r.nombre,data:rd.radar.riv,borderColor:C.blue,backgroundColor:'rgba(127,176,255,.15)',pointBackgroundColor:C.blue}]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{r:{min:0,max:100,grid:{color:C.grid},angleLines:{color:C.grid},pointLabels:{color:C.mut,font:{size:10}},ticks:{display:false}}}}});
+  const se=document.getElementById('shoot'+i);
+  if(se&&rd.shooters)new Chart(se,{type:'bubble',data:{datasets:rd.shooters.map(s=>({label:s.n,data:[{x:s.sh,y:s.gsh,r:Math.max(6,s.g*0.9+4)}],backgroundColor:(s.gsh>=0.25?C.red:C.gold)+'cc',borderColor:'#fff',borderWidth:.5}))},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw.x} tiros · ${c.raw.y} g/tiro · ${Math.round((c.raw.r-4)/0.9)} goles`}}},scales:{x:{title:{display:true,text:'Tiros'},grid:{color:C.grid}},y:{title:{display:true,text:'Goles por tiro'},grid:{color:C.grid}}}}});
+  const de=document.getElementById('def'+i);
+  if(de&&rd.defensores)new Chart(de,{type:'bar',data:{labels:rd.defensores.map(d=>d.n),datasets:[
+    {label:'Intercepciones',data:rd.defensores.map(d=>d.int),backgroundColor:C.gold,borderRadius:4},
+    {label:'Entradas ganadas',data:rd.defensores.map(d=>d.tklw),backgroundColor:C.blue,borderRadius:4}]},
+    options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{color:C.grid}},y:{stacked:true,grid:{display:false}}}}});
+});
+
+/* ---- Bitácora + modo ---- */
+$('#bitacora').innerHTML=R.bitacora.map(b=>`<li><b>${b.fecha}</b> — ${b.nota}</li>`).join('');
+$('#modeSwitch').onclick=function(){this.classList.toggle('on');document.body.classList.toggle('tec');};
+</script>
+</body>
+</html>
