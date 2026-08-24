@@ -143,8 +143,52 @@ const REPORTES = {
     }
   ],
 
+  // ---- Informe táctico 7 preguntas (por rival) ----
+  informe7: {
+    rival: "Universidad Católica",
+    partido: "Coquimbo Unido vs U. Católica · 26 ago",
+    resumen: "U. Católica llega como el equipo más ofensivo de la Liga (2,16 goles/PJ, 30 pts) pero también permeable (1,47 GC/PJ; 98 remates al arco recibidos). Propone con posesión (55,8%) y sistemas flexibles (4-2-3-1 / 4-1-4-1 / 4-3-3). Su peligro se concentra en Fernando Zampedri (23 goles, letal con pocas ocasiones) y en la creación por izquierda (Cuevas, 101 centros; Montes y Palavecino, 6 asistencias cada uno). Cruza un bache: L-W-D-L-L con 9 goles encajados en 5, y de visita concede 1,56/PJ. Es el opuesto natural de Coquimbo: quiere el balón, nosotros somos reactivos. La clave no es quitarle la pelota, sino castigar sus transiciones y su fragilidad defensiva, y negar servicio a Zampedri.",
+    // 7 preguntas: dato real + inferencia marcada
+    preguntas: [
+      { n:1, t:"¿Cómo se organiza?",
+        dato:"Sistemas 4-2-3-1 (9), 4-1-4-1 (8) y 4-3-3 (2). Posesión media 55,8% (DATO).",
+        inf:"Equipo de balón con línea media-alta: al proponer tanto, adelanta bloque y deja espacio a la espalda (INFERENCIA). Con o sin balón mantiene estructura de 4 atrás y un pivote (Medel/Valencia) como ancla." },
+      { n:2, t:"¿Cómo construye y progresa?",
+        dato:"Reparto de asistencias entre Montes (6), Palavecino (6) y Cuevas (5); Cuevas suma 101 centros (DATO).",
+        inf:"Construye desde atrás con posesión y progresa sobre todo por izquierda (Cuevas como carrilero-creador); conectores interiores Montes/Palavecino entre líneas (INFERENCIA). Riesgo: si se le presiona la primera línea, pierde fluidez." },
+      { n:3, t:"¿Cómo genera peligro?",
+        dato:"2,16 goles/PJ; Zampedri 23 goles (50% SoT, 0,31 g/tiro); Giani 9 goles con 83 tiros (0,11); Over 2,5 en 74% (DATO).",
+        inf:"Dos vías: el finalizador de área (Zampedri, remata poco y mata) y el volumen exterior (centros de Cuevas, tiros de Giani). Zona de llegada probable: área y segundo palo por centro (INFERENCIA; sin shot-map público)." },
+      { n:4, t:"¿Qué hace tras pérdida?",
+        dato:"De visita concede 1,56 GC/PJ y encajó 9 goles en sus últimos 5; Valencia acumula 48 faltas (DATO).",
+        inf:"Al jugar alto queda expuesto a la contra; recurre a falta táctica (Valencia) para frenar transiciones. Es su mayor vulnerabilidad y encaja con el ADN reactivo de Coquimbo (INFERENCIA)." },
+      { n:5, t:"¿Cómo defiende?",
+        dato:"1,47 GC/PJ, 98 remates al arco recibidos, solo 21% de vallas invictas; Bernedo 70,4% de atajadas (DATO).",
+        inf:"Defensa adelantada y agresiva pero permeable: concede muchos remates. El arquero sostiene, pero el bloque deja llegar. Marca de área y comportamiento aéreo: sin dato público → verificar en vídeo (HIPÓTESIS)." },
+      { n:6, t:"¿Qué hace en balón parado?",
+        dato:"Cuevas es el gran lanzador desde banda (101 centros); Zampedri, referencia de área (DATO parcial).",
+        inf:"Probable amenaza en córner/falta lateral con servicio de Cuevas a la cabeza de Zampedri; especialista de falta frontal sin confirmar (HIPÓTESIS; requiere vídeo)." }
+    ],
+    // Pregunta 7: patrón -> interpretación -> propuesta
+    patrones: [
+      { p:"Propone con posesión y línea alta (55,8%)", i:"Deja espacio a la espalda de su defensa", x:"Transiciones rápidas (5-8 s) y desmarques a la espalda de sus laterales — nuestro juego reactivo lo favorece", ev:"alta" },
+      { p:"Depende de Zampedri como finalizador (23 g, 0,31 g/tiro)", i:"Con pocas ocasiones hace daño; vive del servicio", x:"Marca de referencia + cortar centros y pases interiores hacia él; aceptar que otros tiren de lejos", ev:"alta" },
+      { p:"Crea y sobrecarga por izquierda (Cuevas, 101 centros)", i:"Su banda izquierda es su fuente de peligro… y su espalda", x:"Reforzar nuestro costado derecho, presionar la salida de Cuevas y atacar el espacio que deja al subir", ev:"media" },
+      { p:"Concede muchos remates (98 SoTA) y peor de visita (1,56 GC/PJ)", i:"Es vulnerable, sobre todo fuera de casa", x:"Subir volumen y calidad de llegada; presionar su primera línea para forzar pérdidas altas", ev:"alta" },
+      { p:"Giani dispara mucho y mal (83 tiros, 0,11 g/tiro)", i:"Remate exterior de baja calidad", x:"Orientar la defensa a proteger el área y ceder el tiro lejano de Giani, cerrando a Zampedri", ev:"media" },
+      { p:"Mala racha (9 goles en contra en 5)", i:"Confianza defensiva baja", x:"Golpear temprano para profundizar la duda y obligarlos a exponerse aún más", ev:"media" }
+    ],
+    top3: [
+      "Plan de transición: recuperar y atacar en pocos segundos el espacio a la espalda de su línea alta. Es donde más sufre y donde Coquimbo es mejor.",
+      "Neutralizar a Zampedri: marca de referencia y corte del servicio (centros/pase interior). Aceptar el tiro lejano de Giani como 'mal menor'.",
+      "Explotar su fragilidad visitante y su banda izquierda con llegadas de segunda línea — y máxima disciplina (nuestras 8 rojas) ante un rival que promedia 2,16 goles."
+    ],
+    limitaciones: "Sin StatsBomb/tracking público para Chile: no hay mapas de pases, PPDA ni posiciones promedio. Las respuestas de organización, presión y balón parado combinan dato agregado (FBref) con inferencia táctica marcada; confirmar con vídeo."
+  },
+
   // ---- Bitácora de avances (AÑADIR líneas nuevas arriba) ----
   bitacora: [
+    { fecha: "2026-08-21", nota: "Añadido informe táctico de 7 preguntas de U. Católica (organización, construcción, peligro, transición, defensa, balón parado y plan propio) con dato real + inferencia marcada." },
     { fecha: "2026-08-21", nota: "Añadido pre-partido U. Católica (26-ago) con dato FBref real: perfil, jugadores, arquero y predicción actualizada. Nuevos gráficos futboleros: radar comparativo, dispersión volumen-vs-eficacia de tiro y líderes defensivos. Paleta amarillo/negro." },
     { fecha: "2026-08-21", nota: "Creado el Centro de Análisis. Cargado perfil Coquimbo 2026 (25 partidos), defensa/intensidad y pre-partido vs Deportes Concepción." }
   ]

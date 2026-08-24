@@ -85,7 +85,7 @@
   <div class="links">
     <a href="#resumen">Reporte</a><a href="#estilo">Identidad</a><a href="#tendencia">Tendencia</a>
     <a href="#cancha">Cancha</a><a href="#jugadores">Plantel</a><a href="#defensa">Defensa</a>
-    <a href="#fixture">Fixture</a><a href="#rivales">Rivales</a><a href="#bitacora">Bitácora</a>
+    <a href="#fixture">Fixture</a><a href="#rivales">Rivales</a><a href="#informe7">Informe 7Q</a><a href="#bitacora">Bitácora</a>
   </div>
   <div class="modewrap"><span>Ejecutiva</span><div class="switch" id="modeSwitch"><div class="knob"></div></div><span>Técnica</span></div>
 </div></header>
@@ -183,6 +183,20 @@
     <h2>Rivales analizados / Pre-partido</h2>
     <p class="sub">Se amplía al añadir objetos en <code>reportes.js → REPORTES.rivales[]</code>.</p>
     <div id="rivales"></div>
+  </section>
+
+  <!-- ===== INFORME TÁCTICO 7 PREGUNTAS ===== -->
+  <section id="informe7">
+    <h2 id="i7titulo"></h2>
+    <p class="sub">Informe de scouting del próximo rival · flujo Observación → Patrón → Interpretación → Propuesta. <span class="badge b-dato">DATO</span> = FBref/fixtures · <span class="badge b-hip">INFERENCIA</span> táctica.</p>
+    <div class="callout" id="i7resumen" style="margin-top:12px"></div>
+    <h3>Patrones clave y qué hacer nosotros</h3>
+    <div class="scroll-x"><table id="i7patrones"><thead><tr><th>Patrón detectado</th><th>Interpretación</th><th>Propuesta táctica</th><th>Ev.</th></tr></thead><tbody></tbody></table></div>
+    <h3>Las 7 preguntas</h3>
+    <div class="grid g2" id="i7preguntas"></div>
+    <h3>Top 3 · prioridades para el partido</h3>
+    <div id="i7top3"></div>
+    <div class="glos" id="i7lim" style="margin-top:12px"></div>
   </section>
 
   <!-- ===== BITÁCORA ===== -->
@@ -382,6 +396,20 @@ R.rivales.forEach((r,i)=>{ if(!r.charts)return; const rd=r.charts;
     {label:'Entradas ganadas',data:rd.defensores.map(d=>d.tklw),backgroundColor:C.blue,borderRadius:4}]},
     options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{color:C.grid}},y:{stacked:true,grid:{display:false}}}}});
 });
+
+/* ---- Informe táctico 7 preguntas ---- */
+(function(){
+  const I=R.informe7; if(!I) return;
+  $('#i7titulo').innerHTML=`Informe táctico — ${I.rival} <span class="badge b-clave">7 PREGUNTAS</span>`;
+  $('#i7resumen').innerHTML=`<b>Resumen ejecutivo.</b> ${I.resumen}`;
+  const evBadge=e=>e==='alta'?'<span class="badge b-dato">alta</span>':e==='media'?'<span class="badge b-ver">media</span>':'<span class="badge b-hip">baja</span>';
+  $('#i7patrones tbody').innerHTML=I.patrones.map(p=>`<tr><td><b>${p.p}</b></td><td class="sub">${p.i}</td><td style="color:var(--gold)">${p.x}</td><td>${evBadge(p.ev)}</td></tr>`).join('');
+  $('#i7preguntas').innerHTML=I.preguntas.map(q=>`<div class="card"><h4>${q.n}. ${q.t}</h4>
+    <div style="font-size:13.5px;margin-bottom:6px"><span class="badge b-dato">DATO</span> ${q.dato}</div>
+    <div style="font-size:13.5px"><span class="badge b-hip">INFERENCIA</span> ${q.inf}</div></div>`).join('');
+  $('#i7top3').innerHTML='<ul class="clean">'+I.top3.map((t,i)=>`<li><b style="color:var(--gold)">${i+1}.</b> ${t}</li>`).join('')+'</ul>';
+  $('#i7lim').innerHTML='<b>Límite de datos:</b> '+I.limitaciones;
+})();
 
 /* ---- Bitácora + modo ---- */
 $('#bitacora').innerHTML=R.bitacora.map(b=>`<li><b>${b.fecha}</b> — ${b.nota}</li>`).join('');
