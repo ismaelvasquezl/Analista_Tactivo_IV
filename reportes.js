@@ -10,7 +10,7 @@
    Estados válidos: "DATO" | "REQUIERE_VERIFICACION" | "HIPOTESIS"
    ========================================================================= */
 const REPORTES = {
-  actualizado: "2026-09-03",
+  actualizado: "2026-09-16",
 
   // ---- Perfil interpretativo de Coquimbo (2026) ----
   coquimbo: {
@@ -18,21 +18,22 @@ const REPORTES = {
     perfil: [
       "Equipo REACTIVO, no dominador: posesión ~50% y correlación posesión→goles negativa. Ante rivales que se cierran debe evitar la 'trampa del dominio': lo logró venciendo 1-0 a U. de Concepción con 60% de balón, tras insistir hasta el 85'.",
       "Ataque muy LATERAL: 24,9 centros/partido (rango 11–47). Es su sello y su límite: si le cierran las bandas, se vuelve previsible.",
-      "Defensa que mejora: 1,16 GC/PJ y ya 21% de vallas invictas; sigue concediendo volumen (10,8 tiros/PJ; corr tiros→goles +0,71).",
-      "Indisciplina doméstica: 8 rojas en 19 de Liga (0 en Libertadores)."
+      "Dos deudas de fondo agravadas: se le escapan los CIERRES (colapsó 1-2→4 vs U. de Chile en 8') y es un COLADOR de visita (1,83 GC/PJ frente a 0,78 de local).",
+      "Defensa global 1,38 GC/PJ; 19% de vallas invictas; concede volumen (11,5 tiros/PJ; corr tiros→goles +0,71).",
+      "Indisciplina doméstica: 8 rojas en 21 de Liga (0 en Libertadores)."
     ],
-    defensa: [   // {k, v, nota}  — Liga 2026, 19 PJ
-      { k: "Goles en contra", v: "1,16 /PJ", nota: "Mejorando" },
-      { k: "Tiros concedidos", v: "10,8 /PJ (SoT 35%)", nota: "Concede volumen" },
-      { k: "Atajadas · Save%", v: "2,4 /PJ · ~68%", nota: "Arco fiable" },
-      { k: "Clean sheets", v: "4/19 (21%)", nota: "Al alza (venía de 17%)" },
-      { k: "Entradas+intercepciones", v: "≈21,5 /PJ", nota: "Recuperación activa" }
+    defensa: [   // {k, v, nota}  — Liga 2026, 21 PJ
+      { k: "Goles en contra", v: "1,38 /PJ", nota: "Empeora (¡1,83 de visita!)" },
+      { k: "Tiros concedidos", v: "11,5 /PJ (SoT 35%)", nota: "Concede volumen" },
+      { k: "Atajadas · Save%", v: "2,6 /PJ · ~66%", nota: "Arco muy exigido" },
+      { k: "Clean sheets", v: "4/21 (19%)", nota: "Poca portería a cero" },
+      { k: "Entradas+intercepciones", v: "≈21,9 /PJ", nota: "Recuperación activa" }
     ],
     intensidad: [
-      { k: "Centros", v: "24,9 /PJ (11–47)", nota: "Frecuencia de ataque lateral, muy alta" },
-      { k: "Faltas", v: "11,8 /PJ (7–18)", nota: "Intensidad de duelo media-alta" },
-      { k: "Tarjetas", v: "56A · 8R", nota: "Foco disciplinario tras la suspensión" },
-      { k: "Posesión", v: "49,8%", nota: "Reactivo" }
+      { k: "Centros", v: "24,3 /PJ (11–47)", nota: "Frecuencia de ataque lateral, muy alta" },
+      { k: "Faltas", v: "11,4 /PJ (6–18)", nota: "Intensidad de duelo media-alta" },
+      { k: "Tarjetas", v: "62A · 8R", nota: "Foco disciplinario" },
+      { k: "Posesión", v: "49,6%", nota: "Reactivo" }
     ],
     jugadores: [ // {n, rol, aporte, nota, tag}
       { n: "Nicolás Johansen", rol: "Delantero", aporte: "6 goles", nota: "Máximo goleador (26% del total); de él depende el gol", tag: "clave" },
@@ -48,7 +49,7 @@ const REPORTES = {
   rivales: [
     {
       nombre: "Universidad de Chile",
-      tipo: "PRÓXIMO · VISITA (Nacional)",
+      tipo: "H2H · JUGADO 5-SEP (2-4)",
       ficha: [
         { k: "Ciudad / apodo", v: "Santiago · La U · DT Fernando Gago", estado: "DATO" },
         { k: "Sede del partido", v: "VISITA para Coquimbo — Estadio Nacional. Contexto difícil: la U es 6-3-1 de local", estado: "DATO" },
@@ -68,21 +69,22 @@ const REPORTES = {
       ],
       h2h: [
         { fecha: "2026-03-14", comp: "Liga (MW7)", sede: "Local", res: "L", gc: "0-1",
-          detalle: "Coquimbo cayó en casa pese a dominar (51% posesión, 19 tiros): otra vez el patrón de dominar sin marcar." }
+          detalle: "Coquimbo cayó en casa pese a dominar (51% posesión, 19 tiros): el patrón de dominar sin marcar." },
+        { fecha: "2026-09-05", comp: "Liga (MW22)", sede: "Visita", res: "L", gc: "2-4",
+          detalle: "En el Nacional: iba GANANDO 1-2 al 82' (a.c. de Castellón) y encajó 3 goles en los últimos 8'. La U remató 22 veces (12 al arco) con 61% de balón." }
       ],
-      resumenH2H: "1 partido 2026: 0V-0E-1D, 0-1 en casa. Ahora el regreso es EN EL NACIONAL, de visita: el examen más duro del tramo.",
-      lecturaH2H: "Rival de nivel superior y, encima, de local: propone, tiene el balón (58%) y defiende de maravilla (0,81 GC/PJ; solo 0,70 en casa). Coquimbo va de visitante, donde es más abierto (concede 1,50/PJ). La U es clara favorita. El plan realista es de partido chico: bloque compacto, no exponerse al ida y vuelta, marca especial a Vargas y apostar a un golpe de eficacia o de balón parado. Sumar aquí sería un golazo anímico.",
+      resumenH2H: "2 partidos 2026: 0V-0E-2D · goles 2-5. En el Nacional cayó 4-2 tras ir ganando 1-2 al minuto 82.",
+      lecturaH2H: "Se cumplió el pronóstico y de la peor forma. Coquimbo compitió y hasta dio vuelta el marcador, pero se DESPLOMÓ en el cierre: 3 goles encajados en 8 minutos ante un rival superior. Confirma sus dos deudas de fondo: la fragilidad en los tramos finales y la permeabilidad de visita (1,83 GC/PJ). La U ganó por jerarquía y volumen (22 tiros).",
       prediccion: [
-        { esc: "Victoria Coquimbo", p: "~25%" },
-        { esc: "Empate", p: "~27%" },
-        { esc: "Victoria U. de Chile", p: "~48%" },
-        { esc: "Over 2.5 goles", p: "~46%" },
-        { esc: "Ambos marcan", p: "~46%" }
+        { esc: "Partidos 2026", p: "2" },
+        { esc: "Coquimbo V-E-D", p: "0-0-2" },
+        { esc: "Goles (Coq–U)", p: "2–5" },
+        { esc: "Dato clave", p: "Ganaba 1-2 al 82' y perdió 4-2" }
       ],
-      marcador: "0-1 o 1-2 U. de Chile (favorita de local)",
-      confianza: "MEDIA-ALTA (dato real de ambos; sede confirmada: visita)",
+      marcador: "Último: 2-4 (5-sep, colapso final)",
+      confianza: "HISTÓRICO · partido jugado",
       claves: [
-        "Partido chico de visita: bloque compacto y NO entrar en el ida y vuelta (de visitante Coquimbo concede 1,50/PJ). Ceder balón sin ceder ocasiones.",
+        "Partido chico de visita: bloque compacto y NO entrar en el ida y vuelta (de visitante Coquimbo concede 1,83/PJ). Ceder balón sin ceder ocasiones.",
         "Marca especial a Vargas y cerrar los centros de Guerrero/Hormazábal: la amplitud de la U es su fuente de peligro en el Nacional.",
         "Apostar al golpe: eficacia máxima en la contra y en el balón parado; con 0,70 GC/PJ de local, las ocasiones serán pocas y hay que aprovecharlas."
       ],
@@ -265,7 +267,7 @@ const REPORTES = {
   informe7: {
     rival: "Universidad de Chile",
     partido: "U. de Chile vs Coquimbo Unido · VISITA (Estadio Nacional)",
-    resumen: "El examen más duro del tramo, y encima de visita. La U (DT Fernando Gago) es de los mejores: 36 pts, 58% de posesión y una defensa sólida (0,81 GC/PJ, 43% de vallas invictas; 0,70 de local). Es un PROPONENTE que domina el balón — Coquimbo no lo tendrá. En el Nacional la U es 6-3-1 y Coquimbo es más abierto de visitante (concede 1,50/PJ). La clave no es competir por la posesión, sino ser un equipo chico eficaz: bloque compacto, no exponerse al ida y vuelta, marca especial a Vargas y golpe de eficacia o balón parado. Favorita clara: la U.",
+    resumen: "El examen más duro del tramo, y encima de visita. La U (DT Fernando Gago) es de los mejores: 36 pts, 58% de posesión y una defensa sólida (0,81 GC/PJ, 43% de vallas invictas; 0,70 de local). Es un PROPONENTE que domina el balón — Coquimbo no lo tendrá. En el Nacional la U es 6-3-1 y Coquimbo es más abierto de visitante (concede 1,83/PJ). La clave no es competir por la posesión, sino ser un equipo chico eficaz: bloque compacto, no exponerse al ida y vuelta, marca especial a Vargas y golpe de eficacia o balón parado. Favorita clara: la U.",
     preguntas: [
       { n:1, t:"¿Cómo se organiza?",
         dato:"Sistemas 4-2-3-1 (7), 3-4-3 (6), 4-1-4-1 (3). Posesión 58% (DATO).",
@@ -291,7 +293,7 @@ const REPORTES = {
       { p:"Ataca por amplitud (carrileros centran 60-126)", i:"Su banda es la fuente de peligro", x:"Cerrar bandas, ganar el área y no permitir centros cómodos", ev:"alta" },
       { p:"Vargas killer (8 g, 0,16 g/tiro)", i:"Con pocas ocasiones define", x:"Marca de referencia sobre Vargas; negarle el balón en el área", ev:"alta" },
       { p:"Muy sólida de local (0,70 GC/PJ, 43% CS)", i:"Las ocasiones serán muy pocas", x:"Máxima eficacia y balón parado: convertir la que llegue", ev:"alta" },
-      { p:"COQUIMBO abierto de visita (1,50 GC/PJ)", i:"Riesgo de entrar en un ida y vuelta que no le conviene", x:"Priorizar orden y equilibrio; no dejarse arrastrar al partido de la U", ev:"media" }
+      { p:"COQUIMBO abierto de visita (1,83 GC/PJ)", i:"Riesgo de entrar en un ida y vuelta que no le conviene", x:"Priorizar orden y equilibrio; no dejarse arrastrar al partido de la U", ev:"media" }
     ],
     top3: [
       "Partido chico y compacto: ceder el balón sin ceder ocasiones y explotar la espalda de sus carrileros en transición — su única grieta.",
@@ -303,6 +305,7 @@ const REPORTES = {
 
   // ---- Bitácora de avances (AÑADIR líneas nuevas arriba) ----
   bitacora: [
+    { fecha: "2026-09-16", nota: "Cargados 2 partidos de visita, ambos derrotas: U. de Chile 4-2 (MW22, iba GANANDO 1-2 al 82' y encajó 3 en 8' — colapso de cierre) y Cobresal 3-2 (MW23, dominó con 55% y 17 tiros y perdió). Liga actualizada a 8-5-8 (21 PJ) con los partidos que tengo. Alerta reforzada: de visita concede 1,83 GC/PJ (vs 0,78 de local). AVISOS: (1) el récord oficial marca 8-5-9 porque falta un partido de Liga reprogramado que no tengo cargado; (2) el suspendido vs Huachipato se completa hoy 16-sep en La Cisterna (pendiente). No se inventó ninguno de los dos." },
     { fecha: "2026-09-03", nota: "BARRIDO DE CIERRE: reconciliados todos los totales acumulados (Liga 8-5-6, 29 pts, GF 26/GC 22, DG +4; 19 PJ). Corregidos textos antiguos (reporte, 'cómo leer', tendencia y visita 1,50 GC/PJ); el reporte y el resumen de tendencia ahora se calculan en vivo desde fixtures.js para no volver a quedar viejos. Corregido el bug del mapa de calor de Coquimbo (clasificación de línea). Fecha del sitio: 2026-09-03." },
     { fecha: "2026-09-03", nota: "Informe 7Q, predicción y todas las secciones actualizadas al rival actual: U. de Chile (visita, Estadio Nacional). Mapa de calor y 'once por minutos' ahora son SELECCIONABLES por equipo (Coquimbo + 3 rivales), calculados con el reparto de minutos por línea + stats. Correcciones: DT U. de Chile = Fernando Gago; DT Coquimbo = Hernán Caputto." },
     { fecha: "2026-09-03", nota: "Cargado próximo rival U. de Chile (fuerte: 36 pts, 58% posesión, 0,81 GC/PJ, 43% vallas invictas) con ficha, jugadores, radar y gráficos. NUEVA 'Pizarra táctica dinámica': cancha con formación y formación rival, fichas arrastrables que al clic muestran stats y aptitud del jugador para el rol (principios por posición) + lectura formación↔estilo. Roster de la U (30 jug.) con datos por jugador para el análisis de aptitud." },
