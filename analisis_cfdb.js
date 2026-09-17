@@ -4,42 +4,42 @@ const ANALISIS = {
  "fuentes": "CFDB (totales, historico, contexto liga) + FBref (detalle partido-a-partido). Etiquetas: DATO/INFERENCIA/HIPOTESIS.",
  "totales_cfdb": {
   "pos": 10,
-  "pj": 22,
+  "pj": 23,
   "w": 8,
   "d": 5,
-  "l": 9,
+  "l": 10,
   "gf": 31,
-  "ga": 31,
-  "gd": 0,
+  "ga": 32,
+  "gd": -1,
   "pts": 29,
   "fuente": "CFDB team_standing"
  },
  "totales_detalle": {
-  "pj": 22,
+  "pj": 23,
   "w": 8,
   "d": 5,
-  "l": 9,
-  "gf": 30,
-  "ga": 30,
-  "gd": 0,
+  "l": 10,
+  "gf": 31,
+  "ga": 32,
+  "gd": -1,
   "pts": 29,
-  "ppg": 1.318,
-  "gf_pg": 1.36,
-  "ga_pg": 1.36
+  "ppg": 1.261,
+  "gf_pg": 1.35,
+  "ga_pg": 1.39
  },
  "split": {
   "local": {
-   "pj": 10,
+   "pj": 11,
    "w": 4,
    "d": 3,
-   "l": 3,
-   "gf": 12,
-   "ga": 8,
-   "gd": 4,
+   "l": 4,
+   "gf": 13,
+   "ga": 10,
+   "gd": 3,
    "pts": 15,
-   "ppg": 1.5,
-   "gf_pg": 1.2,
-   "ga_pg": 0.8
+   "ppg": 1.364,
+   "gf_pg": 1.18,
+   "ga_pg": 0.91
   },
   "visita": {
    "pj": 12,
@@ -57,20 +57,20 @@ const ANALISIS = {
  },
  "reconciliacion": {
   "fbref": {
-   "pj": 22,
-   "record": "8-5-9",
-   "gf": 30,
-   "ga": 30,
+   "pj": 23,
+   "record": "8-5-10",
+   "gf": 31,
+   "ga": 32,
    "pts": 29
   },
   "cfdb": {
-   "pj": 22,
-   "record": "8-5-9",
+   "pj": 23,
+   "record": "8-5-10",
    "gf": 31,
-   "ga": 31,
+   "ga": 32,
    "pts": 29
   },
-  "veredicto": "Coinciden exactamente en PJ (22), record (8-5-9), puntos (29) y posicion (10). Los goles difieren en +1 GF y +1 GC (CFDB 31-31 vs detalle 30-30): diferencia neutra en GD (0 en ambos) y sin efecto en tabla. Probable discrepancia de 1 gol en un marcador entre feeds. Se adoptan los totales CFDB como DATO oficial; el detalle FBref se mantiene para el analisis partido-a-partido."
+  "veredicto": "Reconciliacion COMPLETA tras cargar el partido faltante (U. Catolica 1-2, 26-ago) y el Huachipato 0-1: el detalle FBref coincide EXACTO con CFDB en PJ (23), record (8-5-10), goles (31-32), diferencia (-1), puntos (29) y posicion (10). Cero desfase. Se mantiene CFDB como fuente oficial y FBref para el detalle partido-a-partido."
  },
  "regresion": {
   "titulo": "De campeon invicto-casi a media tabla",
@@ -88,22 +88,22 @@ const ANALISIS = {
   },
   "y2026": {
    "pos": 10,
-   "pj": 22,
+   "pj": 23,
    "w": 8,
    "d": 5,
-   "l": 9,
+   "l": 10,
    "gf": 31,
-   "ga": 31,
-   "gd": 0,
+   "ga": 32,
+   "gd": -1,
    "pts": 29,
    "fuente": "CFDB team_standing"
   },
   "proyeccion_30": {
-   "pts": 39.5,
-   "gf": 42.3,
-   "ga": 42.3
+   "pts": 37.8,
+   "gf": 40.4,
+   "ga": 41.7
   },
-  "lectura": "Campeon 2025 con 75 pts y la mejor defensa de la liga (17 GC en 30 = 0.57/PJ). En 2026 concede 1.41/PJ (ritmo 42.3 en 30), mas del doble. El ataque se sostiene mejor (1.63 -> 1.41 GF/PJ). El colapso es DEFENSIVO."
+  "lectura": "Campeon 2025 con 75 pts y la mejor defensa de la liga (17 GC en 30 = 0.57/PJ). En 2026 concede 1.39/PJ (ritmo 41.7 en 30), mas del doble. El ataque se sostiene mejor (1.63 -> 1.35 GF/PJ). El colapso es DEFENSIVO."
  },
  "tendencia": {
   "fecha": [
@@ -125,6 +125,7 @@ const ANALISIS = {
    "F 17",
    "F 18",
    "F 20",
+   "F 19",
    "F 21",
    "F 16",
    "F 22",
@@ -149,6 +150,7 @@ const ANALISIS = {
    "@Vis Palestino",
    "vLoc La Serena",
    "@Vis D. Concepción",
+   "vLoc U. Católica",
    "vLoc Huachipato",
    "vLoc U. de Concepción",
    "@Vis Universidad de Chile",
@@ -170,6 +172,7 @@ const ANALISIS = {
    1,
    3,
    0,
+   1,
    1,
    1,
    1,
@@ -197,6 +200,7 @@ const ANALISIS = {
    2,
    1,
    1,
+   2,
    1,
    0,
    4,
@@ -221,7 +225,8 @@ const ANALISIS = {
    1.6,
    1.2,
    1.2,
-   0.6,
+   0.8,
+   0.8,
    0.8,
    1,
    1.2
@@ -245,10 +250,11 @@ const ANALISIS = {
    1,
    1.2,
    1.2,
-   1,
-   1,
+   1.2,
    1.4,
-   1.8
+   1,
+   1.6,
+   2
   ],
   "ppg_ma5": [
    0,
@@ -270,39 +276,40 @@ const ANALISIS = {
    1.2,
    1.2,
    0.6,
+   0.4,
    1,
-   1,
-   0.8
+   0.8,
+   0.6
   ],
-  "ult5_pts": 4,
+  "ult5_pts": 3,
   "ult5_gf": 6,
-  "ult5_ga": 9
+  "ult5_ga": 10
  },
  "trend_reg": {
-  "ga_slope": 0.037,
-  "gf_slope": -0.002,
-  "lectura": "Pendiente GC por fecha = +0.037 (GC en alza); pendiente GF = -0.002. n=22, tendencia indicativa no causal."
+  "ga_slope": 0.04,
+  "gf_slope": -0.005,
+  "lectura": "Pendiente GC por fecha = +0.040 (GC en alza); pendiente GF = -0.005. n=23, tendencia indicativa no causal."
  },
  "proyeccion": {
   "metodo": "Bootstrap Monte Carlo (20.000 sim); remuestreo de resultados reales local/visita",
   "base_pts": 29,
-  "rem_local": 5,
+  "rem_local": 4,
   "rem_visita": 3,
-  "home_ppg": 1.5,
+  "home_ppg": 1.364,
   "away_ppg": 1.167,
-  "media": 40.0,
-  "p10": 35,
-  "p50": 40,
-  "p90": 45,
-  "lectura": "Proyeccion fin de temporada ~40 pts (IC80% 35-45). Zona de media tabla: sin lucha por titulo ni riesgo real de descenso con este ritmo. Muestra n=22, proyeccion sensible al calendario restante."
+  "media": 38.0,
+  "p10": 34,
+  "p50": 38,
+  "p90": 42,
+  "lectura": "Proyeccion fin de temporada ~38 pts (IC80% 34-42). Zona de media tabla: sin lucha por titulo ni riesgo real de descenso con este ritmo. Muestra n=23, proyeccion sensible al calendario restante."
  },
  "poisson": {
   "local": {
-   "gf": 1.2,
-   "ga": 0.8,
-   "pW": 0.454,
-   "pD": 0.3,
-   "pL": 0.246
+   "gf": 1.18,
+   "ga": 0.91,
+   "pW": 0.422,
+   "pD": 0.297,
+   "pL": 0.282
   },
   "visita": {
    "gf": 1.5,
@@ -313,9 +320,9 @@ const ANALISIS = {
   },
   "validacion": {
    "local": {
-    "n": 10,
-    "acierto": 0.4,
-    "logloss": 1.186
+    "n": 11,
+    "acierto": 0.364,
+    "logloss": 1.189
    },
    "visita": {
     "n": 12,
@@ -324,7 +331,7 @@ const ANALISIS = {
    },
    "nota": "Validacion leave-one-out (cada partido predicho con las tasas de los otros). Acierto de clase modesto (empate es la clase dificil); el valor esta en la probabilidad, no en el marcador exacto. n bajo: usar como guia, no certeza."
   },
-  "lectura": "En casa el modelo favorece a Coquimbo (pW~45%) con 1.2 GF y solo 0.8 GC esperados. De visita se invierte: mas probable no ganar (pL~46%) por 1.8 GC esperados. El plan debe ser distinto segun localia."
+  "lectura": "En casa el modelo favorece a Coquimbo (pW~42%) con 1.2 GF y solo 0.9 GC esperados. De visita se invierte: mas probable no ganar (pL~46%) por 1.8 GC esperados. El plan debe ser distinto segun localia."
  },
  "liga": {
   "posesion": {
@@ -430,14 +437,14 @@ const ANALISIS = {
    {
     "season": "2026",
     "pos": 10,
-    "pj": 22,
+    "pj": 23,
     "pts": 29,
     "gf": 31,
-    "ga": 31,
+    "ga": 32,
     "encurso": true,
-    "gapg": 1.41,
-    "gfpg": 1.41,
-    "ppg": 1.32
+    "gapg": 1.39,
+    "gfpg": 1.35,
+    "ppg": 1.26
    }
   ],
   "lectura": "Trayectoria en Primera: 5º (2019) → descenso/ascenso → 14º al volver (2022) → 5º (2023) → 8º (2024) → CAMPEÓN (2025) → 10º (2026, en curso). El título fue un pico sostenido sobre una base de media tabla; la caída de 2026 es una regresión a la media agravada por el desplome defensivo (GC/PJ: 0,57 campeón → 1,41 hoy)."
@@ -446,7 +453,7 @@ const ANALISIS = {
   {
    "prioridad": 1,
    "area": "Defensa de visita",
-   "evidencia": "22 GC en 12 de visita = 1.83/PJ (vs 0.8 en casa)",
+   "evidencia": "22 GC en 12 de visita = 1.83/PJ (vs 0.91 en casa)",
    "interpretacion": "El desplome respecto a 2025 es casi todo fuera de casa: la estructura defensiva no aguanta lejos del Sanchez Rumoroso.",
    "accion": "Plan de visita conservador: bloque medio-bajo, no exponer a los laterales, priorizar no encajar primero. Revisar transiciones defensivas (goles tardios: ver U. de Chile 82'-90')."
   },
@@ -460,7 +467,7 @@ const ANALISIS = {
   {
    "prioridad": 3,
    "area": "Dependencia de localia",
-   "evidencia": "Local 4-3-3 (1.5 ppg) vs Visita 4-2-6 (1.167 ppg)",
+   "evidencia": "Local 4-3-4 (1.364 ppg) vs Visita 4-2-6 (1.167 ppg)",
    "interpretacion": "El equipo es competitivo en casa y fragil fuera. Sumar de visita es la palanca de la temporada.",
    "accion": "Objetivo realista: convertir 2-3 de las 3 visitas restantes en al menos empates. En casa (5 restantes) exigir >=10 pts."
   },

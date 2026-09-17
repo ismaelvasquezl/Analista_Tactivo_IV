@@ -162,11 +162,11 @@
     <div class="fill">
       <p>Antes de proyectar nada, se cuadran los totales para que la base sea sólida. El récord de liga se validó cruzando el detalle FBref con el oficial CFDB.</p>
       <div class="grid g2" style="margin-top:12px">
-        <div class="card"><h4>Detalle FBref (partido a partido)</h4><p>22 PJ · <b>8-5-9</b> · 30-30 · 29 pts</p></div>
-        <div class="card"><h4>Oficial CFDB</h4><p>22 PJ · <b>8-5-9</b> · 31-31 · 29 pts · <b>10º</b></p></div>
+        <div class="card"><h4>Detalle FBref (partido a partido)</h4><p>23 PJ · <b>8-5-10</b> · 31-32 · 29 pts</p></div>
+        <div class="card"><h4>Oficial CFDB</h4><p>23 PJ · <b>8-5-10</b> · 31-32 · 29 pts · <b>10º</b></p></div>
       </div>
-      <p style="margin-top:12px"><span class="badge b-dato">Veredicto</span> Coinciden en partidos, récord, puntos y posición. Diferencia de 1 gol por lado (diferencia de gol = 0 en ambos, sin efecto en la tabla): probable discrepancia de un marcador entre feeds. Se adoptó CFDB como oficial y se dejó anotada.</p>
-      <p class="sub" style="margin-top:10px">También se incorporó el Huachipato suspendido, resuelto 0-1 (fuente CFDB), como 9ª derrota: la 22ª fecha que faltaba.</p>
+      <p style="margin-top:12px"><span class="badge b-dato">Veredicto</span> Reconciliación <b>completa, cero desfase</b>: coinciden en partidos, récord, goles, diferencia, puntos y posición. Se cerró tras cargar los dos partidos que faltaban en el detalle: <b>U. Católica 1-2</b> (26-ago, el reprogramado) y <b>Huachipato 0-1</b> (la fecha suspendida, ya jugada).</p>
+      <p class="sub" style="margin-top:10px">La actualización de resultados se hace leyendo CFDB y se dejó <b>agendada semanalmente</b> (cada lunes) para mantener el tablero al día.</p>
     </div>
   </section>
 
@@ -188,13 +188,13 @@
     <div class="fill">
       <p>Se simulan <b>20.000 veces</b> las fechas restantes. Coquimbo juega su <b>calendario real</b> (7 partidos, rival y sede confirmados); el resto de la liga se completa por fuerzas. Cada simulación reparte puntos y se ordena la tabla; se acumulan las posiciones finales.</p>
       <div class="grid g4" style="margin-top:12px">
-        <div class="kpi"><div class="v">38,7</div><div class="l">Pts proyectados (mediana)</div></div>
-        <div class="kpi"><div class="v">9º</div><div class="l">Posición más probable</div></div>
-        <div class="kpi"><div class="v">36%</div><div class="l">Zona internacional (top-8)</div></div>
+        <div class="kpi"><div class="v">38</div><div class="l">Pts proyectados (mediana)</div></div>
+        <div class="kpi"><div class="v">10º</div><div class="l">Posición más probable</div></div>
+        <div class="kpi"><div class="v">32%</div><div class="l">Zona internacional (top-8)</div></div>
         <div class="kpi"><div class="v">~0%</div><div class="l">Riesgo de descenso</div></div>
       </div>
       <h3>Por qué es creíble</h3>
-      <p><span class="badge b-dato">Convergencia</span> Un método independiente (bootstrap de resultados local/visita) dio ~40 pts; el Monte Carlo Dixon-Coles da 38,7 (baja porque el calendario real es más duro). <b>Dos modelos distintos, mismo rango</b> = señal de robustez, no de casualidad.</p>
+      <p><span class="badge b-dato">Convergencia</span> Un método independiente (bootstrap de resultados local/visita) dio ~40 pts; el Monte Carlo Dixon-Coles da 38 (más bajo porque el calendario real restante es duro: Colo-Colo, Everton, Limache). <b>Dos modelos distintos, mismo rango</b> = señal de robustez, no de casualidad.</p>
       <p class="sub" style="margin-top:8px">Validación adicional: el Poisson se contrastó con leave-one-out (log-loss ≈ 1,1 frente a 1,099 del azar de 3 clases). Honesto: aporta más en probabilidad de localía que en marcador exacto, con muestra de ~22 fechas.</p>
     </div>
   </section>
@@ -223,10 +223,37 @@
     <div class="fill">
       <p class="lead">Regla estricta: <b>ninguna posición inventada</b>. Cada ficha se coloca solo en el puesto que el jugador registra en CFDB. El XI de Coquimbo se arma por minutos; el del rival, por titularidad reciente (jugadores del último partido).</p>
       <div class="grid g2" style="margin-top:14px">
-        <div class="card"><h4>Para qué</h4><p>Comparar los dos esquemas en paralelo antes del partido: dónde hay superioridad, qué carriles quedan expuestos, cómo emparejar líneas.</p></div>
-        <div class="card"><h4>Honestidad</h4><p>Es un XI <b>probable</b>, no la alineación oficial. Se anota lo relevante sin adornar: p. ej. Vidal y Correa rotaron en la última fecha de Colo-Colo.</p></div>
+        <div class="card"><h4>Interactiva</h4><p>Dos canchas en paralelo (Coquimbo + rival). Clic en cualquier ficha → <b>globo con radar de percentiles de liga</b> y sus métricas. Los suplentes con minutos aparecen en la <b>banca</b> con mini-radar.</p></div>
+        <div class="card"><h4>Honestidad</h4><p>XI por minutos, en su <b>posición real</b>. Cada puesto lo llena quien más jugó ahí; si falta el dato, el hueco queda vacío (no se inventa). Arqueros sin radar (el feed no da métricas de campo).</p></div>
       </div>
-      <p class="sub" style="margin-top:12px">Coquimbo se proyecta en 4-2-1-3 con Cornejo (LB) y Salinas (RB) como llegadores — coherente con que la creación nace de los laterales.</p>
+      <p class="sub" style="margin-top:12px">Coquimbo se proyecta en 4-3-3 con Cornejo (LB) y Salinas (RB) como llegadores — coherente con que la creación nace de los laterales.</p>
+    </div>
+  </section>
+
+  <!-- 10b SCOUTING -->
+  <section class="slide">
+    <h2>Cálculo 6 · Scouting de liga</h2>
+    <div class="fill">
+      <p class="lead">Sugiere jugadores de otros equipos que puntúan alto <b>en las métricas donde Coquimbo está flojo</b>, con un <b>índice de encaje</b> (0–100, scoring compuesto ponderado por posición) y comparación vs. nuestro titular.</p>
+      <div class="grid g4" style="margin-top:14px">
+        <div class="card"><h4>'9' Goleador</h4><p class="sub">Da Silva (0,66 g/90), Castillo, Sáez.</p></div>
+        <div class="card"><h4>Enganche</h4><p class="sub">Palavecino (10 big chances), Carvallo (3,2 PC/90).</p></div>
+        <div class="card"><h4>Central</h4><p class="sub">Caroca (89,8% pase), Ferrario, Bechtholdt.</p></div>
+        <div class="card"><h4>Pivote</h4><p class="sub">Valencia, Mac Allister, Ogaz.</p></div>
+      </div>
+      <p class="sub" style="margin-top:12px"><span class="badge b-hip">Límite</span> Cobertura Primera División (CFDB no expone métricas por jugador de Segunda vía rankings). El índice usa el acumulado de temporada; se re-extrae al actualizar.</p>
+    </div>
+  </section>
+
+  <!-- 10c MÉTRICAS POR PARTIDO -->
+  <section class="slide">
+    <h2>Cálculo 7 · Métricas por partido &amp; heat-grid</h2>
+    <div class="fill">
+      <p>Líneas de tiempo fecha a fecha del ataque: <b>tiros</b> (realizados → al arco → convertidos), <b>centros</b> y <b>volumen de juego</b>. Embudo acumulado: 242 tiros → 76 al arco (31%) → 30 goles (12,4% conversión).</p>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="card"><h4>Sobre el mapa de calor</h4><p>La liga <b>no publica datos posicionales (x,y)</b>, así que un heatmap espacial sería inventado. La lectura de valor con datos reales es el <b>heat-grid</b>: matriz métrica × fecha; la fila a vigilar es <b>GC</b>, sobre todo de visita.</p></div>
+        <div class="card"><h4>Pases</h4><p>El export por partido no trae pases realizados/completados; se usa <b>posesión %</b> como proxy, marcado como tal. Los pases exactos pueden sumarse desde CFDB (team_match_stats).</p></div>
+      </div>
     </div>
   </section>
 
@@ -239,12 +266,12 @@
         <div class="card"><h4>Histórico &amp; predicción</h4><p class="sub">Trayectoria en Primera, regresión campeón→hoy, proyección.</p></div>
         <div class="card"><h4>Proyección de tabla</h4><p class="sub">Monte Carlo: posición, top-8, descenso por equipo.</p></div>
         <div class="card"><h4>Pre-Match &amp; 7Q</h4><p class="sub">Calendario, ficha del rival, 7 preguntas dinámicas.</p></div>
-        <div class="card"><h4>Pizarra doble</h4><p class="sub">Coquimbo vs rival, posiciones reales, selector.</p></div>
+        <div class="card"><h4>Pizarra doble + radares</h4><p class="sub">Coquimbo vs rival, globo con radar por jugador, banca.</p></div>
         <div class="card"><h4>Plantel avanzado</h4><p class="sub">Percentiles, radar, mapa de perfiles, tabla /90.</p></div>
-        <div class="card"><h4>Cancha &amp; calor</h4><p class="sub">Once por minutos y mapa de calor por zonas (proxy).</p></div>
-        <div class="card"><h4>Fixture &amp; rivales</h4><p class="sub">Resultados, árbitros, tarjetas, tiempo, H2H.</p></div>
+        <div class="card"><h4>Scouting de liga</h4><p class="sub">Candidatos por puesto, índice de encaje, tendencias.</p></div>
+        <div class="card"><h4>Métricas x partido</h4><p class="sub">Líneas de tiempo (tiros, centros, juego) + heat-grid.</p></div>
       </div>
-      <p class="sub" style="margin-top:14px">Navegación por barra lateral, responsiva (PC, tablet, móvil). Modo Ejecutiva / Técnica para dos niveles de detalle.</p>
+      <p class="sub" style="margin-top:14px">Barra lateral responsiva (PC, tablet, móvil), modo Ejecutiva / Técnica, y <b>impresión a PDF completa o por sección</b> con tema claro de alto contraste.</p>
     </div>
   </section>
 
@@ -312,18 +339,18 @@
       <div class="grid g2">
         <div class="card"><h4>Qué aún no se puede medir</h4>
           <ul>
-            <li>xG/xA a nivel de tiro (no público en Chile).</li>
-            <li>Tracking/GPS: distancias, sprints, altura de línea exacta.</li>
-            <li>Timing de goles por tramo (requiere evento con minuto).</li>
-            <li>Calendario exacto del resto de la liga (se aproxima).</li>
+            <li>xG/xA a nivel de tiro y datos posicionales (x,y): no públicos → sin heatmap espacial.</li>
+            <li>Tracking/GPS: distancias, sprints, altura de línea.</li>
+            <li>Pases realizados/completados por partido (se usa posesión como proxy).</li>
+            <li>Timing de goles por tramo de 15'.</li>
           </ul>
         </div>
         <div class="card"><h4>Cómo cerrar la brecha</h4>
           <ul>
-            <li>Registrar internamente minuto de gol y zona de ocasión.</li>
-            <li>Sumar datos GPS del club (si existen) al plantel.</li>
-            <li>Scouting de liga: percentiles vs otros equipos para fichajes.</li>
-            <li>Predictor de partido calibrado con más temporadas.</li>
+            <li>Sumar pases por partido y minuto de gol desde CFDB (team_match_stats).</li>
+            <li>Registrar internamente zona de ocasión y datos GPS del club.</li>
+            <li>Completar planteles rivales y forma de las últimas 5 fechas.</li>
+            <li>Actualización semanal automática ya agendada (cada lunes).</li>
           </ul>
         </div>
       </div>
@@ -353,7 +380,7 @@
   <div class="ttl">COQUIMBO UNIDO · Metodología del proyecto</div>
   <div class="ctrl">
     <button id="prev" aria-label="Anterior">‹</button>
-    <span class="count" id="count">1 / 16</span>
+    <span class="count" id="count">1 / 18</span>
     <button id="next" aria-label="Siguiente">›</button>
   </div>
 </div>

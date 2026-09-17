@@ -27,8 +27,8 @@ TB = [
  ("Colo-Colo",23,54,48,22),("U. Católica",23,42,50,33),("U. de Chile",23,42,35,19),
  ("Everton",23,36,37,25),("Palestino",23,36,36,33),("D. Limache",23,33,43,35),
  ("Ñublense",23,32,28,31),("D. Concepción",23,31,25,26),("La Serena",23,30,34,38),
- ("Coquimbo Unido",22,29,31,31),("Audax Italiano",23,28,26,31),("O'Higgins",23,27,28,36),
- ("Huachipato",21,25,29,39),("Cobresal",23,24,34,44),("U. de Concepción",22,22,17,37),
+ ("Coquimbo Unido",23,29,31,32),("Audax Italiano",23,28,26,31),("O'Higgins",23,27,28,36),
+ ("Huachipato",22,28,30,39),("Cobresal",23,24,34,44),("U. de Concepción",22,22,17,37),
  ("U. La Calera",23,17,19,40),
 ]
 teams=[t[0] for t in TB]
@@ -147,8 +147,8 @@ SIM=dict(meta=dict(
     fuente="Tabla y goles: CFDB league_standings (DATO). Coquimbo con calendario oficial real (7 fechas).",
     limite=("La liga no publica xG/tracking: fuerzas derivadas de goles reales. El calendario exacto de los "
             "otros 15 equipos no está en CFDB: su resto se aproxima por fuerzas (juego independiente). "
-            "Según el calendario oficial a Coquimbo le restan 7 partidos (termina en 29 PJ); la tabla sugería 8, "
-            "posible fecha pendiente aún no calendarizada — no se inventa."),
+            "Coquimbo lleva 23 fechas jugadas (reconciliado con CFDB, incluidos U. Católica 1-2 y Huachipato 0-1) "
+            "y le restan sus 7 partidos reales de calendario para cerrar en 30."),
     league_avg=round(league_avg,3),fecha="2026-09-16",
     zonas="Descenso = 2 últimos. Top-4 ≈ Libertadores, Top-8 ≈ zona internacional (aprox)."),
     tabla=rows, coquimbo=COQROW)
