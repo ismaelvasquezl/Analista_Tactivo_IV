@@ -102,15 +102,37 @@ ROWS=[
  R("D. Limache","Galletto","DM",566,8,1,0,6.58,70.37,0,1,1,0,4,2,11,0,6,3,0),
  R("D. Limache","L. Valencia","AM",1188,19,1,2,6.92,78.18,6,3,1,1,1,3,3,1,1,2,0),
  R("D. Limache","Meneses","LW",2027,23,6,10,7.44,75.77,41,23,12,10,39,15,101,28,11,3,0),
- # O'HIGGINS (parcial — resto pendiente por tope diario CFDB)
+ # O'HIGGINS (completo)
  R("O'Higgins","Castillo","CF",1562,22,8,0,6.96,68.07,12,47,24,4,8,4,91,7,28,5,0),
  R("O'Higgins","Ogaz","DM",1746,22,1,1,6.93,85.10,12,5,2,1,39,32,77,3,20,4,0),
+ R("O'Higgins","Robledo","CB",1295,16,0,0,6.63,79.70,0,6,1,0,9,18,35,3,5,2,0),
+ R("O'Higgins","Garrido","CB",1215,21,0,0,6.71,84.73,2,4,0,0,14,11,53,2,9,5,1),
+ R("O'Higgins","Movillo","CB",278,8,0,0,6.85,94.78,0,1,1,0,5,2,10,0,2,0,0),
+ R("O'Higgins","Morales","RB",455,15,1,0,6.84,75.94,6,8,0,0,9,2,24,5,3,0,0),
+ R("O'Higgins","L. Díaz","LB",668,23,0,1,6.79,79.34,8,2,0,1,15,11,37,6,4,1,0),
+ R("O'Higgins","Leiva","CM",1494,20,0,0,6.69,86.48,9,13,4,0,29,7,47,5,9,4,1),
+ R("O'Higgins","Toloza","AM",158,5,0,3,6.62,72.73,2,0,0,0,0,0,2,0,3,1,0),
+ R("O'Higgins","J. Tapia","RW",474,18,0,1,6.68,71.58,9,15,4,2,5,5,35,10,4,1,0),
+ R("O'Higgins","Yañez","LW",1145,22,2,2,6.69,82.69,20,13,5,3,13,7,36,6,7,0,1),
+ R("O'Higgins","Vecino","CF",652,20,4,1,6.70,68.28,8,20,11,0,2,3,34,4,11,2,0),
+ # BANCAS (refuerzo de suplentes con minutos)
+ R("D. Limache","Castro","LW",1941,22,13,7,7.33,72.97,22,57,26,3,5,7,50,22,20,6,0),
+ R("D. Limache","Sosa","CF",1402,23,6,0,6.80,65.44,10,29,10,1,2,5,74,3,17,3,1),
+ R("D. Limache","V. Álvarez","RW",593,23,4,0,6.74,75.28,7,6,3,0,10,6,21,4,3,0,0),
+ R("U. La Calera","Villanueva","AM",653,15,0,0,6.50,77.44,3,11,3,0,10,6,25,3,9,3,0),
+ R("U. La Calera","Pozzo","CF",838,22,2,0,6.60,60.90,1,17,9,1,5,1,35,8,9,0,0),
+ R("U. La Calera","Oyarzo","RW",1393,23,1,0,6.56,76.41,16,21,8,0,26,9,76,32,27,3,0),
+ R("Audax Italiano","Loyola","AM",342,20,0,0,6.53,78.77,13,7,1,1,6,3,23,10,6,2,2),
+ R("Audax Italiano","Coelho","CF",886,23,3,1,6.69,60.00,8,17,7,0,7,1,46,5,10,1,0),
+ R("Everton","Ovalle","RW",370,8,1,0,6.76,73.91,6,2,1,1,2,2,8,6,3,0,0),
+ R("Everton","E. Ramos","LW",1244,23,1,3,6.66,75.49,16,14,4,4,4,9,45,10,12,2,0),
+ R("Ñublense","Rami","CF",554,19,3,0,6.72,52.48,2,16,6,1,3,1,52,8,17,3,0),
 ]
 
 # GK por equipo (el feed no da métricas de campo de arqueros -> se muestra solo el nombre)
 GK={"Coquimbo Unido":"D. Sánchez","Colo-Colo":"Villanueva","Ñublense":"H. Muñoz","U. La Calera":"N. Espinoza",
     "Audax Italiano":"Garrido","Everton":"Kirkman","D. Limache":"Dutra","O'Higgins":"Carreño"}
-INCOMPLETO={"O'Higgins"}
+INCOMPLETO=set()
 
 LINE={"CB":"DEF","LB":"DEF","RB":"DEF","DM":"MID","CM":"MID","AM":"MID","SS":"MID","LW":"FWD","RW":"FWD","CF":"FWD"}
 AXES=["Creación","Finalización","Regate","Duelo","Recuperación","Pase","Vol. tiro","Disciplina"]
@@ -189,8 +211,8 @@ for team in GK:
 
 OUT=dict(axes=AXES, equipos=equipos,
          meta=dict(fuente="CFDB player_season_stats (Primera 2026). Percentiles a nivel de liga (pool >=200').",
-                   limite="No se inventan posiciones ni datos. GK sin radar (el feed no da métricas de campo de arqueros). O'Higgins parcial por tope diario de CFDB; se completa al reabrir la cuota. XI por minutos; banca = resto con minutos.",
-                   actualizado="2026-09-17", n=len(ROWS)))
+                   limite="No se inventan posiciones ni datos. GK sin radar (el feed no da métricas de campo de arqueros). Cobertura de los 8 equipos (Coquimbo + 7 rivales de calendario). XI por minutos y por posición real; banca = suplentes con minutos.",
+                   actualizado="2026-09-21", n=len(ROWS)))
 (BASE/"radares.js").write_text("// Radares de percentiles por jugador — radares.py (CFDB). NO editar a mano.\nconst RADARES="+json.dumps(OUT,ensure_ascii=False)+";\n",encoding="utf-8")
 
 for t,d in equipos.items():

@@ -252,7 +252,7 @@
       <p>Líneas de tiempo fecha a fecha del ataque: <b>tiros</b> (realizados → al arco → convertidos), <b>centros</b> y <b>volumen de juego</b>. Embudo acumulado: 242 tiros → 76 al arco (31%) → 30 goles (12,4% conversión).</p>
       <div class="grid g2" style="margin-top:12px">
         <div class="card"><h4>Sobre el mapa de calor</h4><p>La liga <b>no publica datos posicionales (x,y)</b>, así que un heatmap espacial sería inventado. La lectura de valor con datos reales es el <b>heat-grid</b>: matriz métrica × fecha; la fila a vigilar es <b>GC</b>, sobre todo de visita.</p></div>
-        <div class="card"><h4>Pases</h4><p>El export por partido no trae pases realizados/completados; se usa <b>posesión %</b> como proxy, marcado como tal. Los pases exactos pueden sumarse desde CFDB (team_match_stats).</p></div>
+        <div class="card"><h4>Pases</h4><p>Se incorporó el <b>% de pases completados real por partido</b> (CFDB team_match_stats), junto a la posesión. CFDB entrega la precisión de pase, no el conteo bruto.</p></div>
       </div>
     </div>
   </section>
@@ -341,7 +341,7 @@
           <ul>
             <li>xG/xA a nivel de tiro y datos posicionales (x,y): no públicos → sin heatmap espacial.</li>
             <li>Tracking/GPS: distancias, sprints, altura de línea.</li>
-            <li>Pases realizados/completados por partido (se usa posesión como proxy).</li>
+            <li>Conteo bruto de pases por partido (CFDB da la precisión %, no el total).</li>
             <li>Timing de goles por tramo de 15'.</li>
           </ul>
         </div>

@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coquimbo Unido · Centro de Alto Rendimiento</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{--bg0:#000;--bg1:#0d0d0d;--panel:#161616;--panel2:#1e1e1e;--gold:#ffd200;--gold2:#f5c400;
+    --white:#f7f7f4;--mut:#b7b7ad;--line:rgba(255,210,0,.14);--blue:#7fb0ff;
+    --green:#4ad991;--amber:#ffcf5c;--red:#ff6b6b;--sh:0 8px 30px rgba(0,0,0,.55);--r:16px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;line-height:1.55;color:var(--white);
+    background:radial-gradient(1200px 600px at 50% -5%,#1a1a10 0,#0b0b0b 55%,#000 100%)}
+  a{color:var(--gold);text-decoration:none}
+  ::selection{background:var(--gold);color:#000}
+  .topbar{display:none;position:fixed;top:0;left:0;right:0;height:52px;z-index:70;align-items:center;gap:12px;padding:0 14px;background:rgba(6,6,6,.96);border-bottom:2px solid var(--gold);backdrop-filter:blur(12px)}
+  .burger{width:40px;height:34px;border:1px solid var(--line);background:var(--panel2);border-radius:8px;color:var(--gold);font-size:17px;cursor:pointer}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:214px;z-index:80;display:flex;flex-direction:column;padding:16px 12px;background:linear-gradient(180deg,#0c0c0c,#050505);border-right:2px solid var(--gold);overflow-y:auto;transition:transform .25s ease}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.4px;font-size:14px;padding:2px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .crest{width:30px;height:30px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);box-shadow:0 0 12px rgba(255,210,0,.4);flex:none}
+  .links{display:flex;flex-direction:column;gap:2px}
+  .links a{color:var(--mut);font-size:13px;padding:8px 11px;border-radius:8px;font-weight:600;display:block}
+  .links a:hover,.links a.active{color:#000;background:var(--gold)}
+  .side-foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:75}
+  main{margin-left:214px;padding:0 26px 90px;max-width:1180px}
+  @media(max-width:900px){
+    .topbar{display:flex}
+    .sidebar{transform:translateX(-100%);box-shadow:var(--sh)}
+    .sidebar.open{transform:translateX(0)}
+    .overlay.show{display:block}
+    main{margin-left:0;padding:64px 14px 80px}
+    .chart-wrap{height:280px}.chart-wrap.tall{height:320px}
+  }
+  section{padding:42px 0 8px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(26px,4.5vw,44px);margin:.15em 0;line-height:1.05}
+  h2{font-size:22px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:6px;height:22px;background:var(--gold);border-radius:3px}
+  h3{font-size:14px;color:var(--gold);margin:20px 0 6px;text-transform:uppercase;letter-spacing:.6px}
+  h4{margin:0 0 8px;font-size:15px}
+  p{color:#e7e7df}.sub{color:var(--mut);font-size:14px}.lead{font-size:17px;color:#f2f2ea;max-width:82ch}
+  .tag{display:inline-block;font-size:12px;letter-spacing:2px;color:#000;background:var(--gold);border-radius:20px;padding:4px 12px;text-transform:uppercase;font-weight:800}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:22px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;box-shadow:var(--sh);position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-18px;top:-18px;width:60px;height:60px;border-radius:50%;background:rgba(255,210,0,.06)}
+  .kpi .v{font-size:28px;font-weight:800;color:var(--gold)}.kpi .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+  .kpi .d{font-size:12px;margin-top:3px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.g{background:var(--green)}.a{background:var(--amber)}.r{background:var(--red)}
+  .grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+  .chart-wrap{position:relative;height:320px}.chart-wrap.tall{height:380px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+  th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase;cursor:pointer}
+  tr:hover td{background:rgba(255,210,0,.05)}
+  .win{color:var(--green);font-weight:800}.draw{color:var(--amber);font-weight:800}.loss{color:var(--red);font-weight:800}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .b-dato{background:rgba(74,217,145,.16);color:var(--green);border:1px solid rgba(74,217,145,.4)}
+  .b-ver{background:rgba(255,207,92,.16);color:var(--amber);border:1px solid rgba(255,207,92,.4)}
+  .b-hip{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
+  .b-clave{background:rgba(255,210,0,.18);color:var(--gold);border:1px solid rgba(255,210,0,.45)}
+  .b-alerta{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
+  .b-forma{background:rgba(74,217,145,.16);color:var(--green);border:1px solid rgba(74,217,145,.4)}
+  .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.06);padding:11px 15px;border-radius:0 10px 10px 0;margin:12px 0;font-size:14px}
+  .callout.warn{border-color:var(--amber);background:rgba(255,207,92,.06)}
+  .callout.danger{border-color:var(--red);background:rgba(255,107,107,.07)}
+  .callout.info{border-color:var(--blue);background:rgba(127,176,255,.07)}
+  .glos{font-size:12.5px;color:var(--mut);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin:6px 0}
+  .glos b{color:var(--gold)}
+  ul.clean{list-style:none;padding:0;margin:8px 0}ul.clean li{padding:7px 0 7px 24px;position:relative;border-bottom:1px solid var(--line);font-size:14px}
+  ul.clean li::before{content:"▸";position:absolute;left:3px;color:var(--gold)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .filters button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:6px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600}
+  .filters button.active{background:var(--gold);color:#000;border-color:var(--gold)}
+  .foot{color:var(--mut);font-size:12px;padding:26px 0 0}
+  details{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:rgba(255,255,255,.015)}
+  summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:16px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .rbody{padding:14px 16px}
+  .scroll-x{overflow-x:auto}
+  code{background:#0b0b0b;padding:2px 6px;border-radius:5px;color:var(--gold);font-size:12px}
+  .modewrap{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--mut)}
+  .switch{position:relative;width:46px;height:24px;background:var(--panel2);border-radius:20px;cursor:pointer;border:1px solid var(--line)}
+  .switch .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--gold);transition:.25s}
+  .switch.on .knob{left:25px;background:var(--amber)}
+  .tecnica{display:none}body.tec .tecnica{display:block}
+  /* pitch */
+  .pitch{width:100%;max-width:420px;margin:0 auto;display:block}
+  /* botón imprimir por sección */
+  .secprint{margin-left:auto;background:var(--panel2);border:1px solid var(--line);color:var(--gold);border-radius:7px;
+    cursor:pointer;font-size:13px;padding:3px 9px;line-height:1;opacity:.55;transition:.15s}
+  .secprint:hover{opacity:1;background:var(--gold);color:#000}
+  h2{position:relative}
+  section{scroll-margin-top:78px}
+  /* franja de resumen ejecutivo (siempre visible) */
+  .exec-strip{position:sticky;top:0;z-index:40;display:flex;gap:8px;overflow-x:auto;padding:9px 2px;margin-bottom:4px;
+    background:rgba(8,8,8,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .ex{flex:0 0 auto;min-width:118px;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:11px;padding:7px 12px}
+  .ex .exv{font-size:16px;font-weight:800;color:var(--gold);white-space:nowrap}
+  .ex .exl{font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+  @media(max-width:900px){.exec-strip{top:52px}}
+  .card{transition:border-color .15s ease}
+  .card:hover{border-color:rgba(255,210,0,.32)}
+  .printbtn{width:100%;margin-top:8px;background:var(--panel2);border:1px solid var(--line);color:var(--gold);
+    border-radius:8px;padding:8px;cursor:pointer;font-size:12px;font-weight:700}
+  .printbtn:hover{background:var(--gold);color:#000}
+  /* ===== TEMA DE IMPRESIÓN (claro, alto contraste, sin tinta desperdiciada) ===== */
+  @media print{
+    @page{margin:12mm}
+    .sidebar,.topbar,.overlay,.hint,.prog,.secprint,.printbtn,.modewrap,.filters,select,button,.exec-strip{display:none!important}
+    html,body{background:#fff!important;color:#111!important}
+    main{margin:0!important;padding:0!important;max-width:100%!important}
+    section{border-bottom:1px solid #ccc!important;padding:10px 0 14px!important;break-inside:auto}
+    h1,h2,h3,h4,b,strong{color:#111!important}
+    h2::before{background:#b78f00!important}
+    h3{color:#8a6d00!important;border-bottom:1px solid #eee}
+    p,.sub,li,td,th{color:#222!important}
+    .lead{color:#111!important}
+    .card,.kpi,.callout,.glos,details{background:#fff!important;border:1px solid #d8d8d8!important;box-shadow:none!important;break-inside:avoid}
+    .kpi .v{color:#111!important}
+    .badge{border:1px solid #bbb!important}
+    table,th,td{border-color:#ccc!important}
+    a{color:#111!important;text-decoration:none}
+    /* las tarjetas con gráfico mantienen fondo oscuro para que el gráfico sea legible */
+    .card:has(canvas),.card:has(svg#pzHome),.card:has(svg#pzAway),.card:has(.pitch){background:#0e0e0e!important;border-color:#333!important}
+    .card:has(canvas) *,.card:has(.pitch) *{color:#eee!important}
+    .card:has(canvas) h4,.card:has(.pitch) h4{color:var(--gold)!important}
+    .chart-wrap{height:300px!important}
+    /* impresión de una sección */
+    body.print-one main section:not(.print-target){display:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="burger" id="burger" aria-label="Menú">☰</button>
+  <div class="brand" style="border:none;padding:0;margin:0;font-size:13px"><span class="crest" style="width:26px;height:26px"></span> COQUIMBO UNIDO</div>
+</div>
+<div class="overlay" id="ovl"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><span class="crest"></span><span>COQUIMBO UNIDO<br><span style="color:var(--gold);font-size:10px;letter-spacing:1px;font-weight:700">ALTO RENDIMIENTO</span></span></div>
+  <nav class="links" id="navLinks">
+    <a href="#resumen">Reporte</a><a href="#estilo">Identidad</a><a href="#tendencia">Tendencia</a>
+    <a href="#metricas">Métricas x partido</a><a href="#patrones">Patrones</a><a href="#cfdb">Histórico &amp; Predicción</a><a href="#prematch">Pre-Match</a><a href="#simtabla">Proyección tabla</a><a href="#pizarra">Pizarra doble</a><a href="#jugadores">Plantel</a><a href="#plantel2">Plantel avanzado</a><a href="#scouting">Scouting</a><a href="#defensa">Defensa</a><a href="#fixture">Fixture</a><a href="#ultimo">Último partido</a><a href="#rivales">Rivales</a><a href="#informe7">Informe 7Q</a><a href="#bitacora">Bitácora</a>
+  </nav>
+  <div class="side-foot"><div class="modewrap"><span>Ejecutiva</span><div class="switch" id="modeSwitch"><div class="knob"></div></div><span>Técnica</span></div>
+    <button class="printbtn" id="printAll">⎙ Imprimir / PDF (todo)</button></div>
+</aside>
+<main>
+<div id="execStrip" class="exec-strip"></div>
+
+  <!-- ===== REPORTE / RESUMEN ===== -->
+  <section id="resumen">
+    <span class="tag">Reporte de rendimiento · Temporada 2026</span>
+    <h1 id="titular"></h1>
+    <div class="kpis" id="kpis"></div>
+    <h3>Informe ejecutivo</h3>
+    <div id="reporte"></div>
+    <div class="glos" id="comoLeer"></div>
+    <p class="sub">Fuentes: FBref (detalle partido-a-partido) + CFDB (totales oficiales). Liga 2026 reconciliada: <b>22 PJ · 8-5-9 · 29 pts · 10º</b>. Actualizado <span id="fecha"></span>.</p>
+  </section>
+
+  <!-- ===== IDENTIDAD / ESTILO ===== -->
+  <section id="estilo">
+    <h2>Identidad y estilo de juego</h2>
+    <p class="sub">Cómo compite el equipo, leído en cifras. <span class="badge b-dato">DATO</span> + <span class="badge b-hip">INTERPRETACIÓN</span></p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Posesión vs. puntos por partido</h4><div class="sub" style="margin-bottom:6px">Cada punto es un partido. Si la nube no sube hacia la derecha, tener más balón <b>no</b> le da más puntos.</div><div class="chart-wrap"><canvas id="chPossPts"></canvas></div></div>
+      <div class="card"><h4>Tiros concedidos vs. goles recibidos</h4><div class="sub" style="margin-bottom:6px">Sube hacia la derecha: cuantos más remates permite, más goles encaja. Es su palanca defensiva.</div><div class="chart-wrap"><canvas id="chShotGa"></canvas></div></div>
+    </div>
+    <div class="cols" style="margin-top:6px">
+      <div class="callout"><span class="badge b-dato">DATO</span> Posesión media ~50% · <b>correlación posesión→puntos ≈ 0</b>. <span class="badge b-hip">LECTURA</span> equipo <b>reactivo</b>: rinde mejor sin la obligación de tener el balón.</div>
+      <div class="callout warn"><span class="badge b-dato">DATO</span> 24,9 centros/partido (14–47). <span class="badge b-hip">LECTURA</span> ataque muy <b>lateral</b>; si le cierran las bandas se vuelve previsible (le pasó en el 0-1 con 36 centros).</div>
+    </div>
+  </section>
+
+  <!-- ===== TENDENCIA ===== -->
+  <section id="tendencia">
+    <h2>Rendimiento y tendencia</h2>
+    <div class="filters" id="compFilters"><button data-c="ALL" class="active">Todo</button><button data-c="LIG">Liga</button><button data-c="LIB">Libertadores</button></div>
+    <div class="grid g2">
+      <div class="card"><h4>Goles a favor / en contra por partido</h4><div class="chart-wrap tall"><canvas id="chTrend"></canvas></div></div>
+      <div class="card"><h4>Local vs. Visita (Liga)</h4><div class="chart-wrap tall"><canvas id="chHA"></canvas></div></div>
+    </div>
+    <div class="callout" id="tendCallout"><span class="badge b-dato">DATO</span> …</div>
+  </section>
+
+  <!-- ===== MÉTRICAS POR PARTIDO ===== -->
+  <section id="metricas">
+    <h2>Métricas por partido · líneas de tiempo</h2>
+    <p class="sub">Evolución fecha a fecha del ataque de Coquimbo. <span class="badge b-dato">DATO</span> FBref por partido (Liga 2026).</p>
+    <div class="callout info" id="metHeatNote"></div>
+    <div class="grid g2" style="margin-top:6px">
+      <div class="card"><h4>Tiros: realizados · al arco · convertidos</h4>
+        <div class="sub" style="margin-bottom:6px">El embudo del ataque: cuántos tiros, cuántos van al arco y cuántos terminan en gol por partido.</div>
+        <div class="chart-wrap tall"><canvas id="chShots"></canvas></div></div>
+      <div class="card"><h4>Centros por partido</h4>
+        <div class="sub" style="margin-bottom:6px">Volumen de centros: la firma de un ataque lateral. Picos altos = partidos de mucho envío al área.</div>
+        <div class="chart-wrap tall"><canvas id="chCrosses"></canvas></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:6px">
+      <div class="card"><h4>Pases completados y posesión</h4>
+        <div class="sub" style="margin-bottom:6px"><span class="badge b-dato">DATO CFDB</span> % de pases <b>completados</b> (precisión) y posesión por partido. Sube el % = circulación más limpia. CFDB entrega la precisión, no el conteo bruto de pases.</div>
+        <div class="chart-wrap tall"><canvas id="chPass"></canvas></div></div>
+      <div class="card"><h4>Heat-grid de la temporada</h4>
+        <div class="sub" style="margin-bottom:6px">Intensidad por métrica y fecha. Cada celda es un partido; más intenso = valor más alto de esa fila.</div>
+        <div class="scroll-x"><div id="heatGrid"></div></div></div>
+    </div>
+    <p class="foot" id="metFoot"></p>
+  </section>
+
+  <!-- ===== PATRONES & MEJORA ===== -->
+  <section id="patrones">
+    <h2>Patrones &amp; mejora</h2>
+    <p class="sub">Gráficos orientados a decisiones: dónde está el margen de mejora de Coquimbo. <span class="badge b-dato">DATO</span> Liga 2026.</p>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>La "trampa del dominio": posesión vs. goles marcados</h4>
+        <div class="sub" style="margin-bottom:6px">Cada punto es un partido. En <span style="color:var(--red)">rojo</span>, partidos con mucho balón (&ge;55%) y ≤1 gol: dominar sin convertir. Ahí está el margen de mejora.</div>
+        <div class="chart-wrap"><canvas id="chTrap"></canvas></div></div>
+      <div class="card"><h4>Forma: media móvil de goles (últimos 5)</h4>
+        <div class="sub" style="margin-bottom:6px">Tendencia suavizada de goles a favor y en contra. Sube GF o baja GC = mejora real.</div>
+        <div class="chart-wrap"><canvas id="chRoll"></canvas></div></div>
+    </div>
+    <div class="callout warn"><span class="badge b-hip">LECTURA</span> Coquimbo repite un patrón caro: en varios partidos tuvo <b>&gt;55% de posesión y no marcó</b> (D. Concepción, O'Higgins). La mejora no pasa por tener más balón, sino por <b>atacar con más criterio y menos centro previsible</b> — como en el 1-0 a U. de Concepción, donde insistió hasta convertir.</div>
+    <h3>Métricas avanzadas (Liga 2026)</h3>
+    <div class="kpis" id="advMetrics"></div>
+    <p class="sub" id="advNote"></p>
+  </section>
+
+  <!-- ===== HISTÓRICO & PREDICCIÓN (CFDB) ===== -->
+  <section id="cfdb">
+    <h2>Histórico &amp; predicción</h2>
+    <p class="sub">Fusión de dos fuentes con trazabilidad: <b>CFDB</b> (base histórica del fútbol chileno: totales oficiales, temporadas previas, contexto de liga) + <b>FBref</b> (detalle partido-a-partido). <span class="badge b-dato">DATO</span> = medido · <span class="badge b-hip">INTERPRETACIÓN</span> · <span class="badge b-ver">MODELO</span>.</p>
+
+    <div class="callout info" id="cfdbRecon"></div>
+
+    <div class="card" style="margin-top:6px"><h4>Trayectoria en Primera (posición final por temporada)</h4>
+      <div class="sub" style="margin-bottom:6px">Fuente CFDB. Eje invertido: más arriba = mejor puesto. El título 2025 es un pico sobre una base de media tabla. 2020 sin dato en CFDB; 2021 fuera de Primera.</div>
+      <div class="chart-wrap tall"><canvas id="chHist"></canvas></div></div>
+    <div class="callout" id="cfdbHist"></div>
+
+    <div class="grid g2" style="margin-top:6px">
+      <div class="card"><h4>Regresión: campeón 2025 → media tabla 2026</h4>
+        <div class="sub" style="margin-bottom:6px">Ritmo por partido en ambas temporadas (fuente CFDB). El ataque se sostiene; la <b>defensa se derrumba</b>.</div>
+        <div class="chart-wrap tall"><canvas id="chReg"></canvas></div></div>
+      <div class="card"><h4>Proyección de puntos a 30 fechas</h4>
+        <div class="sub" style="margin-bottom:6px">Simulación Monte Carlo (20.000) remuestreando resultados reales local/visita. Barra = rango probable (IC80%).</div>
+        <div class="chart-wrap tall"><canvas id="chProj"></canvas></div></div>
+    </div>
+    <div class="callout" id="cfdbReg"></div>
+
+    <div class="grid g2" style="margin-top:6px">
+      <div class="card"><h4>Modelo Poisson: resultado esperado según localía</h4>
+        <div class="sub" style="margin-bottom:6px">Probabilidad de Victoria/Empate/Derrota a partir de las tasas de gol reales en casa y de visita.</div>
+        <div class="chart-wrap"><canvas id="chPois"></canvas></div></div>
+      <div class="card"><h4>Rendimiento local vs. visita (Liga)</h4>
+        <div class="sub" style="margin-bottom:6px">La palanca de la temporada: en casa compite, de visita se desangra atrás.</div>
+        <div id="cfdbSplit"></div></div>
+    </div>
+    <div class="callout warn" id="cfdbPois"></div>
+
+    <h3>Insights accionables (priorizados)</h3>
+    <div id="cfdbInsights"></div>
+    <p class="sub tecnica" id="cfdbValid"></p>
+    <p class="foot">Fuentes: CFDB (totales 2026, standings históricos, contexto liga, H2H) + FBref (match logs). Modelos: bootstrap Monte Carlo y Poisson local/visita con validación leave-one-out. Muestra n=22: proyecciones indicativas, no certezas.</p>
+  </section>
+
+  <!-- ===== PRE-MATCH & RIVALES ===== -->
+  <section id="prematch">
+    <h2>Pre-Match &amp; rivales</h2>
+    <p class="sub">Calendario oficial confirmado + informe del rival que viene, con datos CFDB y predicción Poisson por partido. <span class="badge b-dato">DATO</span> CFDB · <span class="badge b-ver">MODELO</span> predicción · <span class="badge b-hip">INFERENCIA</span> lectura táctica.</p>
+    <div class="grid g2" style="align-items:start">
+      <div class="card"><h4>Calendario restante</h4>
+        <div class="sub" style="margin-bottom:6px">Haz clic en un rival de liga para ver su pre-match.</div>
+        <div class="scroll-x"><table id="calTable" style="width:100%;border-collapse:collapse;font-size:13px"></table></div>
+      </div>
+      <div class="card"><h4>Dificultad del tramo (predicción 1X2)</h4>
+        <div class="sub" style="margin-bottom:6px">Probabilidad de victoria/empate/derrota de Coquimbo en cada uno de los 7 partidos de liga.</div>
+        <div class="chart-wrap tall"><canvas id="chRivRun"></canvas></div>
+      </div>
+    </div>
+    <div class="card" id="pmCard" style="margin-top:6px"></div>
+    <p class="foot" id="pmFoot"></p>
+  </section>
+
+  <!-- ===== PROYECCIÓN DE TABLA (MONTE CARLO) ===== -->
+  <section id="simtabla">
+    <h2>Proyección de tabla · Monte Carlo</h2>
+    <p class="sub">Simulación de las fechas restantes para los 16 equipos con fuerzas ofensivas/defensivas de liga (Dixon-Coles) y ventaja de localía. <span class="badge b-dato">DATO</span> tabla y goles CFDB · <span class="badge b-ver">MODELO</span> 20.000 simulaciones.</p>
+    <div class="kpis" id="simCoqKpis"></div>
+    <div class="grid g2" style="margin-top:6px">
+      <div class="card"><h4>Distribución de posición final de Coquimbo</h4>
+        <div class="sub" style="margin-bottom:6px">En cuántas de las 20.000 simulaciones termina en cada puesto. La barra más alta = puesto más probable.</div>
+        <div class="chart-wrap tall"><canvas id="chPosDist"></canvas></div></div>
+      <div class="card"><h4>Puntos finales proyectados (rango por equipo)</h4>
+        <div class="sub" style="margin-bottom:6px">Punto = mediana; barra = rango IC90%. Coquimbo en <span style="color:var(--gold)">amarillo</span>.</div>
+        <div class="chart-wrap tall"><canvas id="chPtsProj"></canvas></div></div>
+    </div>
+    <h3>Tabla proyectada a 30 fechas</h3>
+    <div class="scroll-x"><table id="simTable" style="width:100%;border-collapse:collapse;font-size:13px"></table></div>
+    <div class="callout info" id="simNote"></div>
+    <p class="foot" id="simLimite"></p>
+  </section>
+
+  <!-- ===== PIZARRA DOBLE ===== -->
+  <section id="pizarra">
+    <h2>Pizarra doble · Coquimbo vs. rival</h2>
+    <p class="sub">Once probable por <b>posición real</b> (CFDB): cada ficha ocupa solo la posición que el jugador ha jugado en el campeonato — <b>no se inventan posiciones</b>. Elige el rival para comparar ambos esquemas en paralelo. <span class="badge b-dato">DATO</span> CFDB · <span class="badge b-hip">XI probable</span> (no confirmado).</p>
+    <p class="sub"><b>Haz clic en una ficha</b> (o en un suplente de la banca) para ver su <b>radar de percentiles de liga</b> y sus métricas en el globo. La <b>banca</b> muestra a los suplentes con minutos y un mini-radar.</p>
+    <div class="filters" style="align-items:center"><span class="sub">Rival de turno</span><select id="pzRival"></select></div>
+    <div class="grid g2" style="align-items:start;margin-top:10px">
+      <div class="card" style="background:#0a1a0a">
+        <div id="pzHomeHead" style="margin-bottom:6px"></div>
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <svg id="pzHome" viewBox="0 0 300 410" style="flex:1;min-width:0;max-width:340px"></svg>
+          <div id="pzHomeBench" style="width:118px;flex:none"></div>
+        </div>
+      </div>
+      <div class="card" style="background:#180a0a">
+        <div id="pzAwayHead" style="margin-bottom:6px"></div>
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <svg id="pzAway" viewBox="0 0 300 410" style="flex:1;min-width:0;max-width:340px"></svg>
+          <div id="pzAwayBench" style="width:118px;flex:none"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="pzGlobo" style="margin-top:8px;display:none"></div>
+    <div class="callout" id="pzCompare"></div>
+    <p class="foot" id="pzFoot"></p>
+  </section>
+
+  <!-- ===== SCOUTING DE LIGA ===== -->
+  <section id="scouting">
+    <h2>Scouting de liga</h2>
+    <p class="sub">Candidatos de otros equipos que puntúan alto en las <b>métricas donde Coquimbo está flojo</b>. Cada uno trae un <b>índice de encaje</b> (0–100, scoring compuesto por posición) y su diferencia vs. nuestro titular. <span class="badge b-dato">DATO</span> CFDB · <span class="badge b-ver">SCORING</span> ponderado · <span class="badge b-hip">SUGERENCIA</span>.</p>
+    <div class="filters" id="scPosFilter" style="margin-top:8px"></div>
+    <div class="callout" id="scNeed"></div>
+    <div class="grid g3" id="scCards" style="margin-top:8px"></div>
+    <h3>Tendencias del mercado</h3>
+    <ul class="clean" id="scTend"></ul>
+    <h3>Decisiones de alto impacto</h3>
+    <div class="grid g2" id="scImpacto"></div>
+    <p class="foot" id="scFoot"></p>
+  </section>
+
+  <!-- ===== PLANTEL ===== -->
+  <section id="jugadores">
+    <h2>Plantel y contribución</h2>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Aporte ofensivo (goles + asistencias)</h4><div class="chart-wrap tall"><canvas id="chAporte"></canvas></div></div>
+      <div class="card"><h4>Jugadores clave</h4><div id="jugCards"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== PLANTEL AVANZADO ===== -->
+  <section id="plantel2">
+    <h2>Plantel · lectura avanzada</h2>
+    <p class="sub">Estadísticas por jugador normalizadas por 90' y en percentiles del plantel, leídas por <b>ámbitos clave de alto rendimiento</b>. <span class="badge b-dato">DATO</span> CFDB · <span class="badge b-ver">PROXY</span> sin xG/tracking · <span class="badge b-hip">LECTURA</span> experto.</p>
+    <h3>Ámbitos clave</h3>
+    <div class="grid g3" id="ambCards" style="margin-top:8px"></div>
+    <div class="grid g2" style="margin-top:10px;align-items:start">
+      <div class="card"><h4>Radar de percentiles por jugador</h4>
+        <div class="filters" style="align-items:center"><span class="sub">Jugador</span><select id="radSel"></select></div>
+        <div class="chart-wrap tall"><canvas id="chRadar"></canvas></div>
+        <div class="sub" id="radNote"></div></div>
+      <div class="card"><h4>Mapa de perfiles: creación vs. duelo</h4>
+        <div class="sub" style="margin-bottom:6px">Eje X = creación (percentil); eje Y = duelo &amp; recuperación. Tamaño = minutos. Arriba-derecha = box-to-box/completo; abajo-derecha = destructor; arriba-izquierda = creador puro.</div>
+        <div class="chart-wrap tall"><canvas id="chProfile"></canvas></div></div>
+    </div>
+    <h3>Tabla por 90 minutos</h3>
+    <p class="sub">Clic en una columna para ordenar. Por 90' salvo rating, %pase, G+A y conversión.</p>
+    <div class="scroll-x"><table id="plTable" style="width:100%;border-collapse:collapse;font-size:12.5px"></table></div>
+    <h3>Lectura del equipo</h3>
+    <ul class="clean" id="plInsights"></ul>
+    <div class="callout info" id="plArquero"></div>
+    <p class="foot" id="plFoot"></p>
+  </section>
+
+  <!-- ===== DEFENSA & INTENSIDAD ===== -->
+  <section id="defensa">
+    <h2>Defensa e intensidad</h2>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Estadísticas defensivas</h4><table id="tblDef"></table></div>
+      <div class="card"><h4>Frecuencia e intensidad</h4><table id="tblInt"></table></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h4>Intensidad por partido (centros · tiros concedidos · rojas)</h4><div class="chart-wrap"><canvas id="chInt"></canvas></div></div>
+  </section>
+
+  <!-- ===== FIXTURE ===== -->
+  <section id="fixture">
+    <h2>Fixture 2026 — resultado, formación, árbitro, tarjetas</h2>
+    <div class="filters" id="fxFilters">
+      <button data-f="ALL" class="active">Todos</button><button data-f="LIG">Liga</button><button data-f="LIB">Libertadores</button>
+      <button data-f="H">Local</button><button data-f="A">Visita</button><button data-f="W">Ganados</button><button data-f="L">Perdidos</button>
+    </div>
+    <div class="scroll-x"><table id="fxTable"><thead><tr>
+      <th>Fecha</th><th>Hora</th><th>Comp</th><th>Sede</th><th>Rival</th><th>Res.</th><th>Pos%</th><th>Form.</th><th>Árbitro</th><th>🟨</th><th>🟥</th>
+    </tr></thead><tbody></tbody></table></div>
+    <div class="callout" id="refNote"></div>
+  </section>
+
+  <!-- ===== ÚLTIMO PARTIDO ===== -->
+  <section id="ultimo">
+    <h2 id="ultTitulo"></h2>
+    <p class="sub" id="ultMeta"></p>
+    <div class="callout" id="ultGoles" style="margin-top:10px"></div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h4>Coquimbo Unido · rendimiento individual</h4><div class="scroll-x"><table id="ultCoq"></table></div></div>
+      <div class="card"><h4>Claves del partido</h4><div id="ultDest"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== RIVALES ===== -->
+  <section id="rivales">
+    <h2>Rivales analizados / Pre-partido</h2>
+    <p class="sub">Se amplía al añadir objetos en <code>reportes.js → REPORTES.rivales[]</code>.</p>
+    <div id="rivales"></div>
+  </section>
+
+  <!-- ===== INFORME TÁCTICO 7 PREGUNTAS ===== -->
+  <section id="informe7">
+    <h2>Informe 7Q · rival de turno</h2>
+    <p class="sub">Las 7 preguntas clave del scouting, generadas con datos CFDB + predicción del modelo para el rival que viene. Cambia el rival para adelantar el trabajo de cualquier fecha. <span class="badge b-dato">DATO</span> CFDB · <span class="badge b-ver">MODELO</span> · <span class="badge b-hip">PLAN</span>.</p>
+    <div class="filters" style="align-items:center"><span class="sub">Rival</span><select id="i7sel"></select></div>
+    <div class="callout" id="i7head" style="margin-top:8px"></div>
+    <div class="grid g2" id="i7preguntas" style="margin-top:6px"></div>
+    <p class="foot" id="i7lim"></p>
+  </section>
+
+  <!-- ===== BITÁCORA ===== -->
+  <section id="bitacora">
+    <h2>Bitácora y actualización</h2>
+    <ul class="clean" id="bitacora"></ul>
+    <div class="glos" style="margin-top:12px"><b>Cómo actualizar.</b> Edita <code>reportes.js</code> (narrativa/rivales) y recarga. Los datos de partido viven en <code>fixtures.js</code> y <code>coquimbo_data.js</code>. Los cuatro archivos van en la misma carpeta.</div>
+    <p class="foot">Fuentes: export FBref Coquimbo Unido y rivales 2026 (validado). Rivales sin export van marcados <span class="badge b-ver">REQUIERE_VERIFICACION</span>. Mapas de calor = proxy de eventos, no tracking posicional.</p>
+  </section>
+</main>
+
+<script src="coquimbo_data.js"></script>
+<script src="fixtures.js"></script>
+<script src="pases.js"></script>
+<script src="ultimo_partido.js"></script>
+<script src="rosters.js"></script>
+<script src="reportes.js"></script>
+<script src="analisis_cfdb.js"></script>
+<script src="sim_tabla.js"></script>
+<script src="rivales_prematch.js"></script>
+<script src="plantel.js"></script>
+<script src="formaciones.js"></script>
+<script src="scouting.js"></script>
+<script src="radares.js"></script>
+<script>
+const C={gold:'#ffd200',blue:'#7fb0ff',mut:'#b7b7ad',green:'#4ad991',amber:'#ffcf5c',red:'#ff6b6b',grid:'rgba(255,210,0,.10)'};
+Chart.defaults.color=C.mut;Chart.defaults.font.family="'Segoe UI',sans-serif";Chart.defaults.plugins.legend.labels.boxWidth=12;
+const $=s=>document.querySelector(s), R=REPORTES;
+const FX=(typeof FIXTURES!=='undefined')?FIXTURES:[];
+const LIG=FX.filter(x=>x.comp==='LIG'&&x.res!=='S'); // 'S' = suspendido: no cuenta en récord/promedios
+const FXstat=FX.filter(x=>x.res!=='S'); // para gráficos de tendencia (excluye suspendidos)
+const av=(k,a=LIG)=>{const v=a.map(x=>x[k]).filter(x=>x!=null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:0;};
+
+/* ---- KPIs + titular ---- */
+$('#titular').textContent='Coquimbo Unido — '+R.coquimbo.titular;
+$('#fecha').textContent=R.actualizado;
+(function(){
+  const w=LIG.filter(x=>x.res==='W').length,d=LIG.filter(x=>x.res==='D').length,l=LIG.filter(x=>x.res==='L').length;
+  const gf=LIG.reduce((s,x)=>s+x.gf,0),ga=LIG.reduce((s,x)=>s+x.ga,0);
+  $('#kpis').innerHTML=[
+    {v:`${w}-${d}-${l}`,l:'Liga 2026 (V-E-D)',d:`<span class="dot a"></span>${w*3+d} pts`},
+    {v:(gf/LIG.length).toFixed(2),l:'Goles a favor /PJ',d:`<span class="dot g"></span>${gf} en ${LIG.length}`},
+    {v:(ga/LIG.length).toFixed(2),l:'Goles contra /PJ',d:`<span class="dot r"></span>${ga} recibidos`},
+    {v:av('poss').toFixed(0)+'%',l:'Posesión media',d:'<span class="dot a"></span>reactivo'},
+    {v:String(LIG.reduce((s,x)=>s+(x.cr||0),0)),l:'Rojas (Liga)',d:'<span class="dot r"></span>indisciplina'}
+  ].map(k=>`<div class="kpi"><div class="v">${k.v}</div><div class="l">${k.l}</div><div class="d">${k.d}</div></div>`).join('');
+})();
+
+/* ---- Reporte escrito ---- */
+$('#reporte').innerHTML=`
+<p class="lead">Coquimbo Unido (DT <b>Hernán Caputto</b>), <b>campeón vigente 2025</b>, atraviesa 2026 con un perfil claro y medible: es un equipo <b>reactivo</b> —no busca dominar el balón— que <b>ataca por las bandas</b> y compite con alta intensidad de duelo. Gana por golpes de eficacia más que por control sostenido, y su gran deuda es <b>defensiva y disciplinaria</b>.</p>
+<p id="repP2"></p>
+<p>Atrás concede volumen: <b>10,8 remates por partido</b>, y la relación entre tiros permitidos y goles recibidos es fuerte (+0,71). Es decir, <b>no defiende reduciendo el balón sino reduciendo remates</b>. El arco de Diego Sánchez sostiene, y últimamente mejora: ya <b id="repCS"></b> de los partidos termina con la valla invicta. La otra alerta es propia: <b>8 rojas en Liga</b> (cero en Libertadores), un problema de gestión más que físico.</p>`;
+(function(){const g=LIG,su=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const w=g.filter(x=>x.res==='W').length,dd=g.filter(x=>x.res==='D').length,ll=g.filter(x=>x.res==='L').length;const gf=su(g,'gf'),ga=su(g,'ga'),cs=g.filter(x=>x.ga===0).length;
+ const p2=document.getElementById('repP2');if(p2)p2.innerHTML=`En Liga suma <b>${w*3+dd} puntos (${w}-${dd}-${ll})</b> con <b>${gf-ga>=0?'+':''}${gf-ga}</b> de diferencia: marca ${(gf/g.length).toFixed(2)} por partido y recibe ${(ga/g.length).toFixed(2)}. La lectura fina importa más que el número: su <b>posesión (~50%) no se traduce en puntos</b> —la correlación es prácticamente cero—, señal de que rinde mejor cuando el rival propone y él golpea al espacio. Su firma ofensiva son los <b>${(su(g,'crs')/g.length).toFixed(1)} centros por partido</b>; cuando le cierran las bandas, el ataque se vuelve previsible.`;
+ const cse=document.getElementById('repCS');if(cse)cse.textContent=Math.round(cs/g.length*100)+'%';
+ const cl=document.getElementById('comoLeer');if(cl)cl.innerHTML='<b>Cómo leer las cifras:</b> «'+(ga/g.length).toFixed(2)+' goles en contra/PJ» = de media encaja algo más de un gol por partido. «Posesión→puntos ≈ 0» = tener más balón no le suma victorias. «+0,71 tiros→goles» = correlación alta: bajar remates concedidos es lo que más le baja los goles. «Valla invicta '+Math.round(cs/g.length*100)+'%» = deja el arco a cero en 1 de cada '+(g.length/Math.max(cs,1)).toFixed(1)+' partidos.';})();
+
+/* ---- Identidad: scatters ---- */
+const ptsMap={W:3,D:1,L:0};
+new Chart($('#chPossPts'),{type:'scatter',data:{datasets:[{label:'Partido',data:LIG.filter(x=>x.poss!=null).map(x=>({x:x.poss,y:ptsMap[x.res]})),backgroundColor:C.gold+'dd',pointRadius:6,borderColor:'#000',borderWidth:.5}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Posesión ${c.raw.x}% → ${c.raw.y} pts`}}},scales:{x:{title:{display:true,text:'Posesión %'},grid:{color:C.grid}},y:{title:{display:true,text:'Puntos'},grid:{color:C.grid},ticks:{stepSize:1}}}}});
+new Chart($('#chShotGa'),{type:'scatter',data:{datasets:[{label:'Partido',data:LIG.filter(x=>x.sha!=null).map(x=>({x:x.sha,y:x.ga})),backgroundColor:C.red+'dd',pointRadius:6,borderColor:'#000',borderWidth:.5}]},
+  options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.x} tiros concedidos → ${c.raw.y} goles`}}},scales:{x:{title:{display:true,text:'Tiros concedidos'},grid:{color:C.grid}},y:{title:{display:true,text:'Goles recibidos'},grid:{color:C.grid},ticks:{stepSize:1}}}}});
+
+/* ---- Tendencia ---- */
+let compF='ALL',chT,chHA;
+function drawTrend(){
+  const d=FXstat.filter(x=>compF==='ALL'||x.comp===compF),labels=d.map(x=>x.date.slice(5)+(x.comp==='LIB'?'·L':''));
+  if(chT)chT.destroy();
+  chT=new Chart($('#chTrend'),{data:{labels,datasets:[
+    {type:'bar',label:'GF',data:d.map(x=>x.gf),backgroundColor:C.gold},
+    {type:'bar',label:'GC',data:d.map(x=>x.ga),backgroundColor:C.red}]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:90}},y:{grid:{color:C.grid},ticks:{precision:0}}}}});
+}
+drawTrend();
+const ha={H:{W:0,D:0,L:0},A:{W:0,D:0,L:0}};LIG.forEach(x=>ha[x.ven][x.res]++);
+chHA=new Chart($('#chHA'),{type:'bar',data:{labels:['Local','Visita'],datasets:[
+  {label:'V',data:[ha.H.W,ha.A.W],backgroundColor:C.green,borderRadius:4},
+  {label:'E',data:[ha.H.D,ha.A.D],backgroundColor:C.amber,borderRadius:4},
+  {label:'D',data:[ha.H.L,ha.A.L],backgroundColor:C.red,borderRadius:4}]},
+  options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:C.grid},ticks:{precision:0}}}}});
+document.querySelectorAll('#compFilters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#compFilters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');compF=b.dataset.c;drawTrend();});
+/* tendencia callout dinámico (evita datos viejos) */
+(function(){const g=LIG,su=(a,k)=>a.reduce((s,x)=>s+(x[k]||0),0);const w=g.filter(x=>x.res==='W').length,dd=g.filter(x=>x.res==='D').length,ll=g.filter(x=>x.res==='L').length;
+ const H=g.filter(x=>x.ven==='H'),A=g.filter(x=>x.ven==='A');const rc=a=>[a.filter(x=>x.res==='W').length,a.filter(x=>x.res==='D').length,a.filter(x=>x.res==='L').length].join('-');
+ const el=document.getElementById('tendCallout');if(el)el.innerHTML=`<span class="badge b-dato">DATO</span> Liga: <b>${w}V-${dd}E-${ll}L, ${w*3+dd} pts, GF ${su(g,'gf')} / GC ${su(g,'ga')} (DG ${su(g,'gf')-su(g,'ga')>=0?'+':''}${su(g,'gf')-su(g,'ga')})</b>. De local sólido (${rc(H)}, ${(su(H,'ga')/H.length).toFixed(2)} GC/PJ); de visita más abierto (${rc(A)}, ${(su(A,'ga')/A.length).toFixed(2)} GC/PJ).`;})();
+
+/* ===== MÉTRICAS POR PARTIDO · líneas de tiempo + heat-grid ===== */
+(function(){
+  const g=[...LIG].sort((a,b)=>a.date<b.date?-1:1);
+  const lab=g.map(x=>x.date.slice(5)+(x.ven==='H'?' L':' V')), opp=g.map(x=>x.opp);
+  const tip=idx=>opp[idx]+' ('+(g[idx].ven==='H'?'local':'visita')+')';
+  const base=extra=>({plugins:{legend:{position:'bottom'},tooltip:{callbacks:{title:i=>tip(i[0].dataIndex)}}},
+    scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:90}},y:Object.assign({grid:{color:C.grid}},extra||{})}});
+  /* plugin: etiqueta el valor del último punto (líneas y la barra de centros) */
+  const lastLabel={id:'ll',afterDatasetsDraw(ch){const ctx=ch.ctx;ch.data.datasets.forEach((ds,di)=>{
+    if(ds.borderDash||!(ds.type==='line'||ds.label==='Centros'))return;const meta=ch.getDatasetMeta(di);if(meta.hidden)return;
+    let li=-1;for(let i=ds.data.length-1;i>=0;i--){if(ds.data[i]!=null){li=i;break;}}if(li<0||!meta.data[li])return;const pt=meta.data[li];
+    ctx.save();ctx.font='700 11px Segoe UI';ctx.fillStyle=ds.borderColor||ds.backgroundColor||'#fff';ctx.textAlign='left';
+    ctx.fillText(String(ds.data[li]),Math.min(pt.x+6,ch.chartArea.right-24),pt.y-4);ctx.restore();});}};
+  new Chart($('#chShots'),{data:{labels:lab,datasets:[
+    {type:'bar',label:'Tiros',data:g.map(x=>x.shf),backgroundColor:'rgba(255,210,0,.28)',order:3},
+    {type:'bar',label:'Al arco',data:g.map(x=>x.sof),backgroundColor:C.amber,order:2},
+    {type:'line',label:'Goles',data:g.map(x=>x.gf),borderColor:C.green,backgroundColor:C.green,tension:.2,pointRadius:4,order:1}]},
+    options:base({ticks:{precision:0}}),plugins:[lastLabel]});
+  const crsAvg=(()=>{const v=g.map(x=>x.crs).filter(y=>y!=null);return v.reduce((s,y)=>s+y,0)/v.length;})();
+  new Chart($('#chCrosses'),{data:{labels:lab,datasets:[
+    {type:'bar',label:'Centros',data:g.map(x=>x.crs),backgroundColor:C.gold},
+    {type:'line',label:'Media',data:g.map(()=>+crsAvg.toFixed(1)),borderColor:C.blue,borderDash:[5,4],pointRadius:0}]},
+    options:base(),plugins:[lastLabel]});
+  const P=(typeof PASES!=='undefined')?PASES:{};
+  new Chart($('#chPass'),{data:{labels:lab,datasets:[
+    {type:'line',label:'% pases completados',data:g.map(x=>P[x.date]?P[x.date].a:null),borderColor:C.gold,backgroundColor:'rgba(255,210,0,.14)',fill:true,tension:.25,pointRadius:3,spanGaps:true},
+    {type:'line',label:'Posesión %',data:g.map(x=>P[x.date]?P[x.date].p:x.poss),borderColor:C.blue,tension:.25,pointRadius:2,spanGaps:true}]},
+    options:base({suggestedMin:30,suggestedMax:92,ticks:{callback:v=>v+'%'}}),plugins:[lastLabel]});
+  /* heat-grid */
+  const rows=[['GF','gf',false],['GC','ga',true],['Tiros','shf',false],['Al arco','sof',false],['Centros','crs',false],['Posesión','poss',false]];
+  let h='<table style="border-collapse:collapse;font-size:10px"><thead><tr><th style="text-align:left;padding:3px 6px;color:var(--gold);position:sticky;left:0;background:#141414">Métrica</th>'+
+    g.map((x,i)=>`<th style="padding:2px 3px;font-size:8px;color:${x.ven==='A'?C.red:'var(--mut)'}" title="${opp[i]}">${x.date.slice(5,10)}</th>`).join('')+'</tr></thead><tbody>';
+  rows.forEach(([name,key,bad])=>{
+    const vals=g.map(x=>x[key]).filter(v=>v!=null),mn=Math.min(...vals),mx=Math.max(...vals);
+    h+=`<tr><td style="padding:3px 6px;white-space:nowrap;color:var(--mut);position:sticky;left:0;background:#141414">${name}</td>`+
+      g.map(x=>{const v=x[key];if(v==null)return '<td style="padding:2px"></td>';
+        const t=mx===mn?.5:(v-mn)/(mx-mn),col=bad?'255,107,107':'255,210,0';
+        return `<td style="padding:2px 3px;text-align:center;background:rgba(${col},${(0.10+0.78*t).toFixed(2)});color:${t>0.6?'#000':'#f7f7f4'}" title="${x.opp}: ${v}">${v}</td>`;}).join('')+'</tr>';});
+  h+='</tbody></table>';
+  $('#heatGrid').innerHTML=h;
+  const su=k=>g.reduce((s,x)=>s+(x[k]||0),0);
+  const acc=su('sof')/su('shf')*100, conv=su('gf')/su('shf')*100;
+  $('#metHeatNote').innerHTML=`<span class="badge b-hip">SOBRE EL MAPA DE CALOR</span> La liga chilena no publica <b>datos posicionales (x,y)</b>, así que un heatmap espacial sobre la cancha no se puede construir con datos reales (sería inventado). La métrica con más valor de lectura que sí tenemos es la <b>intensidad por partido</b>: el <b>heat-grid</b> de la derecha. La fila a vigilar es <b>GC</b> (en rojo): muestra de un vistazo en qué fechas —sobre todo de visita, con el encabezado en rojo— se dispara lo que encaja. <span class="badge b-dato">DATO</span> Embudo de ataque acumulado: <b>${su('shf')}</b> tiros → <b>${su('sof')}</b> al arco (${acc.toFixed(0)}%) → <b>${su('gf')}</b> goles (conversión ${conv.toFixed(1)}%).`;
+  $('#metFoot').innerHTML=`<b>Fuente y límite.</b> Tiros/centros/goles: FBref por partido. <b>% de pases completados y posesión: CFDB team_match_stats</b> (dato real, 22/23 fechas; el Huachipato-makeup del 30-ago no tiene stats cargadas). CFDB entrega la precisión de pase, no el conteo bruto; y no hay datos posicionales (x,y) para un heatmap espacial.`;
+})();
+
+/* ---- SCOUTING de liga ---- */
+(function(){
+  if(typeof SCOUTING==='undefined')return;
+  const SC=SCOUTING, G=SC.grupos;
+  const label={CF:"'9' Goleador",AM:"Enganche",CB:"Central",DM:"Pivote"};
+  const chipsByPos={CF:[["g90","G/90"],["sh90","Tir/90"],["sot90","T.arco/90"],["conv","Conv%"],["bc90","BC/90"]],
+    AM:[["kp90","PC/90"],["bc90","BC/90"],["a90","A/90"],["dr90","Reg/90"],["pass","%Pase"]],
+    CB:[["int90","Int/90"],["du90","Duel/90"],["tk90","Tk/90"],["pass","%Pase"],["card90","Tarj/90"]],
+    DM:[["tk90","Tk/90"],["int90","Int/90"],["du90","Duel/90"],["pass","%Pase"],["card90","Tarj/90"]]};
+  const fitCol=f=>f>=66?C.green:f>=45?C.amber:C.red;
+  const fb=$('#scPosFilter');
+  fb.innerHTML=G.map((g,i)=>`<button data-i="${i}" class="${i===0?'active':''}">${label[g.pos]}</button>`).join('');
+  function render(i){
+    const g=G[i], N=g.need;
+    $('#scNeed').innerHTML=`<span class="badge b-hip">NECESIDAD</span> <b>${N.titulo}.</b> ${N.porque} <span class="badge b-dato">HOY</span> ${N.ref}.`;
+    const chips=chipsByPos[g.pos];
+    $('#scCards').innerHTML=g.candidatos.map((c,r)=>`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h4 style="margin:0">${r+1}. ${c.n}</h4><span class="tag" style="background:${fitCol(c.fit)};font-size:11px">FIT ${c.fit}</span></div>
+      <div class="sub" style="margin:2px 0 6px">${c.team} · ${c.mp} PJ · rating ${c.rating}</div>
+      <div style="height:8px;background:var(--panel2);border-radius:5px;overflow:hidden;margin-bottom:8px"><div style="height:100%;width:${c.fit}%;background:${fitCol(c.fit)}"></div></div>
+      <div style="font-size:13px;margin-bottom:6px"><b style="color:var(--gold);font-size:16px">${c.headline_val} ${c.headline}</b> <span class="sub">(${c.delta_txt})</span></div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px">
+        ${chips.map(([k,l])=>`<div style="text-align:center"><div style="font-weight:800;color:var(--gold);font-size:13px">${c[k]}</div><div class="sub" style="font-size:9px">${l}</div></div>`).join('')}</div>
+      <div class="sub"><span class="badge b-dato">DESTACA</span> ${c.standout}</div></div>`).join('');
+    document.querySelectorAll('#scPosFilter button').forEach((b,j)=>b.classList.toggle('active',j===i));
+  }
+  fb.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(!b)return;render(+b.dataset.i);});
+  render(0);
+  $('#scTend').innerHTML=SC.tendencias.map(t=>`<li>${t}</li>`).join('');
+  $('#scImpacto').innerHTML=SC.impacto.map(x=>`<div class="card"><h4 style="margin:0 0 4px">${x.t}</h4><p class="sub" style="margin:0">${x.d}</p></div>`).join('');
+  $('#scFoot').innerHTML=`<b>Fuente y método.</b> ${SC.meta.fuente} ${SC.meta.metodo} <b>Límite:</b> ${SC.meta.limite}`;
+})();
+
+/* ---- Plantel ---- */
+const ap=[...COQ.players].filter(p=>(p.gls+p.ast)>0).sort((a,b)=>(b.gls+b.ast)-(a.gls+a.ast));
+new Chart($('#chAporte'),{type:'bar',data:{labels:ap.map(p=>p.n),datasets:[
+  {label:'Goles',data:ap.map(p=>p.gls),backgroundColor:C.gold,borderRadius:4},
+  {label:'Asistencias',data:ap.map(p=>p.ast),backgroundColor:C.blue,borderRadius:4}]},
+  options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{color:C.grid},ticks:{precision:0}},y:{stacked:true,grid:{display:false},ticks:{font:{size:10}}}}}});
+$('#jugCards').innerHTML=R.coquimbo.jugadores.map(j=>{
+  const bg=j.tag==='clave'?'b-clave':j.tag==='alerta'?'b-alerta':j.tag==='forma'?'b-forma':'';
+  return `<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${j.n}</b> ${j.tag?`<span class="badge ${bg}">${j.tag}</span>`:''} <span style="color:var(--gold)">${j.aporte}</span><div class="sub">${j.rol} · ${j.nota}</div></div>`;
+}).join('');
+
+/* ---- Defensa & intensidad ---- */
+const rowTbl=(arr)=>'<tr><th>Métrica</th><th>Valor</th><th>Lectura</th></tr>'+arr.map(x=>`<tr><td>${x.k}</td><td><b style="color:var(--gold)">${x.v}</b></td><td class="sub">${x.nota}</td></tr>`).join('');
+$('#tblDef').innerHTML=rowTbl(R.coquimbo.defensa);
+$('#tblInt').innerHTML=rowTbl(R.coquimbo.intensidad);
+new Chart($('#chInt'),{data:{labels:FXstat.map(m=>m.date.slice(5)+(m.comp==='LIB'?'·L':'')),datasets:[
+  {type:'bar',label:'Centros',data:FXstat.map(m=>m.crs),backgroundColor:C.gold,yAxisID:'y'},
+  {type:'line',label:'Tiros concedidos',data:FXstat.map(m=>m.sha),borderColor:C.red,backgroundColor:C.red,tension:.3,pointRadius:2,yAxisID:'y'},
+  {type:'line',label:'Rojas',data:FXstat.map(m=>m.cr),borderColor:'#fff',pointRadius:FXstat.map(m=>m.cr?5:0),stepped:true,yAxisID:'y2'}]},
+  options:{plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:90}},y:{grid:{color:C.grid}},y2:{position:'right',min:0,max:2,grid:{display:false},ticks:{stepSize:1}}}}});
+
+/* ---- Patrones & mejora ---- */
+(function(){
+  const d=LIG.filter(x=>x.poss!=null);
+  // trampa del dominio: posesión vs goles marcados
+  new Chart($('#chTrap'),{type:'scatter',data:{datasets:[
+    {label:'Dominó y no marcó (≥55% y ≤1 gol)',data:d.filter(x=>x.poss>=55&&x.gf<=1).map(x=>({x:x.poss,y:x.gf,o:x.opp})),backgroundColor:C.red,pointRadius:7,borderColor:'#000',borderWidth:.5},
+    {label:'Resto',data:d.filter(x=>!(x.poss>=55&&x.gf<=1)).map(x=>({x:x.poss,y:x.gf,o:x.opp})),backgroundColor:C.gold,pointRadius:6,borderColor:'#000',borderWidth:.5}
+  ]},options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>`${c.raw.o}: ${c.raw.x}% posesión → ${c.raw.y} goles`}}},
+    scales:{x:{title:{display:true,text:'Posesión %'},grid:{color:C.grid}},y:{title:{display:true,text:'Goles marcados'},grid:{color:C.grid},ticks:{stepSize:1}}}}});
+  // media móvil 5 de GF y GC (cronológico)
+  const roll=(arr,w=5)=>arr.map((_,i)=>{const s=arr.slice(Math.max(0,i-w+1),i+1);return +(s.reduce((a,b)=>a+b,0)/s.length).toFixed(2);});
+  const labels=d.map(x=>x.date.slice(5));
+  new Chart($('#chRoll'),{data:{labels,datasets:[
+    {type:'line',label:'GF (media 5)',data:roll(d.map(x=>x.gf)),borderColor:C.gold,backgroundColor:'rgba(255,210,0,.1)',fill:true,tension:.4,pointRadius:0,borderWidth:2},
+    {type:'line',label:'GC (media 5)',data:roll(d.map(x=>x.ga)),borderColor:C.red,backgroundColor:'rgba(255,107,107,.08)',fill:true,tension:.4,pointRadius:0,borderWidth:2,borderDash:[5,4]}
+  ]},options:{plugins:{legend:{position:'bottom'}},scales:{x:{grid:{display:false},ticks:{font:{size:8},maxRotation:90}},y:{grid:{color:C.grid}}}}});
+})();
+
+/* ---- Métricas avanzadas (nuevas variables medibles con el dato actual) ---- */
+(function(){
+  const d=LIG, n=d.length, S=k=>d.reduce((s,x)=>s+(x[k]||0),0);
+  const gf=S('gf'),ga=S('ga'),shf=S('shf'),sof=S('sof'),sha=S('sha'),soa=S('soa');
+  const conv=(gf/shf*100), prec=(sof/shf*100), sotConc=(soa/sha*100);
+  const domTiro=(shf/sha), gPer=((d.filter(x=>x.res==='W').length*3+d.filter(x=>x.res==='D').length)/n);
+  const defEff=(ga/soa*100); // goles concedidos por tiro al arco rival (fiabilidad defensiva/arquero)
+  const M=[
+    {v:conv.toFixed(1)+'%',l:'Conversión (gol/tiro)',d:'eficacia de definición'},
+    {v:prec.toFixed(0)+'%',l:'Precisión (SoT%)',d:'puntería de remate'},
+    {v:domTiro.toFixed(2),l:'Dominio de tiro',d:'tiros propios ÷ concedidos'},
+    {v:sotConc.toFixed(0)+'%',l:'SoT concedidos',d:'calidad que permite atrás'},
+    {v:defEff.toFixed(0)+'%',l:'Gol concedido / SoT rival',d:'menos = arco más fiable'},
+    {v:gPer.toFixed(2),l:'Puntos por partido',d:'ritmo de cosecha'}
+  ];
+  $('#advMetrics').innerHTML=M.map(k=>`<div class="kpi"><div class="v">${k.v}</div><div class="l">${k.l}</div><div class="d sub">${k.d}</div></div>`).join('');
+  $('#advNote').innerHTML='<b>Cómo leerlo:</b> «Conversión '+conv.toFixed(1)+'%» = de cada 100 tiros, ~'+Math.round(conv)+' son gol (mejora si sube). «Dominio de tiro '+domTiro.toFixed(2)+'» = genera '+domTiro.toFixed(2)+' tiros por cada uno que concede (>1 es favorable). «Gol/SoT rival '+defEff.toFixed(0)+'%» combina defensa y arquero: cuántos de los remates al arco rivales terminan en gol.';
+})();
+
+/* ---- Fixture table ---- */
+let fxF='ALL';
+function drawFx(){
+  const rows=FX.filter(x=> fxF==='ALL'||x.comp===fxF||x.ven===fxF||x.res===fxF);
+  $('#fxTable tbody').innerHTML=rows.map(x=>{
+    const susp=x.res==='S';
+    const rc=susp?'':x.res==='W'?'win':x.res==='D'?'draw':'loss';
+    const marc=susp?`<span class="badge b-alerta">SUSP</span> ${x.gf}-${x.ga}`:`<span class="${rc}">${x.gf}-${x.ga}</span>`;
+    return `<tr><td>${x.date}</td><td>${x.time||''}</td><td>${x.comp}</td><td>${x.ven==='H'?'Local':'Visita'}</td>
+      <td>${x.opp}</td><td>${marc}</td><td>${x.poss!=null?x.poss+'%':''}</td>
+      <td>${x.form||''}</td><td class="sub">${x.ref||'—'}</td><td>${x.cy}</td><td>${x.cr?('<b class="loss">'+x.cr+'</b>'):0}</td></tr>`;
+  }).join('');
+}
+document.querySelectorAll('#fxFilters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#fxFilters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');fxF=b.dataset.f;drawFx();});
+drawFx();
+(function(){
+  const refs={};FX.forEach(x=>{if(x.ref){refs[x.ref]=refs[x.ref]||{n:0,cy:0,cr:0};refs[x.ref].n++;refs[x.ref].cy+=x.cy;refs[x.ref].cr+=x.cr;}});
+  const top=Object.entries(refs).sort((a,b)=>b[1].n-a[1].n)[0];
+  $('#refNote').innerHTML=`<span class="badge b-dato">DATO</span> Árbitro más frecuente: <b>${top[0]}</b> (${top[1].n} partidos, ${top[1].cy}🟨 ${top[1].cr}🟥). <span class="badge b-hip">LECTURA</span> útil para anticipar criterio disciplinario dado el problema de rojas del equipo.`;
+})();
+
+/* ---- Rivales (con gráficos) ---- */
+$('#rivales').innerHTML=R.rivales.map((r,i)=>{
+  const ficha=r.ficha.map(f=>`<tr><td>${f.k}</td><td>${f.v}</td><td><span class="badge ${f.estado==='DATO'?'b-dato':'b-ver'}">${f.estado}</span></td></tr>`).join('');
+  const h2h=r.h2h.map(h=>`<tr><td>${h.fecha}</td><td>${h.comp}</td><td>${h.sede}</td><td><b>${h.gc} (${h.res})</b></td><td class="sub">${h.detalle}</td></tr>`).join('');
+  const pred=r.prediccion.map(p=>`<tr><td>${p.esc}</td><td><b style="color:var(--gold)">${p.p}</b></td></tr>`).join('');
+  const jug=r.jugadores?`<h3>Jugadores importantes del rival</h3><table><tr><th>Jugador</th><th>Rol</th><th>Aporte</th><th>Nota</th></tr>${r.jugadores.map(j=>`<tr><td><b>${j.n}</b> ${j.tag?`<span class="badge ${j.tag==='alerta'?'b-alerta':j.tag==='clave'?'b-clave':'b-forma'}">${j.tag}</span>`:''}</td><td>${j.rol}</td><td style="color:var(--gold)">${j.aporte}</td><td class="sub">${j.nota}</td></tr>`).join('')}</table>`:'';
+  const charts=r.charts?`<h3>Gráficos de análisis</h3><div class="grid g2">
+    <div class="card"><h4>Radar de estilo — Coquimbo vs ${r.nombre}</h4><div class="chart-wrap"><canvas id="radar${i}"></canvas></div></div>
+    <div class="card"><h4>Volumen vs. eficacia de tiro (rival)</h4><div class="sub" style="margin-bottom:6px">X=tiros · Y=goles por tiro. Arriba-derecha = killer. Burbuja = goles.</div><div class="chart-wrap"><canvas id="shoot${i}"></canvas></div></div>
+    </div><div class="grid g2" style="margin-top:16px"><div class="card"><h4>Líderes defensivos del rival (Int + Entradas ganadas)</h4><div class="chart-wrap"><canvas id="def${i}"></canvas></div></div>${r.charts.homeAway?`<div class="card"><h4>Local vs Visita del rival (goles/PJ)</h4><div class="sub" style="margin-bottom:6px">Dónde es más vulnerable. Mañana juega de <b>visita</b>.</div><div class="chart-wrap"><canvas id="ha${i}"></canvas></div></div>`:''}</div>`:'';
+  return `<details ${i===0?'open':''}><summary>${r.nombre} <span class="badge b-clave">${r.tipo}</span></summary><div class="rbody">
+    <h3>Ficha técnica</h3><table><tr><th>Campo</th><th>Info</th><th>Estado</th></tr>${ficha}</table>
+    ${jug}
+    <h3>Head-to-Head (dato real)</h3><table><tr><th>Fecha</th><th>Comp</th><th>Sede Coq.</th><th>Result.</th><th>Detalle</th></tr>${h2h}</table>
+    <div class="callout"><b>Resumen:</b> ${r.resumenH2H}</div><div class="callout warn"><b>Lectura:</b> ${r.lecturaH2H}</div>
+    ${r.ultimoRival?`<div class="callout danger"><b>Último partido del rival:</b> ${r.ultimoRival}</div>`:''}
+    ${charts}
+    <h3>Predicción <span class="sub">(confianza: ${r.confianza})</span></h3><table><tr><th>Escenario</th><th>Prob.</th></tr>${pred}</table>
+    <p><b>Marcador más probable:</b> <span style="color:var(--gold)">${r.marcador}</span></p>
+    <h3>3 claves tácticas</h3><ul class="clean">${r.claves.map(c=>`<li>${c}</li>`).join('')}</ul>
+    <div class="callout danger"><b>Pendiente:</b> ${r.pendientes.join(' · ')} <span class="badge b-ver">REQUIERE_VERIFICACION</span></div>
+  </div></details>`;
+}).join('');
+R.rivales.forEach((r,i)=>{ if(!r.charts)return; const rd=r.charts;
+  const re=document.getElementById('radar'+i);
+  if(re&&rd.radar)new Chart(re,{type:'radar',data:{labels:rd.radar.labels,datasets:[
+    {label:'Coquimbo',data:rd.radar.coq,borderColor:C.gold,backgroundColor:'rgba(255,210,0,.18)',pointBackgroundColor:C.gold},
+    {label:r.nombre,data:rd.radar.riv,borderColor:C.blue,backgroundColor:'rgba(127,176,255,.15)',pointBackgroundColor:C.blue}]},
+    options:{plugins:{legend:{position:'bottom'}},scales:{r:{min:0,max:100,grid:{color:C.grid},angleLines:{color:C.grid},pointLabels:{color:C.mut,font:{size:10}},ticks:{display:false}}}}});
+  const se=document.getElementById('shoot'+i);
+  if(se&&rd.shooters)new Chart(se,{type:'bubble',data:{datasets:rd.shooters.map(s=>({label:s.n,data:[{x:s.sh,y:s.gsh,r:Math.max(6,s.g*0.9+4)}],backgroundColor:(s.gsh>=0.25?C.red:C.gold)+'cc',borderColor:'#fff',borderWidth:.5}))},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw.x} tiros · ${c.raw.y} g/tiro · ${Math.round((c.raw.r-4)/0.9)} goles`}}},scales:{x:{title:{display:true,text:'Tiros'},grid:{color:C.grid}},y:{title:{display:true,text:'Goles por tiro'},grid:{color:C.grid}}}}});
+  const de=document.getElementById('def'+i);
+  if(de&&rd.defensores)new Chart(de,{type:'bar',data:{labels:rd.defensores.map(d=>d.n),datasets:[
+    {label:'Intercepciones',data:rd.defensores.map(d=>d.int),backgroundColor:C.gold,borderRadius:4},
+    {label:'Entradas ganadas',data:rd.defensores.map(d=>d.tklw),backgroundColor:C.blue,borderRadius:4}]},
+    options:{indexAxis:'y',plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true,grid:{color:C.grid}},y:{stacked:true,grid:{display:false}}}}});
+  const hae=document.getElementById('ha'+i);
+  if(hae&&rd.homeAway)new Chart(hae,{type:'bar',data:{labels:['Local','Visita'],datasets:[
+    {label:'Goles a favor /PJ',data:rd.homeAway.gf,backgroundColor:C.gold,borderRadius:4},
+    {label:'Goles en contra /PJ',data:rd.homeAway.gc,backgroundColor:C.red,borderRadius:4}]},
+    options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{afterlabel:c=>'Récord: '+rd.homeAway.rec[c.dataIndex]}}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid}}}}});
+});
+
+/* ---- Último partido (detalle individual, genérico + suspensión) ---- */
+(function(){
+  if(typeof ULT==='undefined') return;
+  const susp=ULT.suspendido;
+  $('#ultTitulo').innerHTML=`Último partido — ${ULT.rival} ${susp?`<span class="badge b-alerta">SUSPENDIDO ${ULT.minuto||''}</span> `:''}<span class="draw">${ULT.marcador}</span> Coquimbo`;
+  $('#ultMeta').textContent=`${ULT.ronda} · ${ULT.fecha} · ${ULT.sede} · Árbitro: ${ULT.arbitro}`;
+  let head='';
+  if(susp) head+=`<div class="callout danger"><b>⚠ Partido suspendido — resultado NO oficial.</b> ${ULT.motivo||''} <br><b>Sanción en riesgo:</b> ${ULT.sancion||''}</div>`;
+  head+='<b>Goles:</b> '+(ULT.goles&&ULT.goles.length?ULT.goles.map(g=>`<span class="badge ${g.eq==='COQ'?'b-clave':'b-alerta'}">${g.min}</span> ${g.jug} (${g.eq}) — ${g.nota}`).join(' &nbsp;·&nbsp; '):'sin goles');
+  if(ULT.teamStats){const c=ULT.teamStats.coq,r=ULT.teamStats.riv;
+    head+=`<div class="callout" style="margin-top:8px"><b>Estadísticas (parciales):</b> Posesión <b>${c.poss}%</b>-${r.poss}% · Tiros ${c.sh}(${c.sot} al arco)-${r.sh}(${r.sot}) · Centros <b>${c.crs}</b>-${r.crs} · Faltas ${c.fls}-${r.fls} · Intercepciones ${c.intc}-${r.intc}</div>`;}
+  $('#ultGoles').innerHTML=head;
+  const showMin=ULT.coq.some(p=>p.min>0);
+  $('#ultCoq').innerHTML='<tr><th>Jugador</th><th>Pos</th>'+(showMin?'<th>Min</th>':'')+'<th>Tiros</th><th>AP</th><th>G</th><th>Centr</th><th>TklW</th><th>Int</th><th>Faltas</th><th>Tarj</th></tr>'+
+    ULT.coq.map(p=>`<tr><td>${p.n}${p.g?' <span class="badge b-clave">⚽</span>':''}</td><td>${p.pos}</td>${showMin?`<td>${p.min}</td>`:''}<td>${p.sh}</td><td>${p.sot}</td><td>${p.g||''}</td><td>${p.crs||''}</td><td>${p.tklw||''}</td><td>${p.intc||''}</td><td>${p.fls||''}</td><td>${p.cy?'<span class="draw">🟨</span>':''}${p.cr?'🟥':''}</td></tr>`).join('');
+  // destacados dinámicos
+  const topN=(arr,k,n=1)=>[...arr].filter(p=>p[k]>0).sort((a,b)=>b[k]-a[k]).slice(0,n);
+  const shC=topN(ULT.coq,'sh',1)[0], crC=topN(ULT.coq,'crs',1)[0];
+  const defC=[...ULT.coq].sort((a,b)=>(b.tklw+b.intc)-(a.tklw+a.intc))[0];
+  const shR=topN(ULT.dco,'sh',1)[0], scorer=ULT.dco.find(p=>p.g>0)||ULT.coq.find(p=>p.g>0);
+  const yc=ULT.coq.filter(p=>p.cy).map(p=>p.n.split(' ').slice(-1)[0]);
+  const li=[];
+  if(scorer) li.push(`<li><b>${scorer.n}</b> — autor del gol del partido.</li>`);
+  if(crC) li.push(`<li><b>${crC.n} (COQ)</b> — ${crC.crs} centros: refleja el ataque lateral (Coquimbo llegó a ${ULT.teamStats?ULT.teamStats.coq.crs:''} centros).</li>`);
+  if(defC) li.push(`<li><b>${defC.n} (COQ)</b> — el más activo en recuperación (${defC.tklw} entradas + ${defC.intc} intercepciones).</li>`);
+  if(shR) li.push(`<li><b>${shR.n} (${ULT.rival})</b> — ${shR.sh} remates, el más incisivo del rival.</li>`);
+  $('#ultDest').innerHTML=`<ul class="clean">${li.join('')}</ul>`+
+    (susp?`<div class="callout warn"><span class="badge b-hip">LECTURA</span> Coquimbo dominó el balón (${ULT.teamStats?ULT.teamStats.coq.poss:64}%) y cruzó muchísimo (${ULT.teamStats?ULT.teamStats.coq.crs:32} centros) sin abrir el marcador — su previsibilidad por banda en estado puro. Iba 0-1 cuando la bomba de ruido forzó la suspensión. El resultado deportivo queda en manos del Tribunal ANFP.</div>`:
+     `<div class="callout warn"><span class="badge b-dato">DATO</span> Amarillas Coquimbo: ${yc.join(', ')||'—'}.</div>`);
+})();
+
+/* ---- Informe 7Q dinámico (por rival, desde RIVALES) ---- */
+(function(){
+  if(typeof RIVALES==='undefined')return;
+  const RR=RIVALES.rivales, sel=$('#i7sel');
+  function render(i){
+    const r=RR[i]; if(!r)return;
+    $('#i7head').innerHTML=`<span class="tag">${r.date.slice(8)}/${r.date.slice(5,7)} · ${r.ven==='H'?'LOCAL':'VISITA'}</span> <b>Coquimbo ${r.ven==='H'?'vs':'@'} ${r.opp}</b> — ${r.opp} va ${r.pos}º con ${r.pts} pts. <span class="badge b-hip">Veredicto</span> ${r.lectura.favorito}.`;
+    $('#i7preguntas').innerHTML=r.q7.map(q=>`<div class="card"><h4 style="margin:0 0 6px">${q.q}</h4>
+      <div style="font-size:13.5px">${q.a}</div></div>`).join('');
+    document.querySelectorAll('#i7sel option').forEach((o,j)=>o.selected=(j===i));
+  }
+  sel.innerHTML=RR.map((r,i)=>`<option value="${i}">${r.date.slice(5)} · ${r.opp} (${r.ven==='H'?'L':'V'})</option>`).join('');
+  sel.onchange=()=>render(+sel.value);
+  render(0);
+  $('#i7lim').innerHTML=`<b>Fuente y límite.</b> ${RIVALES.meta.fuente} ${RIVALES.meta.limite}`;
+})();
+
+/* ---- Bitácora + modo ---- */
+$('#bitacora').innerHTML=R.bitacora.map(b=>`<li><b>${b.fecha}</b> — ${b.nota}</li>`).join('');
+/* ================= PIZARRA DOBLE + RADARES (CFDB) ================= */
+(function(){
+  if(typeof RADARES==='undefined')return;
+  const EQ=RADARES.equipos, AX=RADARES.axes, sel=$('#pzRival');
+  const sur=n=>n.split(' ').slice(-1)[0];
+  const lineCol={DEF:C.blue,MID:C.gold,FWD:C.red,GK:'#c9c9c9'};
+  const chip=(l,v)=>`<div style="text-align:center"><div style="font-weight:800;color:var(--gold);font-size:13px">${v}</div><div class="sub" style="font-size:9px">${l}</div></div>`;
+  function miniRadar(radar,size){
+    const cx=size/2,cy=size/2,Rr=size/2-3;
+    const pt=(v,i)=>{const a=-Math.PI/2+i*Math.PI/4,r=Rr*Math.max(4,v)/100;return [(cx+r*Math.cos(a)).toFixed(1),(cy+r*Math.sin(a)).toFixed(1)];};
+    let grid='';[0.5,1].forEach(g=>{const gp=AX.map((_,i)=>{const a=-Math.PI/2+i*Math.PI/4;return [(cx+Rr*g*Math.cos(a)).toFixed(1),(cy+Rr*g*Math.sin(a)).toFixed(1)].join(',');}).join(' ');grid+=`<polygon points="${gp}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width=".5"/>`;});
+    const pts=radar.map((v,i)=>pt(v,i).join(',')).join(' ');
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="flex:none">${grid}<polygon points="${pts}" fill="rgba(255,210,0,.25)" stroke="${C.gold}" stroke-width="1.3"/></svg>`;
+  }
+  let gChart;
+  function showGlobo(pl,teamName,tcol){
+    const el=$('#pzGlobo'); if(!el)return; el.style.display='block';
+    el.innerHTML=`<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex:1;min-width:230px">
+        <h4 style="margin:0">${pl.n} <span class="sub" style="font-weight:400">· ${pl.pos} · ${teamName}</span></h4>
+        <div class="sub" style="margin:3px 0 10px"><b style="color:var(--gold)">${pl.min}'</b> en ${pl.mp} PJ · rating <b>${pl.rating}</b></div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px">
+          ${chip('G',pl.g)}${chip('A',pl.a)}${chip('PC',pl.kp)}${chip('Tiros',pl.sh)}${chip('T.arco',pl.sot)}
+          ${chip('Entr.',pl.tk)}${chip('Int.',pl.intc)}${chip('Duelos',pl.du)}${chip('Reg.',pl.dr)}${chip('%Pase',pl.passpct)}</div>
+      </div>
+      <div style="width:290px;max-width:100%"><div class="chart-wrap" style="height:260px"><canvas id="pzRadarC"></canvas></div></div>
+    </div>`;
+    if(gChart)gChart.destroy();
+    gChart=new Chart($('#pzRadarC'),{type:'radar',data:{labels:AX,datasets:[{label:pl.n,data:pl.radar,backgroundColor:tcol+'33',borderColor:tcol,borderWidth:2,pointBackgroundColor:tcol}]},
+      options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>AX[c.dataIndex]+': percentil '+c.raw}}},scales:{r:{min:0,max:100,grid:{color:C.grid},angleLines:{color:C.grid},pointLabels:{color:C.mut,font:{size:10}},ticks:{display:false}}}}});
+  }
+  function gkGlobo(name,teamName){const el=$('#pzGlobo');if(!el)return;el.style.display='block';
+    el.innerHTML=`<h4 style="margin:0">${name} <span class="sub" style="font-weight:400">· Arquero · ${teamName}</span></h4><p class="sub" style="margin-top:6px">El feed de CFDB no entrega métricas de campo (pases, duelos, tiros) para arqueros, así que no se genera radar. Se muestra por completitud del once.</p>`;}
+  const curP={home:{},away:{}};
+  function drawPitch(svgId,teamName,tint,side){
+    const svg=document.getElementById(svgId); if(!svg)return; const T=EQ[teamName]; if(!T)return;
+    const X=x=>12+(x/100)*276, Y=y=>395-(y/100)*380; curP[side]={};
+    const tok=(x,y,p,gk)=>{const cx=X(x),cy=Y(y),c=lineCol[gk?'GK':p.line];
+      return `<g transform="translate(${cx},${cy})" data-n="${p.n}"${gk?' data-gk="1"':''} style="cursor:pointer">
+        <circle r="13" fill="${c}" stroke="#000" stroke-width="1"/>
+        <text text-anchor="middle" y="3.5" font-size="8.5" font-weight="800" fill="#0a0a0a">${gk?'GK':p.pos}</text>
+        <text text-anchor="middle" y="25" font-size="8" fill="#fff">${sur(p.n)}</text></g>`;};
+    let s=`<rect x="2" y="2" width="296" height="406" rx="10" fill="${tint}" stroke="rgba(255,255,255,.22)"/>
+      <line x1="2" y1="205" x2="298" y2="205" stroke="rgba(255,255,255,.18)"/>
+      <circle cx="150" cy="205" r="30" fill="none" stroke="rgba(255,255,255,.18)"/>
+      <rect x="95" y="2" width="110" height="46" fill="none" stroke="rgba(255,255,255,.15)"/>
+      <rect x="95" y="362" width="110" height="46" fill="none" stroke="rgba(255,255,255,.15)"/>`;
+    s+=tok(50,7,{n:T.gk,pos:'GK',line:'GK'},true);
+    T.xi.forEach(p=>{curP[side][p.n]=p; s+=tok(p.x,p.y,p,false);});
+    svg.innerHTML=s;
+    const tcol=side==='home'?C.gold:C.red;
+    svg.onclick=e=>{const g=e.target.closest('[data-n]');if(!g)return;const n=g.getAttribute('data-n');
+      if(g.getAttribute('data-gk')==='1'){gkGlobo(n,teamName);return;}const pl=curP[side][n];if(pl)showGlobo(pl,teamName,tcol);};
+  }
+  function drawBench(elId,teamName,side){
+    const el=document.getElementById(elId); if(!el)return; const T=EQ[teamName]; const tcol=side==='home'?C.gold:C.red;
+    if(!T.banca.length){el.innerHTML='<div class="sub" style="font-size:10px">Banca: datos en carga (tope diario CFDB).</div>';return;}
+    el.innerHTML='<div style="font-size:10px;color:var(--gold);font-weight:800;margin-bottom:4px">BANCA · min</div>'+
+      T.banca.map(p=>`<div class="bx" data-n="${p.n}" style="display:flex;gap:5px;align-items:center;cursor:pointer;padding:3px 2px;border-bottom:1px solid var(--line)">
+        ${miniRadar(p.radar,32)}<div style="min-width:0;line-height:1.15"><div style="font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sur(p.n)}</div><div class="sub" style="font-size:9px">${p.pos} · ${p.min}'</div></div></div>`).join('');
+    el.onclick=e=>{const b=e.target.closest('.bx');if(!b)return;const pl=T.banca.find(x=>x.n===b.getAttribute('data-n'));if(pl)showGlobo(pl,teamName,tcol);};
+  }
+  function nextMatch(name){ if(typeof RIVALES==='undefined')return null; return RIVALES.rivales.find(r=>r.opp===name); }
+  function render(name){
+    const H=EQ['Coquimbo Unido'], A=EQ[name];
+    drawPitch('pzHome','Coquimbo Unido','#0b2a12','home'); drawPitch('pzAway',name,'#2a0f0f','away');
+    drawBench('pzHomeBench','Coquimbo Unido','home'); drawBench('pzAwayBench',name,'away');
+    const rm=nextMatch(name), vs=rm?(rm.ven==='H'?'LOCAL':'VISITA')+' · '+rm.date.slice(8)+'/'+rm.date.slice(5,7):'';
+    $('#pzHomeHead').innerHTML=`<b style="color:var(--gold)">Coquimbo Unido</b> · XI ${H.formation} <span class="sub">(por minutos)</span>`;
+    $('#pzAwayHead').innerHTML=`<b style="color:var(--red)">${name}</b> · XI ${A.formation} <span class="sub">${vs}</span>${A.incompleto?' <span class="badge b-hip">PARCIAL</span>':''}`;
+    let cmp=`<span class="badge b-hip">ESQUEMAS</span> Coquimbo <b>${H.formation}</b> vs <b>${name} ${A.formation}</b> (XI por minutos, posición real).`;
+    if(rm){const p=rm.pred;cmp+=` Predicción: <b>${Math.round(p.pW*100)}%</b> / ${Math.round(p.pD*100)}% / <b>${Math.round(p.pL*100)}%</b> · ${rm.lectura.favorito}.`;}
+    cmp+=` <span class="sub">Clic en ficha o suplente → radar. <span style="color:${C.blue}">■</span> def · <span style="color:${C.gold}">■</span> med · <span style="color:${C.red}">■</span> atq.</span>`;
+    $('#pzCompare').innerHTML=cmp;
+  }
+  const rivals=Object.keys(EQ).filter(n=>n!=='Coquimbo Unido');
+  sel.innerHTML=rivals.map(n=>`<option>${n}</option>`).join('');
+  sel.onchange=()=>render(sel.value);
+  render(rivals[0]);
+  const pf=$('#pzFoot');if(pf)pf.innerHTML=`<b>Fuente y límite.</b> ${RADARES.meta.fuente} ${RADARES.meta.limite}`;
+})();
+/* ==== (pizarra draggable antigua, desactivada) ==== */
+(function(){
+  const svg=document.getElementById('pzPitch'); if(!svg) return;
+  const FORMS={
+   "4-2-3-1":[[150,440,'GK'],[45,355,'FB'],[108,368,'CB'],[192,368,'CB'],[255,355,'FB'],[112,290,'DM'],[188,290,'DM'],[55,195,'W'],[150,210,'AM'],[245,195,'W'],[150,95,'ST']],
+   "4-4-2":[[150,440,'GK'],[45,355,'FB'],[108,368,'CB'],[192,368,'CB'],[255,355,'FB'],[45,245,'W'],[112,258,'CM'],[188,258,'CM'],[255,245,'W'],[112,110,'ST'],[188,110,'ST']],
+   "4-1-4-1":[[150,440,'GK'],[45,355,'FB'],[108,368,'CB'],[192,368,'CB'],[255,355,'FB'],[150,300,'DM'],[48,205,'W'],[112,218,'CM'],[188,218,'CM'],[252,205,'W'],[150,100,'ST']],
+   "4-3-3":[[150,440,'GK'],[45,355,'FB'],[108,368,'CB'],[192,368,'CB'],[255,355,'FB'],[95,270,'CM'],[150,295,'DM'],[205,270,'CM'],[58,155,'W'],[150,95,'ST'],[242,155,'W']],
+   "3-4-3":[[150,440,'GK'],[80,370,'CB'],[150,380,'CB'],[220,370,'CB'],[40,260,'FB'],[112,268,'CM'],[188,268,'CM'],[260,260,'FB'],[62,150,'W'],[150,95,'ST'],[238,150,'W']],
+   "5-3-2":[[150,440,'GK'],[35,305,'FB'],[88,372,'CB'],[150,380,'CB'],[212,372,'CB'],[265,305,'FB'],[95,245,'CM'],[150,258,'CM'],[205,245,'CM'],[115,110,'ST'],[185,110,'ST']],
+   "3-5-2":[[150,440,'GK'],[80,375,'CB'],[150,382,'CB'],[220,375,'CB'],[32,275,'FB'],[95,258,'CM'],[150,268,'CM'],[205,258,'CM'],[268,275,'FB'],[115,110,'ST'],[185,110,'ST']]
+  };
+  const GRP={GK:['GK'],CB:['DF'],FB:['DF'],DM:['MF','DF'],CM:['MF','DF'],AM:['MF','FW'],W:['FW','MF'],ST:['FW']};
+  const ROLE_NAME={GK:'Arquero',CB:'Central',FB:'Lateral/Carrilero',DM:'Volante de marca',CM:'Mediocampista',AM:'Enganche',W:'Extremo/Carril',ST:'Delantero'};
+  const TEAMAGG={"Coquimbo Unido":{poss:49.8,gf:1.37,gc:1.16},"Universidad de Chile":{poss:58.3,gf:1.33,gc:0.81}};
+  const npos=p=>String(p||'').replace(/DEF/g,'DF').replace(/MID/g,'MF').replace(/FWD/g,'FW');
+
+  function getRoster(team){
+    if(team==='Coquimbo Unido') return COQ.players.filter(p=>p.min>0).map(p=>({n:p.n,pos:npos(p.pos),min:p.min,g:p.gls||0,a:p.ast||0,sh:p.sh||0,sot:p.sot||0,intc:null,tklw:null,crs:null,cy:p.cy||0,cr:p.cr||0,st:p.st||0,minpct:null,ppm:null,pm90:null}));
+    return (ROSTERS[team]||[]).map(p=>({n:p.n,pos:npos(p.pos),min:p.min,g:p.g||0,a:p.a||0,sh:p.sh||0,sot:p.sot||0,intc:p.intc,tklw:p.tklw,crs:p.crs,cy:p.cy||0,cr:p.cr||0,st:p.st||0,minpct:p.minpct,ppm:p.ppm,pm90:p.pm90}));
+  }
+  const ptPct=(p,ros)=> p.minpct!=null?p.minpct : Math.round(p.min/Math.max(1,...ros.map(x=>x.min))*100);
+  const ptTag=v=> v>=75?'Titular fijo': v>=45?'Rotativo':'Suplente';
+  const per90=(v,m)=> (v==null||!m)?null:v/(m/90);
+  function withMetrics(ros){
+    ros.forEach(p=>{p._={g:per90(p.g,p.min),a:per90(p.a,p.min),sh:per90(p.sh,p.min),
+      int:per90(p.intc,p.min),tkl:per90(p.tklw,p.min),crs:per90(p.crs,p.min),
+      card:per90((p.cy+2*p.cr),p.min),sotAcc:p.sh>0?p.sot/p.sh*100:0};});
+    const pool=ros.filter(p=>p.min>=300);
+    const pct=(key,val)=>{if(val==null)return null;const arr=pool.map(p=>p._[key]).filter(v=>v!=null);if(!arr.length)return null;return Math.round(arr.filter(v=>v<=val).length/arr.length*100);};
+    ros.forEach(p=>{p._pct={};['g','a','sh','int','tkl','crs','sotAcc'].forEach(k=>p._pct[k]=pct(k,p._[k]));p._pct.disc=(()=>{const v=pct('card',p._.card);return v==null?null:100-v;})();});
+    return ros;
+  }
+  const WEIGHTS={
+    GK:{min:1},
+    CB:{int:.4,tkl:.4,disc:.2}, FB:{crs:.35,tkl:.3,a:.2,int:.15},
+    DM:{int:.45,tkl:.45,disc:.1}, CM:{tkl:.25,int:.2,a:.3,g:.25},
+    AM:{a:.4,g:.3,sh:.3}, W:{crs:.3,sh:.25,g:.25,a:.2}, ST:{g:.45,sh:.3,sotAcc:.25}
+  };
+  function fit(p,role,ros){
+    if(role==='GK'){const arr=ros.filter(x=>x.min>=300).map(x=>x.min);const pc=arr.length?Math.round(arr.filter(v=>v<=p.min).length/arr.length*100):50;return {score:pc,parts:[['experiencia/titularidad',pc]]};}
+    const w=WEIGHTS[role]; let s=0,tw=0,parts=[];
+    for(const k in w){let v=(k==='disc')?p._pct.disc:p._pct[k]; if(v==null)continue; s+=w[k]*v; tw+=w[k]; parts.push([k,v]);}
+    let score= tw>0?Math.round(s/tw):null;
+    // penalización por fuera de posición natural
+    const grp=GRP[role], mism=!grp.some(g=>p.pos.split(',').includes(g));
+    if(mism && score!=null) score=Math.max(0,score-12);
+    return {score,parts:parts.sort((a,b)=>b[1]-a[1]),mism};
+  }
+  const KL={g:'goles/90',a:'asist./90',sh:'tiros/90',int:'intercep./90',tkl:'entradas/90',crs:'centros/90',sotAcc:'precisión de tiro',disc:'disciplina'};
+
+  let team='Universidad de Chile', form='4-2-3-1', oppForm='4-4-2', assign=[], dragI=-1, moved=false, start=null, pzSel=-1;
+  const $$=id=>document.getElementById(id);
+  // selects
+  $$('pzTeam').innerHTML=['Coquimbo Unido',...Object.keys(ROSTERS)].map(t=>`<option${t===team?' selected':''}>${t}</option>`).join('');
+  const fopts=Object.keys(FORMS).map(f=>`<option>${f}</option>`).join('');
+  $$('pzForm').innerHTML=fopts; $$('pzForm').value=form;
+  $$('pzOpp').innerHTML=fopts; $$('pzOpp').value=oppForm;
+  ['pzTeam','pzForm','pzOpp'].forEach(id=>$$(id).onchange=()=>{team=$$('pzTeam').value;form=$$('pzForm').value;oppForm=$$('pzOpp').value;build();});
+  $$('pzReset').onclick=build;
+
+  function assignPlayers(){
+    const ros=withMetrics(getRoster(team)); const used=new Set(); assign=[];
+    FORMS[form].forEach(([x,y,f])=>{
+      const grp=GRP[f];
+      let cand=ros.filter(p=>!used.has(p.n)&&grp.some(g=>p.pos.split(',').includes(g))).sort((a,b)=>b.min-a.min);
+      if(!cand.length) cand=ros.filter(p=>!used.has(p.n)).sort((a,b)=>b.min-a.min);
+      const p=cand[0]; if(p)used.add(p.n);
+      assign.push({x,y,f,p,ros});
+    });
+  }
+  function svgP(e){const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(svg.getScreenCTM().inverse());}
+  function build(){
+    assignPlayers(); pzSel=-1;
+    // pitch
+    let s=`<rect x="2" y="2" width="296" height="466" rx="10" fill="#0b2a12" stroke="rgba(255,255,255,.25)"/>
+      <line x1="2" y1="235" x2="298" y2="235" stroke="rgba(255,255,255,.2)"/>
+      <circle cx="150" cy="235" r="34" fill="none" stroke="rgba(255,255,255,.2)"/>
+      <rect x="95" y="2" width="110" height="52" fill="none" stroke="rgba(255,255,255,.18)"/>
+      <rect x="95" y="416" width="110" height="52" fill="none" stroke="rgba(255,255,255,.18)"/>`;
+    // opp formation ghost (top, mirrored)
+    (FORMS[oppForm]||[]).forEach(([x,y])=>{const yy=470-y;s+=`<circle cx="${x}" cy="${yy}" r="7" fill="none" stroke="rgba(127,176,255,.5)" stroke-dasharray="2 2"/>`;});
+    s+=`<text x="150" y="14" text-anchor="middle" font-size="9" fill="rgba(127,176,255,.8)">Rival: ${oppForm}</text>`;
+    svg.innerHTML=s;
+    assign.forEach((a,i)=>{
+      if(!a.p) return;
+      const fv=fit(a.p,a.f,a.ros).score;
+      const col=fv==null?'#888':fv>=66?'#4ad991':fv>=45?'#ffcf5c':'#ff6b6b';
+      const sur=a.p.n.split(' ').slice(-1)[0];
+      const pct=ptPct(a.p,a.ros), sw=(1.2+3.3*pct/100).toFixed(1);
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('transform',`translate(${a.x},${a.y})`); g.setAttribute('class','tok'); g.style.cursor='grab'; g.dataset.i=i;
+      g.innerHTML=`<circle class="ring" r="18" fill="none" stroke="${i===pzSel?'#fff':'transparent'}" stroke-width="2.2"/>
+        <circle r="15" fill="none" stroke="#fff" stroke-opacity="${(0.18+0.7*pct/100).toFixed(2)}" stroke-width="${sw}"/>
+        <circle r="12.5" fill="${col}" stroke="#000" stroke-width="1"/>
+        <text text-anchor="middle" y="3.5" font-size="9.5" font-weight="800" fill="#062">${a.f}</text>
+        <text text-anchor="middle" y="27" font-size="8.5" fill="#fff">${sur}</text>
+        <text text-anchor="middle" y="-19" font-size="7.5" fill="#ffd200">${a.p.min}'</text>`;
+      svg.appendChild(g);
+    });
+    // estilo
+    const A=TEAMAGG[team]||{poss:50,gf:1.2,gc:1.2};
+    let base= A.poss>=55?`<b>PROPONENTE</b>: domina el balón (${A.poss}%)`: A.poss<=48?`<b>REACTIVO</b>: cede el balón (${A.poss}%)`:`<b>EQUILIBRADO</b> (${A.poss}% de balón)`;
+    let atk= A.gf>=1.4?`, ataca con eficacia (${A.gf} goles/PJ)`:`, ataque discreto (${A.gf} goles/PJ)`;
+    let def= A.gc<=0.9?` y defensa sólida (${A.gc} GC/PJ)`:` y concede ${A.gc} GC/PJ`;
+    let logic= (A.poss<=48&&A.gf>=1.2)?` → <b>reacciona bien y es efectivo en transición/contragolpe</b>: su fuerza no es tener el balón, sino castigar al recuperarlo — por eso funciona con delanteros veloces y carrileros que llegan.`
+      : (A.poss>=55&&A.gc<=0.9)?` → <b>controla el juego y defiende adelantado</b>: su reto es romper defensas cerradas; premia a creadores entre líneas y laterales que dan amplitud.`
+      : ` → equilibrio entre proponer y contragolpear según el rival.`;
+    $$('pzStyle').innerHTML=`<span class="badge b-hip">FORMACIÓN ↔ ESTILO</span> ${team} en ${form}: ${base}${atk}${def}.${logic}`;
+    $$('pzHelp').innerHTML='<b>Cómo leer la ficha:</b> el <b>color</b> = aptitud para el rol (verde apto · amarillo aceptable · rojo forzado), comparando sus stats/90 con los <b>principios del puesto</b> (central: intercepciones/entradas; extremo: centros/tiros; delantero: goles/precisión). El <b>grosor del anillo blanco</b> y el número dorado arriba = <b>tiempo de juego</b> (más grueso = más titular). Haz clic para ver minutos, % de minutos, impacto (PPM y saldo de goles) y una recomendación de decisión.';
+    $$('pzPanel').innerHTML='<p class="sub">Haz clic en una ficha para ver su análisis de aptitud.</p>';
+  }
+  function showPanel(i){
+    const a=assign[i]; if(!a||!a.p) return; const p=a.p; const F=fit(p,a.f,a.ros);
+    pzSel=i; svg.querySelectorAll('.tok').forEach((t,j)=>{const r=t.querySelector('.ring');if(r)r.setAttribute('stroke',j===i?'#fff':'transparent');});
+    const barCol=F.score==null?'#888':F.score>=66?'#4ad991':F.score>=45?'#ffcf5c':'#ff6b6b';
+    const verd=F.score==null?'—':F.score>=66?'APTO ✅':F.score>=45?'ACEPTABLE 🟡':'FORZADO 🔴';
+    const stat=(l,v)=>`<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:var(--gold)">${v}</div><div class="sub" style="font-size:10px">${l}</div></div>`;
+    const pct=ptPct(p,a.ros), tag=ptTag(pct);
+    const reason= F.parts&&F.parts.length? `Destaca en <b>${KL[F.parts[0][0]]||F.parts[0][0]}</b> (percentil ${F.parts[0][1]} del plantel)`+(F.parts.length>1&&F.parts[F.parts.length-1][1]<40?`, pero flojo en ${KL[F.parts[F.parts.length-1][0]]||''} (p${F.parts[F.parts.length-1][1]})`:''):'Datos limitados para este rol';
+    // dato para decisión
+    let decis;
+    if(F.score!=null&&F.score>=66&&pct>=75) decis='Pieza fija y apta: titular indiscutido en su rol.';
+    else if(F.score!=null&&F.score>=60&&pct<45) decis='Recambio infrautilizado: rinde para el rol pero juega poco — opción para sumar minutos.';
+    else if(F.score!=null&&F.score<45&&pct>=60) decis='Alerta: juega mucho pero encaja poco en este rol — evaluar cambio de función o de pieza.';
+    else if(F.mism) decis='Está fuera de su posición natural: úsalo aquí solo como recurso puntual.';
+    else decis='Rendimiento acorde a sus minutos.';
+    const imp = (p.ppm!=null||p.pm90!=null)? `<div class="sub" style="margin-top:6px"><b>Impacto:</b> el equipo suma <b>${p.ppm!=null?p.ppm:'—'} pts/partido</b> con él en cancha · saldo de goles <b>${p.pm90!=null?(p.pm90>0?'+':'')+p.pm90:'—'}</b> por 90'</div>`:'';
+    $$('pzPanel').innerHTML=`<div class="rival-hd"><h4 style="margin:0">${p.n}</h4><span class="badge ${F.score>=66?'b-forma':F.score>=45?'b-ver':'b-alerta'}">${verd}</span></div>
+      <div class="sub" style="margin:2px 0 8px">Pos. natural: <b>${p.pos}</b> · en pizarra: <b>${ROLE_NAME[a.f]} (${a.f})</b>${F.mism?' · <span style="color:var(--red)">fuera de posición</span>':''}</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <span class="badge ${pct>=75?'b-forma':pct>=45?'b-ver':'b-alerta'}">${tag}</span>
+        <span class="sub"><b style="color:var(--gold)">${p.min}'</b> jugados · <b>${pct}%</b> de los minutos posibles</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px">
+        ${stat('Goles',p.g)}${stat('Asist.',p.a)}${stat('Tiros',p.sh)}${stat('Amarillas',p.cy)}
+        ${stat('Intercep.',p.intc==null?'—':p.intc)}${stat('Entradas',p.tklw==null?'—':p.tklw)}${stat('Centros',p.crs==null?'—':p.crs)}${stat('Prec.tiro',p.sh>0?Math.round(p.sot/p.sh*100)+'%':'—')}</div>
+      ${imp}
+      <div class="sub" style="margin:8px 0 3px">Aptitud para ${ROLE_NAME[a.f]}: <b style="color:${barCol}">${F.score==null?'s/d':F.score}</b></div>
+      <div style="height:10px;background:var(--panel2);border-radius:6px;overflow:hidden"><div style="height:100%;width:${F.score||0}%;background:${barCol}"></div></div>
+      <p style="font-size:13px;margin-top:8px">${reason}.</p>
+      <div class="callout" style="margin:8px 0 0;padding:8px 12px"><b>Para decidir:</b> ${decis}</div>
+      ${p.intc==null?'<p class="sub">Nota: de Coquimbo solo hay goles/asistencias/minutos por jugador (no intercepciones/centros de temporada); la aptitud usa lo disponible.</p>':''}`;
+  }
+  // drag + click
+  svg.addEventListener('pointerdown',e=>{const g=e.target.closest('.tok');if(!g)return;dragI=+g.dataset.i;moved=false;start=svgP(e);g.setPointerCapture&&g.setPointerCapture(e.pointerId);g.style.cursor='grabbing';});
+  svg.addEventListener('pointermove',e=>{if(dragI<0)return;const pt=svgP(e);if(Math.abs(pt.x-start.x)>3||Math.abs(pt.y-start.y)>3)moved=true;assign[dragI].x=Math.max(14,Math.min(286,pt.x));assign[dragI].y=Math.max(14,Math.min(456,pt.y));const g=svg.querySelector(`.tok[data-i="${dragI}"]`);if(g)g.setAttribute('transform',`translate(${assign[dragI].x},${assign[dragI].y})`);});
+  svg.addEventListener('pointerup',e=>{if(dragI<0)return;const i=dragI;dragI=-1;const g=svg.querySelector(`.tok[data-i="${i}"]`);if(g)g.style.cursor='grab';if(!moved)showPanel(i);});
+  build();
+})();
+
+$('#modeSwitch').onclick=function(){this.classList.toggle('on');document.body.classList.toggle('tec');};
+
+/* ===== IMPRESIÓN: completa o por sección ===== */
+(function(){
+  const all=$('#printAll'); if(all)all.onclick=()=>{document.body.classList.remove('print-one');window.print();};
+  document.querySelectorAll('main section[id]').forEach(sec=>{
+    const h=sec.querySelector('h2'); if(!h)return;
+    const b=document.createElement('button'); b.className='secprint'; b.title='Imprimir solo esta sección'; b.textContent='⎙';
+    b.onclick=()=>{document.querySelectorAll('main section').forEach(s=>s.classList.toggle('print-target',s===sec));
+      document.body.classList.add('print-one'); window.print();};
+    h.appendChild(b);
+  });
+  window.addEventListener('afterprint',()=>{document.body.classList.remove('print-one');
+    document.querySelectorAll('.print-target').forEach(s=>s.classList.remove('print-target'));});
+})();
+
+/* ===== FRANJA DE RESUMEN EJECUTIVO (siempre visible) ===== */
+(function(){
+  const el=$('#execStrip'); if(!el)return;
+  const g=LIG,w=g.filter(x=>x.res==='W').length,d=g.filter(x=>x.res==='D').length,l=g.filter(x=>x.res==='L').length,pts=w*3+d;
+  let pos='—',med='—',t8='—';
+  if(typeof SIMTABLA!=='undefined'){const Q=SIMTABLA.coquimbo;pos=Q.pos_mode+'º';med=Q.pts_med;t8=Math.round(Q.p_top8*100)+'%';}
+  let riv='—';
+  if(typeof RIVALES!=='undefined'&&RIVALES.rivales.length){const r=RIVALES.rivales[0];riv=`${r.opp} ${r.ven==='H'?'L':'V'} · ${Math.round(r.pred.pW*100)}/${Math.round(r.pred.pD*100)}/${Math.round(r.pred.pL*100)}`;}
+  const ex=(lb,v,c)=>`<div class="ex"><div class="exv"${c?` style="color:${c}"`:''}>${v}</div><div class="exl">${lb}</div></div>`;
+  el.innerHTML=ex('Liga · V-E-D',`${w}-${d}-${l}`,'#f7f7f4')+ex('Puntos · Pos',`${pts} · ${pos}`)+ex('Próximo (1X2)',riv,'#7fb0ff')+ex('Proy. fin (pts)',med,'#4ad991')+ex('Zona intl · top-8',t8,'#ffcf5c');
+})();
+
+/* ===== SIDEBAR responsivo + scrollspy ===== */
+(function(){
+  const sb=$('#sidebar'), ov=$('#ovl'), bg=$('#burger');
+  const open=()=>{sb.classList.add('open');ov.classList.add('show');};
+  const close=()=>{sb.classList.remove('open');ov.classList.remove('show');};
+  if(bg)bg.onclick=()=>sb.classList.contains('open')?close():open();
+  if(ov)ov.onclick=close;
+  const links=[...document.querySelectorAll('#navLinks a')];
+  links.forEach(a=>a.addEventListener('click',()=>{if(window.innerWidth<=900)close();}));
+  // scrollspy: marca la sección activa
+  const secs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+  const spy=()=>{let cur=secs[0];const y=window.scrollY+120;
+    for(const s of secs){if(s.offsetTop<=y)cur=s;}
+    links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+(cur&&cur.id)));};
+  window.addEventListener('scroll',spy,{passive:true}); spy();
+})();
+
+/* ===== HISTÓRICO & PREDICCIÓN (CFDB + FBref) ===== */
+(function(){
+  if(typeof ANALISIS==='undefined'){return;}
+  const A=ANALISIS, pct=x=>Math.round(x*100)+'%';
+  /* Reconciliación */
+  const rc=A.reconciliacion;
+  const rEl=$('#cfdbRecon');
+  if(rEl)rEl.innerHTML=`<span class="badge b-dato">DATO</span> <b>Reconciliación FBref ↔ CFDB.</b> `+
+    `Detalle FBref: ${rc.fbref.record}, ${rc.fbref.gf}-${rc.fbref.ga}, ${rc.fbref.pts} pts en ${rc.fbref.pj} PJ. `+
+    `Oficial CFDB: ${rc.cfdb.record}, ${rc.cfdb.gf}-${rc.cfdb.ga}, ${rc.cfdb.pts} pts en ${rc.cfdb.pj} PJ. `+
+    `<span class="badge b-hip">LECTURA</span> ${rc.veredicto}`;
+  /* Trayectoria histórica */
+  if(A.historia){
+    const H=A.historia.filas, labels=H.map(r=>r.season);
+    const posData=H.map(r=>r.pos), ppgData=H.map(r=>r.ppg!=null?r.ppg:null);
+    new Chart($('#chHist'),{data:{labels,datasets:[
+      {type:'line',label:'Posición final',data:posData,yAxisID:'y',borderColor:C.gold,backgroundColor:C.gold,
+       pointRadius:H.map(r=>r.pos===1?8:5),pointBackgroundColor:H.map(r=>r.pos===1?C.green:(r.encurso?C.amber:C.gold)),
+       spanGaps:false,tension:.15,borderWidth:2},
+      {type:'bar',label:'Puntos por partido',data:ppgData,yAxisID:'y1',backgroundColor:'rgba(127,176,255,.35)',borderRadius:3}]},
+      options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>{const r=H[c.dataIndex];
+        if(c.dataset.label==='Posición final')return r.pos!=null?('Puesto '+r.pos+(r.encurso?' (en curso)':'')+' · '+r.pts+' pts'):(r.nota||'sin dato');
+        return r.ppg!=null?('PPG '+r.ppg):'';}}}},
+      scales:{
+        y:{reverse:true,min:1,suggestedMax:16,title:{display:true,text:'Posición'},grid:{color:C.grid},ticks:{stepSize:2,precision:0}},
+        y1:{position:'right',min:0,suggestedMax:3,title:{display:true,text:'Pts/PJ'},grid:{display:false}},
+        x:{grid:{display:false}}}}});
+    const hc=$('#cfdbHist');if(hc)hc.innerHTML=`<span class="badge b-dato">DATO</span> ${A.historia.lectura} <span class="badge b-ver">FUENTE</span> ${A.historia.fuente}`;
+  }
+  /* Regresión chart */
+  const y25=A.regresion.y2025,y26=A.regresion.y2026;
+  new Chart($('#chReg'),{type:'bar',data:{labels:['Puntos /PJ','GF /PJ','GC /PJ'],datasets:[
+    {label:'2025 (Campeón)',data:[+(y25.pts/y25.pj).toFixed(2),+(y25.gf/y25.pj).toFixed(2),+(y25.ga/y25.pj).toFixed(2)],backgroundColor:C.gold,borderRadius:4},
+    {label:'2026 (10º)',data:[+(y26.pts/y26.pj).toFixed(2),+(y26.gf/y26.pj).toFixed(2),+(y26.ga/y26.pj).toFixed(2)],backgroundColor:C.red,borderRadius:4}]},
+    options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw}}},scales:{x:{grid:{display:false}},y:{grid:{color:C.grid},beginAtZero:true}}}});
+  const rg=$('#cfdbReg');if(rg)rg.innerHTML=`<span class="badge b-dato">DATO</span> ${A.regresion.lectura} <span class="badge b-ver">RITMO 30F</span> proyecta ${A.regresion.proyeccion_30.pts} pts, ${A.regresion.proyeccion_30.gf} GF, ${A.regresion.proyeccion_30.ga} GC (vs 75/49/17 del título).`;
+  /* Proyección chart (rango IC80) */
+  const p=A.proyeccion;
+  new Chart($('#chProj'),{type:'bar',data:{labels:['Fin de temporada'],datasets:[
+    {label:'Ya sumado ('+p.base_pts+')',data:[p.base_pts],backgroundColor:C.gold,stack:'s',borderRadius:3},
+    {label:'Proy. mínima (p10)',data:[p.p10-p.base_pts],backgroundColor:'rgba(127,176,255,.35)',stack:'s',borderRadius:3},
+    {label:'Rango p10→p90',data:[p.p90-p.p10],backgroundColor:'rgba(127,176,255,.75)',stack:'s',borderRadius:3}]},
+    options:{indexAxis:'y',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>{
+      if(c.datasetIndex===0)return 'Puntos actuales: '+p.base_pts;
+      if(c.datasetIndex===1)return 'Escenario bajo (p10): '+p.p10+' pts';
+      return 'Rango probable: '+p.p10+'–'+p.p90+' pts (mediana '+p.p50+')';}}}},
+    scales:{x:{stacked:true,grid:{color:C.grid},title:{display:true,text:'Puntos'},suggestedMax:52},y:{stacked:true,grid:{display:false}}}}});
+  /* Poisson W/D/L local vs visita */
+  const lo=A.poisson.local,vi=A.poisson.visita;
+  new Chart($('#chPois'),{type:'bar',data:{labels:['Local','Visita'],datasets:[
+    {label:'Victoria',data:[lo.pW,vi.pW],backgroundColor:C.green,borderRadius:4},
+    {label:'Empate',data:[lo.pD,vi.pD],backgroundColor:C.amber,borderRadius:4},
+    {label:'Derrota',data:[lo.pL,vi.pL],backgroundColor:C.red,borderRadius:4}]},
+    options:{plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+pct(c.raw)}}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,max:1,grid:{color:C.grid},ticks:{callback:v=>Math.round(v*100)+'%'}}}}});
+  const po=$('#cfdbPois');if(po)po.innerHTML=`<span class="badge b-ver">MODELO</span> ${A.poisson.lectura} <span class="badge b-hip">CAUTELA</span> ${A.poisson.validacion.nota}`;
+  /* Split table */
+  const s=A.split,row=(t,o)=>`<tr><td><b>${t}</b></td><td>${o.w}-${o.d}-${o.l}</td><td>${o.ppg}</td><td>${o.gf_pg}</td><td>${o.ga_pg}</td></tr>`;
+  const st=$('#cfdbSplit');if(st)st.innerHTML=`<div class="scroll-x"><table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="color:var(--gold);text-align:left"><th>Contexto</th><th>V-E-D</th><th>Pts/PJ</th><th>GF/PJ</th><th>GC/PJ</th></tr></thead>
+    <tbody>${row('Local',s.local)}${row('Visita',s.visita)}</tbody></table></div>
+    <div class="callout warn" style="margin-top:10px"><span class="badge b-dato">DATO</span> De visita encaja <b>${s.visita.ga_pg}</b> goles/PJ contra <b>${s.local.ga_pg}</b> en casa: la fragilidad es casi toda fuera del Sánchez Rumoroso.</div>`;
+  /* Insights */
+  const ic=$('#cfdbInsights');
+  if(ic)ic.innerHTML=A.insights.map(i=>`<details><summary>#${i.prioridad} · ${i.area}</summary><div class="rbody">
+    <p><span class="badge b-dato">EVIDENCIA</span> ${i.evidencia}</p>
+    <p><span class="badge b-hip">INTERPRETACIÓN</span> ${i.interpretacion}</p>
+    <p><span class="badge b-ver">ACCIÓN</span> <b>${i.accion}</b></p></div></details>`).join('');
+  const vv=$('#cfdbValid');if(vv)vv.innerHTML=`<b>Validación técnica.</b> Poisson LOO — Local: acierto ${pct(A.poisson.validacion.local.acierto)}, log-loss ${A.poisson.validacion.local.logloss} (n=${A.poisson.validacion.local.n}). Visita: acierto ${pct(A.poisson.validacion.visita.acierto)}, log-loss ${A.poisson.validacion.visita.logloss} (n=${A.poisson.validacion.visita.n}). Referencia azar 3 clases ≈ 1,099. El modelo aporta más en probabilidad de localía que en marcador exacto.`;
+})();
+
+/* ===== PROYECCIÓN DE TABLA · MONTE CARLO ===== */
+(function(){
+  if(typeof SIMTABLA==='undefined')return;
+  const S=SIMTABLA, Q=S.coquimbo, pctv=x=>(x*100).toFixed(x*100<10?1:0)+'%';
+  /* KPIs Coquimbo */
+  const kp=$('#simCoqKpis');
+  if(kp)kp.innerHTML=[
+    {v:Q.pts_med,l:'Puntos proyectados',d:`<span class="dot a"></span>IC90% ${Q.pts_p05}-${Q.pts_p95}`},
+    {v:Q.pos_mode+'º',l:'Posición más probable',d:`<span class="dot a"></span>de ${Q.pts_now} pts hoy`},
+    {v:pctv(Q.p_top8),l:'Zona internacional (top-8)',d:'<span class="dot g"></span>aprox'},
+    {v:pctv(Q.p_top4),l:'Zona Libertadores (top-4)',d:'<span class="dot a"></span>aprox'},
+    {v:pctv(Q.p_releg),l:'Riesgo de descenso',d:`<span class="dot ${Q.p_releg<0.02?'g':'r'}"></span>${Q.p_releg<0.02?'nulo':'vigilar'}`}
+  ].map(k=>`<div class="kpi"><div class="v">${k.v}</div><div class="l">${k.l}</div><div class="d">${k.d}</div></div>`).join('');
+  /* Distribución de posición de Coquimbo */
+  new Chart($('#chPosDist'),{type:'bar',data:{labels:Q.pos_dist.map((_,i)=>(i+1)+'º'),
+    datasets:[{label:'Prob. de terminar en el puesto',data:Q.pos_dist.map(x=>+(x*100).toFixed(1)),
+      backgroundColor:Q.pos_dist.map((_,i)=>i+1===Q.pos_mode?C.gold:'rgba(255,210,0,.35)'),borderRadius:3}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'% de las simulaciones'}}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:C.grid},title:{display:true,text:'% simulaciones'}}}}});
+  /* Rango de puntos por equipo (ordenado por mediana) */
+  const T=S.tabla;
+  new Chart($('#chPtsProj'),{data:{labels:T.map(r=>r.team),datasets:[
+    {type:'bar',label:'Rango IC90%',data:T.map(r=>[r.pts_p05,r.pts_p95]),
+      backgroundColor:T.map(r=>r.team==='Coquimbo Unido'?'rgba(255,210,0,.30)':'rgba(127,176,255,.25)'),borderRadius:3,barPercentage:.7},
+    {type:'scatter',label:'Mediana',data:T.map((r,i)=>({x:r.pts_med,y:i})),
+      backgroundColor:T.map(r=>r.team==='Coquimbo Unido'?C.gold:C.blue),pointRadius:4}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const r=T[c.dataIndex];return r.team+': mediana '+r.pts_med+' pts ('+r.pts_p05+'-'+r.pts_p95+')';}}}},
+    scales:{x:{grid:{color:C.grid},title:{display:true,text:'Puntos finales'}},y:{grid:{display:false},ticks:{font:{size:9},callback:(v,i)=>T[i]?T[i].team:''}}}}});
+  /* Tabla proyectada */
+  const tb=$('#simTable');
+  if(tb){
+    const head='<thead><tr style="color:var(--gold);text-align:left"><th>#</th><th>Equipo</th><th>Pts hoy</th><th>Pts proy.</th><th>Rango</th><th>Top-4</th><th>Top-8</th><th>Desc.</th></tr></thead>';
+    const body=T.map((r,i)=>{const coq=r.team==='Coquimbo Unido';
+      return `<tr style="border-top:1px solid var(--line);${coq?'background:rgba(255,210,0,.10);font-weight:700':''}">
+        <td>${i+1}</td><td>${r.team}${coq?' ★':''}</td><td>${r.pts_now}</td><td><b>${r.pts_med}</b></td>
+        <td class="sub">${r.pts_p05}-${r.pts_p95}</td><td>${pctv(r.p_top4)}</td><td>${pctv(r.p_top8)}</td>
+        <td style="color:${r.p_releg>0.3?'var(--red)':r.p_releg>0.05?'var(--amber)':'var(--mut)'}">${pctv(r.p_releg)}</td></tr>`;}).join('');
+    tb.innerHTML=head+'<tbody>'+body+'</tbody>';
+  }
+  const sn=$('#simNote');if(sn)sn.innerHTML=`<span class="badge b-ver">MODELO</span> ${S.meta.modelo}. <b>Convergencia:</b> la mediana de ${Q.pts_med} pts es consistente con el bootstrap independiente (~40) de la sección anterior; baja un poco porque ahora usa el <b>calendario real</b> (más duro: Colo-Colo, Everton y Limache) en vez de uno neutral. <span class="badge b-hip">LECTURA</span> Coquimbo es matemáticamente de media tabla: sin opción de título (Colo-Colo ${pctv(T[0].p_champ)} campeón) y sin riesgo real de descenso; la pelea es por meterse en zona internacional.`;
+  const sl=$('#simLimite');if(sl)sl.innerHTML=`<b>Fuente y límite.</b> ${S.meta.fuente} ${S.meta.limite} ${S.meta.zonas}`;
+})();
+
+/* ===== PRE-MATCH & RIVALES ===== */
+(function(){
+  if(typeof RIVALES==='undefined')return;
+  const RV=RIVALES, dotC={W:C.green,D:C.amber,L:C.red}, pctv=x=>Math.round(x*100)+'%';
+  const dots=f=>f.map(x=>`<span title="${x[0]} ${x[1]}-${x[2]} (${x[3]==='H'?'L':'V'})" style="display:inline-block;width:13px;height:13px;border-radius:50%;background:${dotC[x[0]]};margin-right:3px"></span>`).join('');
+  /* Calendario */
+  const ct=$('#calTable');
+  const rowsCal=RV.fixture.map(f=>{
+    const isLig=f.comp==='LIG'; const ri=RV.rivales.findIndex(r=>r.opp===f.opp&&r.date===f.date);
+    const sede=f.ven==='H'?'Local':'Visita';
+    return `<tr data-ri="${ri}" style="border-top:1px solid var(--line);cursor:${isLig?'pointer':'default'}">
+      <td class="sub">${f.date.slice(5)}</td><td><b>${f.opp}</b> ${isLig?'':'<span class="badge b-ver">COPA</span>'}</td>
+      <td>${sede}</td><td class="sub">${isLig?'Liga':(f.nota||'Copa Chile')}</td></tr>`;}).join('');
+  if(ct)ct.innerHTML='<thead><tr style="color:var(--gold);text-align:left"><th>Fecha</th><th>Rival</th><th>Sede</th><th>Comp.</th></tr></thead><tbody>'+rowsCal+'</tbody>';
+  /* Run de dificultad (1X2) */
+  const RR=RV.rivales;
+  new Chart($('#chRivRun'),{type:'bar',data:{labels:RR.map(r=>r.opp+(r.ven==='H'?' (L)':' (V)')),datasets:[
+    {label:'Victoria',data:RR.map(r=>+(r.pred.pW*100).toFixed(0)),backgroundColor:C.green,borderRadius:3},
+    {label:'Empate',data:RR.map(r=>+(r.pred.pD*100).toFixed(0)),backgroundColor:C.amber,borderRadius:3},
+    {label:'Derrota',data:RR.map(r=>+(r.pred.pL*100).toFixed(0)),backgroundColor:C.red,borderRadius:3}]},
+    options:{indexAxis:'y',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'%'}}},
+    scales:{x:{stacked:true,max:100,grid:{color:C.grid},ticks:{callback:v=>v+'%'}},y:{stacked:true,grid:{display:false},ticks:{font:{size:9}}}}}});
+  /* Ficha pre-match */
+  function renderPM(i){
+    const r=RR[i]; if(!r)return; const p=r.pred, L=r.lectura, h=r.h2h;
+    const barW=`<div style="display:flex;height:26px;border-radius:6px;overflow:hidden;font-size:11px;font-weight:700;color:#000">
+      <div style="width:${p.pW*100}%;background:${C.green};display:flex;align-items:center;justify-content:center">${pctv(p.pW)}</div>
+      <div style="width:${p.pD*100}%;background:${C.amber};display:flex;align-items:center;justify-content:center">${pctv(p.pD)}</div>
+      <div style="width:${p.pL*100}%;background:${C.red};display:flex;align-items:center;justify-content:center;color:#fff">${pctv(p.pL)}</div></div>`;
+    const chip=(l,v)=>`<div class="kpi" style="padding:8px 10px"><div class="v" style="font-size:18px">${v}</div><div class="l">${l}</div></div>`;
+    $('#pmCard').innerHTML=`
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline">
+        <h3 style="margin:0">Coquimbo ${r.ven==='H'?'vs':'@'} ${r.opp} · ${r.date.slice(8)}/${r.date.slice(5,7)}</h3>
+        <span class="tag">${r.ven==='H'?'LOCAL':'VISITA'} · Liga · ${L.favorito}</span></div>
+      <div class="grid g2" style="margin-top:10px;align-items:start">
+        <div>
+          <p class="sub"><b>Ficha del rival.</b> ${r.pos}º con ${r.pts} pts · ${r.gfpg} GF/PJ · ${r.gapg} GC/PJ · goleador: ${r.goleador}.</p>
+          <p class="sub" style="margin:6px 0"><b>Forma (últimos 5):</b> ${dots(r.forma)} <span class="sub">(${r.forma_pts}/15 pts)</span></p>
+          <p class="sub"><b>H2H histórico:</b> ${h.w}-${h.d}-${h.l} en ${h.tot} · últimos: ${h.ult}. <span class="sub">${h.nota}</span></p>
+          <div class="kpis" style="margin-top:8px">${chip('Goles esp. CU',p.egf)}${chip('Goles esp. riv',p.ega)}${chip('Over 2.5',pctv(p.over25))}${chip('Ambos marcan',pctv(p.btts))}</div>
+        </div>
+        <div>
+          <div class="sub" style="margin-bottom:4px"><b>Predicción 1X2</b> (Coquimbo · empate · rival) — marcador más probable <b>${p.marcador}</b></div>
+          ${barW}
+          <div class="callout" style="margin-top:10px"><span class="badge b-hip">AMENAZAS</span> ${L.amenazas.join('; ')}.</div>
+          <div class="callout" style="margin-top:6px"><span class="badge b-dato">A EXPLOTAR</span> ${L.debilidades.join('; ')}.</div>
+          <div class="callout warn" style="margin-top:6px"><span class="badge b-ver">PLAN</span> ${L.plan}</div>
+        </div>
+      </div>`;
+    document.querySelectorAll('#calTable tr[data-ri]').forEach(tr=>{tr.style.background=(+tr.dataset.ri===i)?'rgba(255,210,0,.10)':'';});
+  }
+  if(ct)ct.addEventListener('click',e=>{const tr=e.target.closest('tr[data-ri]');if(!tr)return;const i=+tr.dataset.ri;if(i>=0)renderPM(i);});
+  renderPM(0); // próximo rival de liga
+  const pf=$('#pmFoot');if(pf)pf.innerHTML=`<b>Fuente y límite.</b> ${RV.meta.fuente} ${RV.meta.limite}`;
+})();
+
+/* ===== PLANTEL · LECTURA AVANZADA ===== */
+(function(){
+  if(typeof PLANTEL==='undefined')return;
+  const PL=PLANTEL, ax=PL.radar_axes, PLS=PL.players;
+  const lineC={DEF:C.blue,MID:C.gold,FWD:C.red};
+  /* Ámbitos */
+  const ac=$('#ambCards');
+  if(ac)ac.innerHTML=PL.ambitos.map(a=>`<div class="card"><h4 style="margin:0 0 4px">${a.k}</h4>
+    <div class="tag" style="margin-bottom:6px">${a.lider}</div>
+    <p class="sub" style="margin:0 0 6px"><span class="badge b-dato">DATO</span> ${a.dato}</p>
+    <p class="sub" style="margin:0"><span class="badge b-hip">LECTURA</span> ${a.lectura}</p></div>`).join('');
+  /* Radar selector */
+  const sel=$('#radSel');
+  if(sel)sel.innerHTML=PLS.map((p,i)=>`<option value="${i}">${p.short} (${p.pos})</option>`).join('');
+  let chR;
+  function drawRadar(i){
+    const p=PLS[i];
+    if(chR)chR.destroy();
+    chR=new Chart($('#chRadar'),{type:'radar',data:{labels:ax,datasets:[{label:p.short,data:p.radar,
+      backgroundColor:'rgba(255,210,0,.20)',borderColor:C.gold,borderWidth:2,pointBackgroundColor:C.gold}]},
+      options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>ax[c.dataIndex]+': percentil '+c.raw}}},
+      scales:{r:{min:0,max:100,grid:{color:C.grid},angleLines:{color:C.grid},pointLabels:{color:C.mut,font:{size:10}},ticks:{display:false}}}}});
+    const rn=$('#radNote');if(rn)rn.innerHTML=`<b>${p.short}</b> · ${p.pos} · ${p.MP} PJ, ${p.min}' · rating ${p.rating} · ${p.ga} G+A · ${p.passpct}% pase. <span class="sub">Percentil dentro del plantel (100 = mejor del equipo en ese ámbito).</span>`;
+  }
+  if(sel)sel.addEventListener('change',e=>drawRadar(+e.target.value));
+  drawRadar(0);
+  /* Mapa de perfiles creación vs duelo */
+  new Chart($('#chProfile'),{type:'bubble',data:{datasets:PLS.map(p=>({label:p.short,
+    data:[{x:p.A_creacion,y:p.A_duelo,r:Math.max(5,Math.sqrt(p.min)/6)}],
+    backgroundColor:(lineC[p.line]||C.mut)+'cc',borderColor:'#000',borderWidth:.5}))},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const p=PLS[c.datasetIndex];return `${p.short} (${p.pos}) · creación ${p.A_creacion} · duelo ${p.A_duelo}`;}}}},
+    scales:{x:{min:0,max:100,title:{display:true,text:'Creación (percentil)'},grid:{color:C.grid}},
+            y:{min:0,max:100,title:{display:true,text:'Duelo & recuperación (percentil)'},grid:{color:C.grid}}}}});
+  /* Tabla por 90' ordenable */
+  const cols=[["short","Jugador",0],["pos","Pos",0],["min","Min",1],["rating","Rat",1],["ga","G+A",1],
+    ["g90","G/90",1],["a90","A/90",1],["kp90","PC/90",1],["bc90","BC/90",1],["sh90","Tir/90",1],
+    ["conv","Conv%",1],["dr90","Reg/90",1],["tk90","Tk/90",1],["int90","Int/90",1],["du90","Duel/90",1],["passpct","%Pase",1]];
+  let sortK="rating",sortD=-1;
+  function drawTable(){
+    const data=[...PLS].sort((a,b)=>{const x=a[sortK],y=b[sortK];return (x>y?1:x<y?-1:0)*sortD;});
+    const head='<thead><tr style="color:var(--gold);text-align:left">'+cols.map(c=>`<th data-k="${c[0]}" style="cursor:pointer;padding:4px 6px">${c[1]}${sortK===c[0]?(sortD<0?' ▾':' ▴'):''}</th>`).join('')+'</tr></thead>';
+    const body=data.map(p=>{const coqhi=p.rating>=7.0;return '<tr style="border-top:1px solid var(--line)'+(coqhi?';background:rgba(255,210,0,.07)':'')+'">'+cols.map(c=>{
+      let v=p[c[0]]; if(c[0]==='short')v='<b>'+v+'</b>';
+      return `<td style="padding:4px 6px">${v}</td>`;}).join('')+'</tr>';}).join('');
+    const t=$('#plTable');if(t){t.innerHTML=head+'<tbody>'+body+'</tbody>';
+      t.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(k===sortK)sortD*=-1;else{sortK=k;sortD=(k==='short'||k==='pos')?1:-1;}drawTable();});}
+  }
+  drawTable();
+  /* Insights + arquero */
+  const pi=$('#plInsights');if(pi)pi.innerHTML=PL.insights.map(x=>`<li>${x}</li>`).join('');
+  const pa=$('#plArquero');const A=PL.arquero;
+  if(pa)pa.innerHTML=`<span class="badge b-dato">ARQUERO</span> <b>${A.nombre}</b> — ${A.MP} PJ, rating ${A.rating}, ${A.saves} atajadas, ${A.savepct}% de paradas, ${A.pass_pct}% de pase. <span class="badge b-hip">LECTURA</span> ${A.lectura}`;
+  const pff=$('#plFoot');if(pff)pff.innerHTML=`<b>Fuente y límite.</b> ${PL.meta.fuente} ${PL.meta.limite} (${PL.meta.n} jugadores de campo con minutos).`;
+})();
+</script>
+</body>
+</html>
