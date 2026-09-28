@@ -6,28 +6,49 @@
 <title>Coquimbo Unido · Centro de Alto Rendimiento</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-  :root{--bg0:#0b0e12;--bg1:#0f141a;--panel:#161c23;--panel2:#1d242d;--gold:#ffd21f;--gold2:#f0c000;
-    --white:#f4f6f8;--mut:#9fb0bd;--line:rgba(255,255,255,.085);--line2:rgba(255,210,0,.18);--blue:#6fb2ff;
-    --green:#4ad991;--amber:#ffcf5c;--red:#ff6f6f;--teal:#4fd6c9;--sh:0 10px 34px rgba(0,0,0,.5);--r:15px;}
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  :root{
+    --bg0:#0a0d11;--bg1:#0e1319;--panel:#151b22;--panel2:#1b222b;--panel3:#212a34;
+    --gold:#ffd21f;--gold2:#e8bd00;--gold-ink:#0a0d11;
+    --white:#f4f7fa;--txt:#dfe6ec;--mut:#aab8c4;--mut2:#7f8c98;
+    --blue:#5aa8ff;--teal:#3fd0c4;--green:#38d98a;--amber:#f5a623;--red:#ff5f5f;
+    --line:rgba(255,255,255,.075);--line-strong:rgba(255,255,255,.14);--line2:rgba(255,210,0,.22);--line-gold:rgba(255,210,0,.22);
+    --sh:inset 0 1px 0 rgba(255,255,255,.05),0 6px 18px rgba(0,0,0,.38);
+    --sh2:0 14px 34px rgba(0,0,0,.5);--glow-gold:0 0 0 1px rgba(255,210,0,.25),0 0 18px rgba(255,210,0,.18);
+    --r:16px;--r-sm:8px;--r-md:12px;--r-lg:16px;
+    --f-display:'Barlow Condensed','Segoe UI',system-ui,sans-serif;--f-body:'Inter','Segoe UI',system-ui,Arial,sans-serif;}
   *{box-sizing:border-box}html{scroll-behavior:smooth}
-  body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;line-height:1.55;color:var(--white);
-    background:radial-gradient(1200px 700px at 18% -8%,#16202b 0,#0e141b 52%,#0a0d11 100%) fixed}
-  a{color:var(--gold);text-decoration:none}
+  body{margin:0;font-family:var(--f-body);line-height:1.55;color:var(--txt);
+    background:radial-gradient(1200px 700px at 18% -8%,#14202c 0,#0d131a 52%,#090c10 100%) fixed}
+  a{color:var(--teal);text-decoration:none}
+  a:focus-visible,button:focus-visible,summary:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+  h1,h2,.brand,.tag{font-family:var(--f-display);letter-spacing:.3px}
+  .kpi .v,.ex .exv,table td,table th,.kpi .l{font-variant-numeric:tabular-nums}
   ::selection{background:var(--gold);color:#000}
   .topbar{display:none;position:fixed;top:0;left:0;right:0;height:52px;z-index:70;align-items:center;gap:12px;padding:0 14px;background:rgba(6,6,6,.96);border-bottom:2px solid var(--gold);backdrop-filter:blur(12px)}
   .burger{width:40px;height:34px;border:1px solid var(--line);background:var(--panel2);border-radius:8px;color:var(--gold);font-size:17px;cursor:pointer}
-  .sidebar{position:fixed;top:0;left:0;bottom:0;width:214px;z-index:80;display:flex;flex-direction:column;padding:16px 12px;background:linear-gradient(180deg,#0c0c0c,#050505);border-right:2px solid var(--gold);overflow-y:auto;transition:transform .25s ease}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:232px;z-index:80;display:flex;flex-direction:column;padding:16px 12px;background:linear-gradient(180deg,#121821,#0b0f14);border-right:1px solid var(--line-gold);box-shadow:inset -16px 0 28px rgba(0,0,0,.35);overflow-y:auto;transition:transform .25s ease}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.4px;font-size:14px;padding:2px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
   .crest{width:30px;height:30px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);box-shadow:0 0 12px rgba(255,210,0,.4);flex:none}
   .links{display:flex;flex-direction:column;gap:1px}
-  .navgroup{font-size:9px;letter-spacing:1.6px;color:var(--mut);text-transform:uppercase;margin:11px 8px 3px;opacity:.65;font-weight:700}
-  .navgroup:first-child{margin-top:2px}
-  .links a{color:var(--mut);font-size:12.5px;padding:6px 11px;border-radius:8px;font-weight:600;display:block;border-left:2px solid transparent}
+  .navgrp{margin:1px 0}
+  .navhead{display:flex;align-items:center;gap:9px;width:100%;background:none;border:0;cursor:pointer;color:var(--mut2);
+    font-family:var(--f-display);font-size:12.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;
+    padding:8px 10px;border-radius:9px;transition:background .15s,color .15s}
+  .navhead:hover{color:var(--white);background:rgba(255,255,255,.045)}
+  .navhead svg{width:15px;height:15px;flex:none;opacity:.8}
+  .navhead .chev{margin-left:auto;opacity:.55;font-size:15px;transition:transform .2s ease}
+  .navgrp.open>.navhead{color:var(--gold)}
+  .navgrp.open>.navhead svg{opacity:1}
+  .navgrp.open>.navhead .chev{transform:rotate(90deg);opacity:.9}
+  .navsub{overflow:hidden;max-height:0;transition:max-height .25s ease;margin:1px 0 2px}
+  .navgrp.open>.navsub{max-height:260px}
+  .links a{color:var(--mut);font-size:12.5px;padding:6px 12px 6px 34px;border-radius:8px;font-weight:600;display:block;border-left:2px solid transparent;transition:background .15s,color .15s}
   .links a:hover{color:var(--white);background:rgba(255,255,255,.05)}
-  .links a.active{color:var(--gold);background:rgba(255,210,0,.10);border-left-color:var(--gold)}
+  .links a.active{color:var(--gold);background:rgba(255,210,0,.10);border-left-color:var(--gold);box-shadow:0 0 14px rgba(255,210,0,.10)}
   .side-foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:75}
-  main{margin-left:214px;padding:0 26px 90px;max-width:1180px}
+  main{margin-left:232px;padding:0 26px 90px;max-width:1180px}
   @media(max-width:900px){
     .topbar{display:flex}
     .sidebar{transform:translateX(-100%);box-shadow:var(--sh)}
@@ -60,13 +81,13 @@
   .win{color:var(--green);font-weight:800}.draw{color:var(--amber);font-weight:800}.loss{color:var(--red);font-weight:800}
   .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
   .b-dato{background:rgba(74,217,145,.16);color:var(--green);border:1px solid rgba(74,217,145,.4)}
-  .b-ver{background:rgba(255,207,92,.16);color:var(--amber);border:1px solid rgba(255,207,92,.4)}
+  .b-ver{background:rgba(245,166,35,.16);color:var(--amber);border:1px solid rgba(245,166,35,.42)}
   .b-hip{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
   .b-clave{background:rgba(255,210,0,.18);color:var(--gold);border:1px solid rgba(255,210,0,.45)}
   .b-alerta{background:rgba(255,107,107,.16);color:var(--red);border:1px solid rgba(255,107,107,.4)}
   .b-forma{background:rgba(74,217,145,.16);color:var(--green);border:1px solid rgba(74,217,145,.4)}
   .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.06);padding:11px 15px;border-radius:0 10px 10px 0;margin:12px 0;font-size:14px}
-  .callout.warn{border-color:var(--amber);background:rgba(255,207,92,.06)}
+  .callout.warn{border-color:var(--amber);background:rgba(245,166,35,.07)}
   .callout.danger{border-color:var(--red);background:rgba(255,107,107,.07)}
   .callout.info{border-color:var(--blue);background:rgba(127,176,255,.07)}
   .glos{font-size:12.5px;color:var(--mut);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin:6px 0}
@@ -105,8 +126,8 @@
   .ex .exv{font-size:16px;font-weight:800;color:var(--gold);white-space:nowrap}
   .ex .exl{font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
   @media(max-width:900px){.exec-strip{top:52px}}
-  .card{transition:border-color .15s ease}
-  .card:hover{border-color:rgba(255,210,0,.32)}
+  .card{transition:border-color .15s ease,box-shadow .15s ease}
+  .card:hover{border-color:rgba(255,210,0,.32);box-shadow:var(--sh2)}
   .printbtn{width:100%;margin-top:8px;background:var(--panel2);border:1px solid var(--line);color:var(--gold);
     border-radius:8px;padding:8px;cursor:pointer;font-size:12px;font-weight:700}
   .printbtn:hover{background:var(--gold);color:#000}
@@ -146,20 +167,34 @@
 <aside class="sidebar" id="sidebar">
   <div class="brand"><span class="crest"></span><span>COQUIMBO UNIDO<br><span style="color:var(--gold);font-size:10px;letter-spacing:1px;font-weight:700">ALTO RENDIMIENTO</span></span></div>
   <nav class="links" id="navLinks">
-    <div class="navgroup">Resumen</div>
-    <a href="#resumen">Reporte</a><a href="#estilo">Identidad</a>
-    <div class="navgroup">Rendimiento</div>
-    <a href="#tendencia">Tendencia</a><a href="#metricas">Métricas x partido</a><a href="#patrones">Patrones</a>
-    <div class="navgroup">Táctica</div>
-    <a href="#pizarra">Pizarra doble</a><a href="#tactico">Mapa táctico (18 zonas)</a>
-    <div class="navgroup">Plantel</div>
-    <a href="#jugadores">Plantel</a><a href="#plantel2">Plantel avanzado</a><a href="#defensa">Defensa</a><a href="#scouting">Scouting</a>
-    <div class="navgroup">Predicción</div>
-    <a href="#cfdb">Histórico &amp; Predicción</a><a href="#simtabla">Proyección tabla</a>
-    <div class="navgroup">Rival</div>
-    <a href="#prematch">Pre-Match</a><a href="#rivales">Rivales</a><a href="#informe7">Informe 7Q</a>
-    <div class="navgroup">Partidos</div>
-    <a href="#fixture">Fixture</a><a href="#ultimo">Último partido</a><a href="#bitacora">Bitácora</a>
+    <div class="navgrp open">
+      <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg><span>Resumen</span><span class="chev">›</span></button>
+      <div class="navsub"><a href="#resumen">Reporte</a><a href="#estilo">Identidad</a></div>
+    </div>
+    <div class="navgrp">
+      <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg><span>Rendimiento</span><span class="chev">›</span></button>
+      <div class="navsub"><a href="#tendencia">Tendencia</a><a href="#metricas">Métricas x partido</a><a href="#patrones">Patrones</a></div>
+    </div>
+    <div class="navgrp">
+      <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M12 4v16M3 12h18"/></svg><span>Táctica</span><span class="chev">›</span></button>
+      <div class="navsub"><a href="#pizarra">Pizarra doble</a><a href="#tactico">Mapa táctico (18 zonas)</a></div>
+    </div>
+    <div class="navgrp">
+      <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5M17 14c2.5.6 4 2.6 4 6"/></svg><span>Plantel</span><span class="chev">›</span></button>
+      <div class="navsub"><a href="#jugadores">Plantel</a><a href="#plantel2">Plantel avanzado</a><a href="#defensa">Defensa</a><a href="#scouting">Scouting</a></div>
+    </div>
+    <div class="navgrp">
+      <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Predicción</span><span class="chev">›</span></button>
+      <div class="navsub"><a href="#cfdb">Histórico &amp; Predicción</a><a href="#simtabla">Proyección tabla</a><a href="#copachile">Copa Chile</a></div>
+    </div>
+    <div class="navgrp">
+      <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="2.5"/></svg><span>Rival</span><span class="chev">›</span></button>
+      <div class="navsub"><a href="#prematch">Pre-Match</a><a href="#rivales">Rivales</a><a href="#informe7">Informe 7Q</a></div>
+    </div>
+    <div class="navgrp">
+      <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span>Partidos</span><span class="chev">›</span></button>
+      <div class="navsub"><a href="#fixture">Fixture</a><a href="#ultimo">Último partido</a><a href="#bitacora">Bitácora</a></div>
+    </div>
   </nav>
   <div class="side-foot"><div class="modewrap"><span>Ejecutiva</span><div class="switch" id="modeSwitch"><div class="knob"></div></div><span>Técnica</span></div>
     <button class="printbtn" id="printAll">⎙ Imprimir / PDF (todo)</button></div>
@@ -190,6 +225,8 @@
       <div class="callout"><span class="badge b-dato">DATO</span> Posesión media ~50% · <b>correlación posesión→puntos ≈ 0</b>. <span class="badge b-hip">LECTURA</span> equipo <b>reactivo</b>: rinde mejor sin la obligación de tener el balón.</div>
       <div class="callout warn"><span class="badge b-dato">DATO</span> 24,9 centros/partido (14–47). <span class="badge b-hip">LECTURA</span> ataque muy <b>lateral</b>; si le cierran las bandas se vuelve previsible (le pasó en el 0-1 con 36 centros).</div>
     </div>
+    <h3>Estilo de equipo · Coquimbo vs. liga</h3>
+    <div class="card" id="estiloDL"></div>
   </section>
 
   <!-- ===== TENDENCIA ===== -->
@@ -319,6 +356,16 @@
     <div class="scroll-x"><table id="simTable" style="width:100%;border-collapse:collapse;font-size:13px"></table></div>
     <div class="callout info" id="simNote"></div>
     <p class="foot" id="simLimite"></p>
+  </section>
+
+  <section id="copachile">
+    <h2>Copa Chile 2026 · Fase de grupos</h2>
+    <p class="sub">Barrido oficial de los 8 grupos (32 equipos). <span class="badge b-dato">DATO</span> CFDB · líder de grupo resaltado · <b>Coquimbo Unido</b> en <span style="color:var(--gold)">amarillo</span>.</p>
+    <div class="callout info" id="ccNote"></div>
+    <div class="grid g2" id="ccGroups" style="align-items:start;margin-top:8px"></div>
+    <h3 style="margin-top:16px">Líderes de grupo</h3>
+    <div class="scroll-x"><table id="ccLeaders" style="width:100%;border-collapse:collapse;font-size:13px"></table></div>
+    <p class="foot" id="ccFoot"></p>
   </section>
 
   <!-- ===== PIZARRA DOBLE ===== -->
@@ -479,6 +526,9 @@
 <script src="reportes.js"></script>
 <script src="analisis_cfdb.js"></script>
 <script src="sim_tabla.js"></script>
+<script src="copa_chile.js"></script>
+<script src="primera_equipos.js"></script>
+<script src="primera_creadores.js"></script>
 <script src="rivales_prematch.js"></script>
 <script src="plantel.js"></script>
 <script src="formaciones.js"></script>
@@ -1154,11 +1204,18 @@ $('#modeSwitch').onclick=function(){this.classList.toggle('on');document.body.cl
   if(ov)ov.onclick=close;
   const links=[...document.querySelectorAll('#navLinks a')];
   links.forEach(a=>a.addEventListener('click',()=>{if(window.innerWidth<=900)close();}));
-  // scrollspy: marca la sección activa
+  // menú colapsable (acordeón): abrir un grupo cierra los demás
+  const grps=[...document.querySelectorAll('#navLinks .navgrp')];
+  const openOnly=g=>grps.forEach(x=>x.classList.toggle('open',x===g));
+  grps.forEach(g=>{const h=g.querySelector('.navhead');
+    if(h)h.onclick=()=>{const was=g.classList.contains('open');grps.forEach(x=>x.classList.remove('open'));if(!was)g.classList.add('open');};});
+  // scrollspy: marca la sección activa y abre su grupo
   const secs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
   const spy=()=>{let cur=secs[0];const y=window.scrollY+120;
     for(const s of secs){if(s.offsetTop<=y)cur=s;}
-    links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+(cur&&cur.id)));};
+    let actGrp=null;
+    links.forEach(a=>{const on=a.getAttribute('href')==='#'+(cur&&cur.id);a.classList.toggle('active',on);if(on)actGrp=a.closest('.navgrp');});
+    if(actGrp&&!actGrp.classList.contains('open'))openOnly(actGrp);};
   window.addEventListener('scroll',spy,{passive:true}); spy();
 })();
 
@@ -1385,6 +1442,86 @@ $('#modeSwitch').onclick=function(){this.classList.toggle('on');document.body.cl
   const pa=$('#plArquero');const A=PL.arquero;
   if(pa)pa.innerHTML=`<span class="badge b-dato">ARQUERO</span> <b>${A.nombre}</b> — ${A.MP} PJ, rating ${A.rating}, ${A.saves} atajadas, ${A.savepct}% de paradas, ${A.pass_pct}% de pase. <span class="badge b-hip">LECTURA</span> ${A.lectura}`;
   const pff=$('#plFoot');if(pff)pff.innerHTML=`<b>Fuente y límite.</b> ${PL.meta.fuente} ${PL.meta.limite} (${PL.meta.n} jugadores de campo con minutos).`;
+})();
+
+/* ===== COPA CHILE ===== */
+(function(){
+  if(typeof COPACHILE==='undefined')return;
+  const C=COPACHILE, COQ=C.coquimboId;
+  const note=document.getElementById('ccNote');
+  if(note)note.innerHTML=`<span class="badge b-dato">DATO</span> ${C.fase} · fuente ${C.fuente} (freshness ${C.freshness}). ${C.nota}`;
+  const gwrap=document.getElementById('ccGroups');
+  if(gwrap){
+    gwrap.innerHTML=Object.entries(C.groups).map(([gn,rows])=>{
+      const body=rows.map(r=>{
+        const isCoq=r.id===COQ, isLead=r.pos===1;
+        const bg=isCoq?'background:rgba(255,210,0,.10)':(isLead?'background:rgba(79,214,201,.08)':'');
+        const nm=isCoq?`<b style="color:var(--gold)">${r.team}</b>`:(isLead?`<b>${r.team}</b>`:r.team);
+        return `<tr style="border-top:1px solid var(--line);${bg}">`+
+          `<td style="padding:3px 6px;text-align:center">${r.pos}</td>`+
+          `<td style="padding:3px 6px">${nm}</td>`+
+          `<td style="padding:3px 6px;text-align:center">${r.pj}</td>`+
+          `<td style="padding:3px 6px;text-align:center">${r.w}-${r.d}-${r.l}</td>`+
+          `<td style="padding:3px 6px;text-align:center">${r.gf}:${r.ga}</td>`+
+          `<td style="padding:3px 6px;text-align:center">${r.gd>=0?'+':''}${r.gd}</td>`+
+          `<td style="padding:3px 6px;text-align:center"><b>${r.pts}</b></td></tr>`;}).join('');
+      return `<div class="card"><h4>${gn}</h4>`+
+        `<table style="width:100%;border-collapse:collapse;font-size:12px">`+
+        `<thead><tr style="color:var(--gold);text-align:center"><th style="padding:3px 6px">#</th>`+
+        `<th style="padding:3px 6px;text-align:left">Equipo</th><th>PJ</th><th>V-E-D</th><th>Goles</th><th>DG</th><th>Pts</th></tr></thead>`+
+        `<tbody>${body}</tbody></table></div>`;}).join('');
+  }
+  const lt=document.getElementById('ccLeaders');
+  if(lt){
+    const leaders=Object.entries(C.groups).map(([gn,rows])=>({gn,...rows[0]}));
+    const body=leaders.map(l=>{const isCoq=l.id===COQ;
+      return `<tr style="border-top:1px solid var(--line)${isCoq?';background:rgba(255,210,0,.10)':''}">`+
+        `<td style="padding:4px 6px">${l.gn}</td>`+
+        `<td style="padding:4px 6px">${isCoq?`<b style="color:var(--gold)">${l.team}</b>`:`<b>${l.team}</b>`}</td>`+
+        `<td style="padding:4px 6px;text-align:center">${l.pj}</td>`+
+        `<td style="padding:4px 6px;text-align:center">${l.w}-${l.d}-${l.l}</td>`+
+        `<td style="padding:4px 6px;text-align:center">${l.gd>=0?'+':''}${l.gd}</td>`+
+        `<td style="padding:4px 6px;text-align:center"><b>${l.pts}</b></td></tr>`;}).join('');
+    lt.innerHTML='<thead><tr style="color:var(--gold);text-align:left"><th style="padding:4px 6px">Grupo</th><th style="padding:4px 6px">Líder</th><th style="text-align:center">PJ</th><th style="text-align:center">V-E-D</th><th style="text-align:center">DG</th><th style="text-align:center">Pts</th></tr></thead><tbody>'+body+'</tbody>';
+  }
+  const ft=document.getElementById('ccFoot');
+  if(ft)ft.innerHTML=`<b>Límite honesto.</b> CFDB no confirma el cierre de fase (partidos jugados desiguales entre equipos, 6 a 8). Los líderes son DATO; la clasificación definitiva se confirma con la próxima ronda. Actualizado ${C.actualizado}.`;
+})();
+
+/* ===== ESTILO DE EQUIPO (datalabs, Primera A 2025) ===== */
+(function(){
+  const box=document.getElementById('estiloDL');
+  if(!box||typeof ESTILO==='undefined')return;
+  const E=ESTILO, Q=E.coquimbo, N=E.n;
+  const DEF=[
+    {k:"posesion",lab:"Posesión",unit:"%",hint:"controlar el balón"},
+    {k:"tiros",lab:"Tiros por partido",unit:"",hint:"volumen ofensivo"},
+    {k:"pases",lab:"% de pases completados",unit:"%",hint:"precisión / juego elaborado"},
+    {k:"corners",lab:"Córners (total)",unit:"",hint:"llegada por bandas / balón parado"},
+    {k:"amarillas",lab:"Amarillas (total)",unit:"",hint:"menos = más disciplina"}
+  ];
+  const maxOf=k=>Math.max(...E.teams.map(t=>t[k]||0));
+  const rows=DEF.map(d=>{
+    const v=Q[d.k], avg=E.avg[d.k], rk=Q.rank[d.k], mx=maxOf(d.k)||1;
+    const vp=Math.max(2,Math.round(v/mx*100)), ap=Math.round(avg/mx*100);
+    const good=(rk<=Math.ceil(N/3)), bad=(rk>N-Math.ceil(N/3));
+    const rkcol=d.k==='amarillas'?(rk>=N-2?'var(--green)':(rk<=3?'var(--red)':'var(--mut)'))
+                :(good?'var(--gold)':(bad?'var(--red)':'var(--mut)'));
+    return `<div style="margin:9px 0">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:13px">
+        <span>${d.lab} <span class="sub" style="font-size:11px">· ${d.hint}</span></span>
+        <span><b style="color:var(--gold)">${v}${d.unit}</b> <span style="color:${rkcol};font-weight:700;font-size:12px">${rk}º/${N}</span></span>
+      </div>
+      <div style="position:relative;height:9px;background:rgba(255,255,255,.06);border-radius:6px;margin-top:4px;overflow:visible">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:${vp}%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:6px"></div>
+        <div title="Media liga ${avg}${d.unit}" style="position:absolute;left:${ap}%;top:-3px;bottom:-3px;width:2px;background:var(--teal)"></div>
+      </div></div>`;}).join('');
+  box.innerHTML=
+    `<div class="sub" style="margin-bottom:6px"><span class="badge b-ver">2ª FUENTE · datalabs</span> <span class="badge b-dato">PRIMERA A 2025</span> Barra dorada = Coquimbo · línea <span style="color:var(--teal)">teal</span> = media de la liga (${N} equipos).</div>`+
+    rows+
+    `<div class="callout" style="margin-top:12px"><span class="badge b-hip">LECTURA TÁCTICA</span> Coquimbo es de <b>mínimo control</b>: <b>último en posesión (${Q.posesion}%) y en % de pases (${Q.pases}%)</b>, y penúltimo en tiros — pero <b>${Q.rank.corners}º en córners</b>. Perfil <b>directo y de balón parado</b>: no construye, llega por segundas jugadas y centros. Refuerza la tesis del scouting: el déficit no es volumen, es <b>creación en Zona 14</b> que convierta esas llegadas en ocasiones claras.</div>`+
+    (typeof CREADORES!=='undefined'?`<div class="sub" style="margin-top:8px"><b>Creadores de la liga (2025, top asistencias):</b> ${CREADORES.players.slice(0,5).map(c=>`${c.n} (${c.a}A/${c.g}G)`).join(' · ')}. <span class="badge b-ver">datalabs</span> referencia de perfil, no plantilla actual.</div>`:'')+
+    `<p class="foot" style="padding-top:10px">${E.procedencia}</p>`;
 })();
 </script>
 </body>
