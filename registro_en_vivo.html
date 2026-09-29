@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Registro Táctico en Vivo · Coquimbo Unido</title>
+<meta name="description" content="Registro de eventos tácticos en vivo — Football Tactical Analysis Framework">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="registro_core.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  :root{
+    --bg0:#0a0d11;--bg1:#0e1319;--panel:#151b22;--panel2:#1b222b;--panel3:#212a34;
+    --gold:#ffd21f;--gold2:#e8bd00;--gold-ink:#0a0d11;
+    --white:#f4f7fa;--txt:#dfe6ec;--mut:#aab8c4;--mut2:#7f8c98;
+    --blue:#4a90ff;--violet:#a78bfa;--teal:#3fd0c4;--green:#38d98a;--amber:#f5a623;--orange:#ff8a5c;--red:#ff5f5f;
+    --line:rgba(255,255,255,.075);--line-strong:rgba(255,255,255,.14);--line-gold:rgba(255,210,0,.22);
+    --sh:inset 0 1px 0 rgba(255,255,255,.05),0 6px 18px rgba(0,0,0,.38);--r:14px;--r-sm:9px;
+    --f-display:'Barlow Condensed','Segoe UI',system-ui,sans-serif;--f-body:'Inter','Segoe UI',system-ui,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--f-body);color:var(--txt);line-height:1.5;
+    background:radial-gradient(1200px 700px at 18% -8%,#14202c 0,#0d131a 52%,#090c10 100%) fixed;-webkit-tap-highlight-color:transparent}
+  h1,h2,h3,.brand,.disp{font-family:var(--f-display);letter-spacing:.3px}
+  a{color:var(--teal);text-decoration:none}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+  .num{font-variant-numeric:tabular-nums}
+  /* ---- barra superior fija: marca + cronómetro + marcador (siempre visible) ---- */
+  .stickytop{position:sticky;top:0;z-index:60}
+  .top{background:rgba(8,11,15,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-gold)}
+  .topin{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:8px 14px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;color:var(--white)}
+  .crest{width:26px;height:26px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);box-shadow:0 0 10px rgba(255,210,0,.35);flex:none}
+  .scorebox{display:flex;align-items:center;gap:10px;margin-left:auto;font-family:var(--f-display)}
+  .scoreteams{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;text-align:right;line-height:1.15}
+  .scoreN{font-size:30px;font-weight:800;color:var(--gold);line-height:1}
+  .clockbox{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:5px 12px}
+  .clockN{font-family:var(--f-display);font-size:26px;font-weight:800;color:var(--white);letter-spacing:1px}
+  .clockmeta{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;line-height:1.2}
+  .stpill{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(255,210,0,.14);color:var(--gold);border:1px solid var(--line-gold)}
+  .stpill.run{background:rgba(56,217,138,.16);color:var(--green);border-color:rgba(56,217,138,.4)}
+  .stpill.pause{background:rgba(245,166,35,.16);color:var(--amber);border-color:rgba(245,166,35,.4)}
+  .stpill.fin{background:rgba(255,95,95,.16);color:var(--red);border-color:rgba(255,95,95,.4)}
+  /* ---- navegación de vistas ---- */
+  .tabs{background:rgba(8,11,15,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tabsin{max-width:1080px;margin:0 auto;display:flex;gap:2px;padding:6px 10px}
+  .tab{flex:0 0 auto;background:none;border:0;color:var(--mut);font-family:var(--f-display);font-size:14px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.8px;padding:8px 13px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:.15s}
+  .tab:hover{color:var(--white);background:rgba(255,255,255,.04)}
+  .tab.active{color:var(--gold-ink);background:linear-gradient(180deg,var(--gold),var(--gold2))}
+  main{max-width:1080px;margin:0 auto;padding:16px 14px 120px}
+  .view{display:none}.view.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  h2{font-size:22px;margin:4px 0 2px;display:flex;align-items:center;gap:9px}
+  h2::before{content:"";width:6px;height:20px;background:var(--gold);border-radius:3px}
+  h3{font-size:13px;color:var(--gold);text-transform:uppercase;letter-spacing:.7px;margin:18px 0 6px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-top:12px}
+  .grid{display:grid;gap:12px}
+  @media(min-width:640px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}}
+  /* ---- formularios ---- */
+  label{display:block;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:10px 0 3px;font-weight:600}
+  label .req{color:var(--gold)}
+  input,select,textarea{width:100%;background:var(--bg1);border:1px solid var(--line-strong);color:var(--white);
+    border-radius:9px;padding:10px 12px;font-family:var(--f-body);font-size:15px}
+  textarea{min-height:70px;resize:vertical}
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);outline:none}
+  .err{color:var(--red);font-size:12.5px;margin-top:6px}
+  /* ---- botones ---- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--panel3);color:var(--white);
+    border:1px solid var(--line-strong);border-radius:10px;padding:11px 16px;font-family:var(--f-body);font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+  .btn:hover{border-color:var(--gold);background:var(--panel2)}
+  .btn.primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--gold-ink);border:0;font-weight:700}
+  .btn.ghost{background:none}
+  .btn.danger{border-color:rgba(255,95,95,.45);color:var(--red)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  /* ---- botones de evento (grandes, táctiles) ---- */
+  .evgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media(max-width:560px){.evgrid{grid-template-columns:1fr 1fr}}
+  .evbtn{position:relative;border:0;border-radius:14px;padding:20px 12px;color:#06131f;font-family:var(--f-display);
+    font-weight:800;font-size:17px;letter-spacing:.4px;cursor:pointer;min-height:84px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:4px;text-align:center;transition:transform .08s,filter .15s;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+  .evbtn:hover{filter:brightness(1.08)}
+  .evbtn:active{transform:scale(.96)}
+  .evbtn .k{position:absolute;top:6px;right:8px;font-size:11px;opacity:.6;font-family:var(--f-body);font-weight:700}
+  .evbtn .c{font-size:12px;font-weight:700;opacity:.85;font-family:var(--f-body)}
+  .evbtn.corner_for{background:var(--blue)}
+  .evbtn.free_kick_for{background:var(--violet);color:#0a0713}
+  .evbtn.goal_for{background:var(--green)}
+  .evbtn.corner_against{background:var(--orange)}
+  .evbtn.free_kick_against{background:var(--red);color:#fff}
+  .evbtn.goal_against{background:#e23a3a;color:#fff}
+  .evsect{margin-top:8px}
+  .evsect h3{margin-top:6px}
+  /* ---- KPIs ---- */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+  .kpi{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .kpi .v{font-family:var(--f-display);font-size:26px;font-weight:800;color:var(--gold)}
+  .kpi .l{font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+  /* ---- tabla ---- */
+  .scroll-x{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;vertical-align:middle}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase;cursor:pointer}
+  tr:hover td{background:rgba(255,210,0,.04)}
+  .chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+  .chip.off{background:rgba(74,144,255,.16);color:var(--blue);border:1px solid rgba(74,144,255,.4)}
+  .chip.def{background:rgba(245,166,35,.16);color:var(--amber);border:1px solid rgba(245,166,35,.4)}
+  .mini{background:none;border:1px solid var(--line-strong);color:var(--mut);border-radius:7px;padding:4px 8px;cursor:pointer;font-size:12px}
+  .mini:hover{color:var(--white);border-color:var(--gold)}
+  .empty{text-align:center;color:var(--mut);padding:34px 16px;border:1px dashed var(--line-strong);border-radius:14px;margin-top:12px}
+  .empty .big{font-size:34px;margin-bottom:6px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .filters select,.filters input{width:auto;min-width:120px;padding:7px 10px;font-size:13px}
+  .chart-wrap{position:relative;height:260px}
+  /* ---- toast / undo ---- */
+  #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:calc(100% - 28px);max-width:460px}
+  .toast{pointer-events:auto;background:#0c1219;border:1px solid var(--line-gold);border-radius:12px;padding:11px 14px;
+    box-shadow:0 12px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:12px;width:100%;animation:pop .18s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .toast .tmsg{font-size:14px;font-weight:600;flex:1}
+  .toast .dot{width:10px;height:10px;border-radius:50%;flex:none}
+  .toast.ok{border-color:rgba(56,217,138,.5)}
+  .toast.warn{border-color:rgba(245,166,35,.5)}
+  .toast.err{border-color:rgba(255,95,95,.5)}
+  .toast button{background:var(--gold);color:#000;border:0;border-radius:8px;padding:6px 12px;font-weight:800;cursor:pointer;font-size:13px}
+  /* ---- guardado ---- */
+  .savepill{font-size:11px;color:var(--mut);display:flex;align-items:center;gap:6px}
+  .savepill .d{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+  .savepill.saving .d{background:var(--amber)}
+  .savepill.ok .d{background:var(--green)}
+  .savepill.err .d{background:var(--red)}
+  /* ---- modal ---- */
+  .modal{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
+  .modal.show{display:flex}
+  @media(min-width:640px){.modal{align-items:center}}
+  .modal .box{background:var(--panel);border:1px solid var(--line-gold);border-radius:18px 18px 0 0;width:100%;max-width:560px;max-height:88vh;overflow:auto;padding:18px}
+  @media(min-width:640px){.modal .box{border-radius:18px}}
+  .modal h3{margin-top:0}
+  .stars{display:flex;gap:6px}
+  .star{flex:1;background:var(--bg1);border:1px solid var(--line-strong);color:var(--mut);border-radius:8px;padding:8px;cursor:pointer;font-weight:700}
+  .star.on{background:var(--gold);color:#000;border-color:var(--gold)}
+  .foot{color:var(--mut);font-size:12px;margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:rgba(255,210,0,.16);color:var(--gold);border:1px solid var(--line-gold)}
+  .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.06);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0;font-size:13.5px}
+  .callout.warn{border-color:var(--amber);background:rgba(245,166,35,.07)}
+  .pitch{display:grid;grid-template-rows:repeat(3,1fr);gap:4px;height:150px;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden}
+  .pzone{display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:12px;color:var(--mut)}
+  .pzone b{font-family:var(--f-display);font-size:18px;color:var(--white)}
+  /* selector de sector (izquierda/centro/derecha) — táctil */
+  .segmented{display:flex;gap:6px;margin:4px 0 12px}
+  .segmented button{flex:1;background:var(--bg1);border:1px solid var(--line-strong);color:var(--mut);border-radius:10px;
+    padding:13px 8px;font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.3px;cursor:pointer;min-height:48px;transition:.12s}
+  .segmented button:hover{color:var(--white)}
+  .segmented button.on{background:var(--gold);color:#000;border-color:var(--gold)}
+  .sidechip{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:5px;background:var(--panel3);color:var(--mut);border:1px solid var(--line-strong)}
+  /* afinado para teléfonos pequeños */
+  @media(max-width:560px){
+    .topin{gap:9px;padding:7px 12px}
+    .brand{font-size:13px} .brand span:last-child{display:none}
+    .clockN{font-size:22px} .scoreN{font-size:24px} .scorebox{gap:7px} .scoreteams{font-size:11px}
+    main{padding:14px 11px calc(120px + env(safe-area-inset-bottom))}
+    h2{font-size:20px}
+    .evbtn{font-size:15px;min-height:76px;padding:16px 8px}
+    .btn{padding:12px 14px} .tab{font-size:13px;padding:8px 11px}
+  }
+  @media(max-width:380px){ .evgrid{grid-template-columns:1fr 1fr} .segmented button{font-size:13px;padding:12px 4px} }
+  #toast{bottom:calc(24px + env(safe-area-inset-bottom))}
+  @media print{
+    .top,.tabs,#toast,.modal,.btnrow,.filters,.tab,.segmented,.no-print{display:none!important}
+    body{background:#fff!important;color:#111!important}
+    .view:not(.active){display:none}
+    main{padding:0;max-width:100%}
+    .card{background:#fff!important;border:1px solid #ccc!important;box-shadow:none!important;break-inside:avoid}
+    h2,h3,.kpi .v{color:#111!important}
+  }
+</style>
+</head>
+<body>
+<!-- ===== BARRA SUPERIOR (marcador + cronómetro siempre visibles) ===== -->
+<div class="stickytop">
+<header class="top">
+  <div class="topin">
+    <div class="brand"><span class="crest"></span><span>REGISTRO EN VIVO</span></div>
+    <div class="clockbox" title="Cronómetro del partido">
+      <div>
+        <div class="clockN num" id="clockN">00:00</div>
+        <div class="clockmeta"><span class="stpill" id="stPill">No iniciado</span></div>
+      </div>
+    </div>
+    <div class="scorebox">
+      <div class="scoreteams"><span id="scTeamA">Equipo</span> vs <span id="scTeamB">Rival</span></div>
+      <div class="scoreN num"><span id="scA">0</span>-<span id="scB">0</span></div>
+    </div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Secciones">
+  <div class="tabsin" id="tabsin">
+    <button class="tab active" data-view="config">Configuración</button>
+    <button class="tab" data-view="tracker">Registro</button>
+    <button class="tab" data-view="eventos">Eventos</button>
+    <button class="tab" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="informe">Informe</button>
+    <button class="tab" data-view="exportar">Exportar</button>
+    <button class="tab" data-view="historial">Historial</button>
+  </div>
+</nav>
+</div>
+
+<main>
+  <!-- ===== CONFIGURACIÓN ===== -->
+  <section class="view active" id="v-config">
+    <h2>Configuración de sesión</h2>
+    <p class="sub">Completa los datos del partido. Los campos con <span style="color:var(--gold)">*</span> son obligatorios.</p>
+    <div class="card">
+      <div class="grid g2">
+        <div><label>Equipo analizado <span class="req">*</span></label><input id="f_analyzedTeam" autocomplete="off" placeholder="Ej: Coquimbo Unido"></div>
+        <div><label>Equipo rival <span class="req">*</span></label><input id="f_opponentTeam" autocomplete="off" placeholder="Ej: Colo-Colo"></div>
+        <div><label>Fecha del partido <span class="req">*</span></label><input id="f_matchDate" type="date"></div>
+        <div><label>Analista responsable <span class="req">*</span></label><input id="f_analyst" autocomplete="off" placeholder="Tu nombre"></div>
+        <div><label>Competición o torneo</label><input id="f_competition" autocomplete="off" placeholder="Ej: Primera División 2026"></div>
+        <div><label>Categoría</label><input id="f_category" autocomplete="off" placeholder="Ej: Adulto profesional"></div>
+        <div><label>Estadio o lugar</label><input id="f_venue" autocomplete="off" placeholder="Ej: Estadio Francisco Sánchez Rumoroso"></div>
+        <div><label>Sistema táctico inicial (analizado)</label><input id="f_analyzedTeamFormation" autocomplete="off" placeholder="Ej: 1-4-3-3"></div>
+        <div><label>Sistema táctico inicial (rival)</label><input id="f_opponentFormation" autocomplete="off" placeholder="Ej: 1-4-4-2"></div>
+      </div>
+      <label>Observaciones previas al partido</label>
+      <textarea id="f_preMatchNotes" placeholder="Contexto, plan de partido, focos de observación…"></textarea>
+      <div id="configErr" class="err" hidden></div>
+      <div class="btnrow">
+        <button class="btn primary" id="btnStartSession">▶ Iniciar sesión de análisis</button>
+        <button class="btn ghost" id="btnDemo">Cargar sesión de demostración</button>
+      </div>
+      <p class="sub" style="margin-top:10px">Al iniciar se crea un identificador único <code style="color:var(--gold)">MATCH-AAAAMMDD-HHMMSS</code> y la sesión se guarda antes del registro en vivo.</p>
+    </div>
+    <div class="card" id="activeSessionCard" hidden>
+      <h3>Sesión activa</h3>
+      <div id="activeSessionInfo"></div>
+      <div class="btnrow">
+        <button class="btn" data-goto="tracker">Ir al registro →</button>
+        <button class="btn danger" id="btnCloseSession">Cerrar sesión activa</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== REGISTRO (cronómetro + botones + timeline) ===== -->
+  <section class="view" id="v-tracker">
+    <h2>Registro en vivo</h2>
+    <div id="noSession" class="empty"><div class="big">⏱️</div>No hay sesión activa. Ve a <b>Configuración</b> e inicia una sesión de análisis para comenzar a registrar.</div>
+    <div id="trackerBody" hidden>
+      <div class="card">
+        <h3>Cronómetro y período</h3>
+        <div class="btnrow" id="clockControls"></div>
+        <div class="savepill" id="savePill" style="margin-top:8px"><span class="d"></span><span id="saveTxt">Guardado</span></div>
+      </div>
+
+      <div class="card evsect">
+        <h3>Sector del campo <span class="sub" style="text-transform:none;letter-spacing:0">· se aplica al registrar (teclas ← ↓ →)</span></h3>
+        <div class="segmented" id="sideSel" role="group" aria-label="Sector del campo">
+          <button type="button" data-side="left">◀ Izquierda</button>
+          <button type="button" data-side="center" class="on">Centro</button>
+          <button type="button" data-side="right">Derecha ▶</button>
+        </div>
+        <h3 style="color:var(--blue)">Organización ofensiva · <span class="sub" style="text-transform:none;letter-spacing:0">acciones a favor</span></h3>
+        <div class="evgrid" id="offButtons"></div>
+        <h3 style="color:var(--amber)">Organización defensiva · <span class="sub" style="text-transform:none;letter-spacing:0">acciones en contra</span></h3>
+        <div class="evgrid" id="defButtons"></div>
+        <p class="sub" style="margin-top:10px">Un clic registra el evento con su minuto y período. Atajos de teclado: <b>1–6</b> eventos · <b>Espacio</b> pausa/reanuda. Tras registrar puedes <b>Deshacer</b> (10 s) o <b>Completar</b> detalles.</p>
+      </div>
+
+      <div class="card">
+        <h3>Últimos eventos</h3>
+        <div id="quickTimeline"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EVENTOS ===== -->
+  <section class="view" id="v-eventos">
+    <h2>Eventos del partido</h2>
+    <div class="filters">
+      <select id="flt_period"><option value="">Todos los períodos</option></select>
+      <select id="flt_org"><option value="">Ofensiva y defensiva</option><option value="offensive">Ofensiva</option><option value="defensive">Defensiva</option></select>
+      <select id="flt_type"><option value="">Todos los eventos</option></select>
+      <input id="flt_min" type="number" min="0" placeholder="Min. desde" style="width:110px">
+      <input id="flt_max" type="number" min="0" placeholder="Min. hasta" style="width:110px">
+      <input id="flt_text" placeholder="Buscar en observaciones…">
+      <button class="mini" id="flt_clear">Limpiar</button>
+    </div>
+    <div id="eventosEmpty" class="empty" hidden><div class="big">📋</div>Sin eventos registrados todavía.</div>
+    <div class="scroll-x"><table id="eventsTable"></table></div>
+  </section>
+
+  <!-- ===== DASHBOARD ===== -->
+  <section class="view" id="v-dashboard">
+    <h2>Dashboard en vivo</h2>
+    <div class="kpis" id="dashKpis" style="margin-top:12px"></div>
+    <div class="grid g2">
+      <div class="card"><h3>Eventos a favor vs. en contra</h3><div class="chart-wrap"><canvas id="chFavContra"></canvas></div></div>
+      <div class="card"><h3>Distribución por período</h3><div class="chart-wrap"><canvas id="chPeriodo"></canvas></div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><h3>Línea de tiempo de eventos</h3><div class="chart-wrap"><canvas id="chTimeline"></canvas></div></div>
+      <div class="card"><h3>Distribución por zona del campo</h3><div class="pitch" id="pitchZones"></div>
+        <p class="sub" style="margin-top:8px">Conteo de eventos por tercio/área (según información complementaria registrada).</p></div>
+    </div>
+  </section>
+
+  <!-- ===== INFORME ===== -->
+  <section class="view" id="v-informe">
+    <h2>Informe de sesión</h2>
+    <div id="informeBody"></div>
+  </section>
+
+  <!-- ===== EXPORTAR ===== -->
+  <section class="view" id="v-exportar">
+    <h2>Exportar y compartir</h2>
+    <div id="exportBody"></div>
+  </section>
+
+  <!-- ===== HISTORIAL ===== -->
+  <section class="view" id="v-historial">
+    <h2>Historial de sesiones</h2>
+    <div class="filters">
+      <input id="hist_text" placeholder="Buscar por equipo, analista, competición…">
+      <select id="hist_arch"><option value="active">Activas</option><option value="archived">Archivadas</option><option value="all">Todas</option></select>
+    </div>
+    <div id="historialBody"></div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<!-- Modal detalle de evento -->
+<div class="modal" id="evModal"><div class="box" id="evModalBox"></div></div>
+
+<script>
+/* ============================================================================
+ * Registro Táctico en Vivo — capa de aplicación (UI + persistencia).
+ * La lógica pura vive en registro_core.js (RegCore). Aquí: repositorio,
+ * estado, render de vistas y manejadores. Comentarios solo donde aporta.
+ * ==========================================================================*/
+(function(){
+'use strict';
+const C = window.RegCore;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const el = (t,props,html)=>{const e=document.createElement(t);if(props)Object.assign(e,props);if(html!=null)e.innerHTML=html;return e;};
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------- Repositorio (IndexedDB con fallback a localStorage) ------ */
+const Repo = (function(){
+  const DB='ftaf_registro_v1', STORE='sessions', LS_PREFIX='ftaf_sess_', LS_INDEX='ftaf_index';
+  let db=null, useLS=false;
+  function open(){
+    return new Promise((res)=>{
+      if(!('indexedDB' in window)){useLS=true;return res();}
+      let r;
+      try{ r=indexedDB.open(DB,1); }catch(e){ useLS=true; return res(); }
+      r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};
+      r.onsuccess=e=>{db=e.target.result;res();};
+      r.onerror=()=>{useLS=true;res();};
+    });
+  }
+  function tx(mode){return db.transaction(STORE,mode).objectStore(STORE);}
+  function put(doc){
+    doc.updatedAt=new Date().toISOString();
+    if(useLS){
+      try{
+        localStorage.setItem(LS_PREFIX+doc.id, JSON.stringify(doc));
+        const idx=JSON.parse(localStorage.getItem(LS_INDEX)||'[]');
+        if(idx.indexOf(doc.id)<0){idx.push(doc.id);localStorage.setItem(LS_INDEX,JSON.stringify(idx));}
+        return Promise.resolve(doc);
+      }catch(e){return Promise.reject(e);}
+    }
+    return new Promise((res,rej)=>{const r=tx('readwrite').put(doc);r.onsuccess=()=>res(doc);r.onerror=()=>rej(r.error);});
+  }
+  function get(id){
+    if(useLS){const v=localStorage.getItem(LS_PREFIX+id);return Promise.resolve(v?JSON.parse(v):null);}
+    return new Promise((res,rej)=>{const r=tx('readonly').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error);});
+  }
+  function all(){
+    if(useLS){const idx=JSON.parse(localStorage.getItem(LS_INDEX)||'[]');return Promise.resolve(idx.map(id=>{const v=localStorage.getItem(LS_PREFIX+id);return v?JSON.parse(v):null;}).filter(Boolean));}
+    return new Promise((res,rej)=>{const out=[];const r=tx('readonly').openCursor();r.onsuccess=e=>{const c=e.target.result;if(c){out.push(c.value);c.continue();}else res(out);};r.onerror=()=>rej(r.error);});
+  }
+  function del(id){
+    if(useLS){localStorage.removeItem(LS_PREFIX+id);const idx=JSON.parse(localStorage.getItem(LS_INDEX)||'[]').filter(x=>x!==id);localStorage.setItem(LS_INDEX,JSON.stringify(idx));return Promise.resolve();}
+    return new Promise((res,rej)=>{const r=tx('readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});
+  }
+  return {open,put,get,all,del,mode:()=>useLS?'localStorage':'IndexedDB'};
+})();
+
+/* ---------------- Estado ---------------- */
+const State = {
+  session:null, events:[], report:null,
+  prevStatus:'not_started',
+  currentSide:'center',   // sector aplicado al registrar (left/center/right)
+  undo:null, undoTimer:null,
+  lastPress:{},        // dedupe por tipo
+  saveTimer:null,
+  charts:{}
+};
+const SIDE_ABBR={left:'Izq',center:'Cen',right:'Der',unspecified:'—'};
+function setSide(side){
+  if(!C.FIELD_SIDES[side])return;
+  State.currentSide=side;
+  const box=document.getElementById('sideSel');
+  if(box)box.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.side===side));
+}
+function initSideSelector(){
+  const box=document.getElementById('sideSel'); if(!box)return;
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>setSide(b.dataset.side));
+  setSide(State.currentSide);
+}
+const CURRENT_KEY='ftaf_current_session';
+
+/* ---------------- Guardado ---------------- */
+function setSave(state){
+  const p=$('#savePill'), t=$('#saveTxt'); if(!p)return;
+  p.className='savepill '+(state==='saving'?'saving':state==='ok'?'ok':state==='err'?'err':'');
+  t.textContent = state==='saving'?'Guardando…':state==='ok'?'Guardado correctamente':state==='err'?'Error de guardado':'Guardado';
+}
+function docOf(){return {id:State.session.id, session:State.session, events:State.events, report:State.report, archived:!!State.session.archived};}
+function save(){
+  if(!State.session)return;
+  setSave('saving');
+  State.session.updatedAt=new Date().toISOString();
+  State.session.elapsedSeconds=C.computeElapsedSeconds(State.session.clockSegments);
+  State.session.scoreFor=C.computeScore(State.events).scoreFor;
+  State.session.scoreAgainst=C.computeScore(State.events).scoreAgainst;
+  Repo.put(docOf()).then(()=>setSave('ok')).catch(()=>{setSave('err');toast('No se pudo guardar la sesión','err');});
+}
+function saveDebounced(){clearTimeout(State.saveTimer);State.saveTimer=setTimeout(save,250);}
+
+/* ---------------- Toast + Undo ---------------- */
+function toast(msg,kind,undoFn){
+  const box=$('#toast');
+  const t=el('div',{className:'toast '+(kind||'')});
+  const dotColor = kind==='ok'?'var(--green)':kind==='warn'?'var(--amber)':kind==='err'?'var(--red)':'var(--gold)';
+  t.innerHTML='<span class="dot" style="background:'+dotColor+'"></span><span class="tmsg">'+esc(msg)+'</span>';
+  if(undoFn){const b=el('button',{},'Deshacer');b.onclick=()=>{undoFn();t.remove();};t.appendChild(b);}
+  box.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);}, undoFn?10000:2600);
+}
+
+/* ---------------- Cronómetro (tick por marcas de tiempo) ---------------- */
+function clockTick(){
+  if(!State.session){$('#clockN').textContent='00:00';return;}
+  const sec=C.computeElapsedSeconds(State.session.clockSegments);
+  $('#clockN').textContent=C.formatMMSS(sec);
+  const st=State.session.status;
+  const pill=$('#stPill'); pill.textContent=C.STATUS_LABELS[st]||st;
+  pill.className='stpill '+(st==='paused'?'pause':st==='finished'?'fin':C.isClockRunning(State.session.clockSegments)?'run':'');
+}
+setInterval(clockTick,250);
+
+/* ---------------- Marcador + barra superior ---------------- */
+function refreshTopbar(){
+  const s=State.session;
+  $('#scTeamA').textContent = s? (s.analyzedTeam||'Equipo') : 'Equipo';
+  $('#scTeamB').textContent = s? (s.opponentTeam||'Rival') : 'Rival';
+  const sc=C.computeScore(State.events||[]);
+  $('#scA').textContent=sc.scoreFor; $('#scB').textContent=sc.scoreAgainst;
+  clockTick();
+}
+
+/* ---------------- Navegación de vistas ---------------- */
+function go(view){
+  $$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===view));
+  $$('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+view));
+  if(view==='tracker')renderTracker();
+  if(view==='eventos')renderEvents();
+  if(view==='dashboard')renderDashboard();
+  if(view==='informe')renderInforme();
+  if(view==='exportar')renderExport();
+  if(view==='historial')renderHistorial();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$$('.tab').forEach(t=>t.onclick=()=>go(t.dataset.view));
+document.addEventListener('click',e=>{const g=e.target.closest('[data-goto]');if(g)go(g.dataset.goto);});
+
+/* ---------------- Configuración: iniciar sesión ---------------- */
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+C.pad2(d.getMonth()+1)+'-'+C.pad2(d.getDate());}
+$('#f_matchDate').value=todayISO();
+
+$('#btnStartSession').onclick=function(){
+  const s={
+    analyzedTeam:$('#f_analyzedTeam').value.trim(), opponentTeam:$('#f_opponentTeam').value.trim(),
+    matchDate:$('#f_matchDate').value, competition:$('#f_competition').value.trim(),
+    category:$('#f_category').value.trim(), venue:$('#f_venue').value.trim(), analyst:$('#f_analyst').value.trim(),
+    analyzedTeamFormation:$('#f_analyzedTeamFormation').value.trim(), opponentFormation:$('#f_opponentFormation').value.trim(),
+    preMatchNotes:$('#f_preMatchNotes').value.trim()
+  };
+  const errs=C.validateSession(s);
+  const box=$('#configErr');
+  if(errs.length){box.hidden=false;box.innerHTML=errs.map(esc).join('<br>');return;}
+  box.hidden=true;
+  const now=new Date();
+  Object.assign(s,{
+    id:C.genSessionId(now), status:'not_started', clockSegments:[], startedAt:null, finishedAt:null,
+    elapsedSeconds:0, scoreFor:0, scoreAgainst:0, archived:false, isDemo:false,
+    createdAt:now.toISOString(), updatedAt:now.toISOString()
+  });
+  State.session=s; State.events=[]; State.report=emptyReport(s.id); State.prevStatus='not_started';
+  localStorage.setItem(CURRENT_KEY,s.id);
+  save(); refreshTopbar();
+  toast('Sesión creada: '+s.id,'ok');
+  go('tracker');
+  renderActiveSessionCard();
+};
+
+function emptyReport(sessionId){
+  const now=new Date().toISOString();
+  return {id:'REP-'+sessionId, sessionId, executiveSummary:'', offensiveAnalysis:'', defensiveAnalysis:'',
+    offensiveSetPieces:'', defensiveSetPieces:'', strengths:'', improvementAreas:'', trainingRecommendations:'',
+    overallConclusion:'', createdAt:now, updatedAt:now};
+}
+
+function renderActiveSessionCard(){
+  const c=$('#activeSessionCard');
+  if(!State.session){c.hidden=true;return;}
+  c.hidden=false;
+  const s=State.session;
+  $('#activeSessionInfo').innerHTML =
+    '<div class="sub"><b style="color:var(--white)">'+esc(s.analyzedTeam)+'</b> vs <b style="color:var(--white)">'+esc(s.opponentTeam)+'</b>'+
+    (s.isDemo?' <span class="badge">DEMO</span>':'')+'</div>'+
+    '<div class="sub num">ID: '+esc(s.id)+' · '+esc(s.matchDate)+(s.competition?' · '+esc(s.competition):'')+'</div>'+
+    '<div class="sub">Analista: '+esc(s.analyst)+' · Estado: '+esc(C.STATUS_LABELS[s.status])+' · '+State.events.length+' eventos</div>';
+}
+$('#btnCloseSession').onclick=()=>{
+  if(!confirm('¿Cerrar la sesión activa? Queda guardada en el historial y puedes reabrirla cuando quieras.'))return;
+  State.session=null;State.events=[];State.report=null;localStorage.removeItem(CURRENT_KEY);
+  refreshTopbar();renderActiveSessionCard();renderTracker();toast('Sesión cerrada','ok');
+};
+
+/* ---------------- Controles de cronómetro ---------------- */
+const CLOCK_ACTIONS=[
+  {label:'▶ Iniciar 1.º tiempo', when:['not_started'], run:()=>setStatus('first_half',true)},
+  {label:'⏸ Pausar', when:['first_half','second_half','extra_time_first_half','extra_time_second_half'], run:pause},
+  {label:'▶ Reanudar', when:['paused'], run:resume},
+  {label:'⏹ Fin 1.º tiempo', when:['first_half'], run:()=>setStatus('halftime',false)},
+  {label:'▶ Iniciar 2.º tiempo', when:['halftime'], run:()=>setStatus('second_half',true)},
+  {label:'▶ Iniciar prórroga', when:['second_half','finished'], run:()=>setStatus('extra_time_first_half',true)},
+  {label:'⏹ Finalizar partido', when:['first_half','second_half','extra_time_first_half','extra_time_second_half','paused','halftime'], run:finishMatch},
+  {label:'↺ Reiniciar', when:['*'], danger:true, run:resetClock}
+];
+function renderClockControls(){
+  const box=$('#clockControls'); if(!box)return; box.innerHTML='';
+  const st=State.session?State.session.status:'not_started';
+  CLOCK_ACTIONS.forEach(a=>{
+    if(a.when[0]==='*'||a.when.indexOf(st)>=0){
+      const b=el('button',{className:'btn'+(a.danger?' danger':(a.label.indexOf('Iniciar')>=0||a.label.indexOf('Reanudar')>=0?' primary':''))},esc(a.label));
+      b.onclick=a.run; box.appendChild(b);
+    }
+  });
+}
+function setStatus(status,startClock){
+  const s=State.session; if(!s)return;
+  if(status==='first_half'&&!s.startedAt)s.startedAt=new Date().toISOString();
+  s.status=status;
+  if(startClock)s.clockSegments=C.clockStart(s.clockSegments);
+  State.prevStatus=status;
+  renderClockControls();saveDebounced();clockTick();
+}
+function pause(){const s=State.session;if(!s)return;State.prevStatus=s.status;s.status='paused';s.clockSegments=C.clockPause(s.clockSegments);renderClockControls();saveDebounced();clockTick();toast('Cronómetro pausado','warn');}
+function resume(){const s=State.session;if(!s)return;s.status=(State.prevStatus&&State.prevStatus!=='paused')?State.prevStatus:'first_half';s.clockSegments=C.clockResume(s.clockSegments);renderClockControls();saveDebounced();clockTick();toast('Cronómetro reanudado','ok');}
+function finishMatch(){
+  const s=State.session;if(!s)return;
+  if(!s.startedAt){if(!confirm('El cronómetro nunca se inició. ¿Finalizar la sesión de todos modos?'))return;}
+  s.status='finished';s.clockSegments=C.clockPause(s.clockSegments);s.finishedAt=new Date().toISOString();
+  renderClockControls();save();clockTick();toast('Partido finalizado','ok');go('informe');
+}
+function resetClock(){
+  if(!confirm('¿Reiniciar el cronómetro a 00:00? Esto NO borra los eventos, solo el tiempo. Acción irreversible.'))return;
+  const s=State.session;if(!s)return;
+  s.clockSegments=[];s.status='not_started';s.startedAt=null;State.prevStatus='not_started';
+  renderClockControls();save();clockTick();toast('Cronómetro reiniciado','warn');
+}
+
+/* ---------------- Registro de eventos ---------------- */
+function renderEventButtons(){
+  const off=$('#offButtons'), def=$('#defButtons'); if(!off)return; off.innerHTML='';def.innerHTML='';
+  Object.keys(C.EVENT_TYPES).forEach(type=>{
+    const m=C.EVENT_TYPES[type];
+    const b=el('button',{className:'evbtn '+type, type:'button'});
+    b.setAttribute('aria-label',m.label);
+    b.innerHTML='<span class="k">'+m.key+'</span>'+esc(m.label)+'<span class="c" id="cnt_'+type+'">0</span>';
+    b.onclick=()=>registerEvent(type);
+    (m.org==='offensive'?off:def).appendChild(b);
+  });
+  refreshCounters();
+}
+function refreshCounters(){
+  const s=C.aggregateStats(State.events);
+  Object.keys(C.EVENT_TYPES).forEach(t=>{const e=$('#cnt_'+t);if(e)e.textContent=s.counts[t];});
+}
+function registerEvent(type){
+  if(!State.session){toast('Primero crea una sesión','warn');go('config');return;}
+  const st=State.session.status;
+  if(st==='not_started'){toast('Inicia el cronómetro antes de registrar','warn');return;}
+  // dedupe: mismo tipo en <1s
+  const now=Date.now();
+  if(State.lastPress[type]&&now-State.lastPress[type]<1000){return;}
+  State.lastPress[type]=now;
+  // registro durante pausa
+  let registeredDuringPause=false, period=st;
+  if(st==='paused'){
+    if(!confirm('El cronómetro está en pausa. ¿Registrar el evento igualmente? Quedará marcado como "durante pausa".'))return;
+    registeredDuringPause=true; period=(State.prevStatus&&State.prevStatus!=='paused')?State.prevStatus:'first_half';
+  }
+  const total=C.computeElapsedSeconds(State.session.clockSegments);
+  const t=C.splitTime(total);
+  const nowIso=new Date().toISOString();
+  const ev={
+    id:C.genEventId(now), sessionId:State.session.id, eventType:type,
+    organization:C.organizationOf(type),
+    associatedTeam:C.associatedTeam(type,State.session.analyzedTeam,State.session.opponentTeam),
+    period, registeredDuringPause, minute:t.minute, second:t.second, totalElapsedSeconds:total,
+    fieldSide:State.currentSide||'unspecified', fieldZone:'unspecified', taker:'', involvedPlayer:'', outcome:'',
+    riskLevel:null, effectivenessLevel:null, tacticalTags:[], notes:'', videoUrl:'',
+    createdAt:nowIso, updatedAt:nowIso, deleted:false
+  };
+  State.events.push(ev);
+  save(); refreshTopbar(); refreshCounters(); renderQuickTimeline();
+  // deshacer
+  const label=C.EVENT_TYPES[type].label;
+  const sideTxt=(ev.fieldSide&&ev.fieldSide!=='unspecified')?' ('+SIDE_ABBR[ev.fieldSide]+')':'';
+  toast('Evento registrado: '+label+sideTxt+' — '+C.formatMMSS(total), 'ok', ()=>{
+    State.events=State.events.filter(x=>x.id!==ev.id);
+    save();refreshTopbar();refreshCounters();renderQuickTimeline();
+    toast('Registro deshecho','warn');
+  });
+  // ofrecer completar detalle (no invasivo): botón extra en el toast lo cubre "Completar" via timeline
+}
+function renderQuickTimeline(){
+  const box=$('#quickTimeline'); if(!box)return;
+  const evs=State.events.filter(e=>!e.deleted).slice(-6).reverse();
+  if(!evs.length){box.innerHTML='<div class="sub">Aún no hay eventos. Registra con los botones o las teclas 1–6.</div>';return;}
+  box.innerHTML=evs.map(ev=>{
+    const m=C.EVENT_TYPES[ev.eventType];
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)">'+
+      '<span class="num" style="font-family:var(--f-display);font-size:16px;color:var(--white);min-width:52px">'+C.formatMMSS(ev.totalElapsedSeconds)+'</span>'+
+      '<span class="chip '+(m.org==='offensive'?'off':'def')+'">'+(m.org==='offensive'?'OF':'DEF')+'</span>'+
+      '<span style="flex:1">'+esc(m.label)+((ev.fieldSide&&ev.fieldSide!=='unspecified')?' <span class="sidechip">'+SIDE_ABBR[ev.fieldSide]+'</span>':'')+(ev.registeredDuringPause?' <span class="badge">pausa</span>':'')+'</span>'+
+      '<button class="mini" data-detail="'+ev.id+'">Completar</button></div>';
+  }).join('');
+  box.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>openEventModal(b.dataset.detail));
+}
+function renderTracker(){
+  const has=!!State.session;
+  $('#noSession').hidden=has; $('#trackerBody').hidden=!has;
+  if(!has)return;
+  renderClockControls(); initSideSelector(); renderEventButtons(); renderQuickTimeline(); setSave('ok');
+}
+
+/* ---------------- Modal de detalle de evento ---------------- */
+function openEventModal(id){
+  const ev=State.events.find(e=>e.id===id); if(!ev)return;
+  const m=C.EVENT_TYPES[ev.eventType];
+  const sideOpts=Object.keys(C.FIELD_SIDES).map(k=>'<option value="'+k+'"'+(ev.fieldSide===k?' selected':'')+'>'+C.FIELD_SIDES[k]+'</option>').join('');
+  const zoneOpts=Object.keys(C.FIELD_ZONES).map(k=>'<option value="'+k+'"'+(ev.fieldZone===k?' selected':'')+'>'+C.FIELD_ZONES[k]+'</option>').join('');
+  const outOpts='<option value="">—</option>'+C.OUTCOMES.map(o=>'<option'+(ev.outcome===o?' selected':'')+'>'+o+'</option>').join('');
+  const stars=(field,val)=>'<div class="stars" data-stars="'+field+'">'+[1,2,3,4,5].map(n=>'<button type="button" class="star'+(val>=n?' on':'')+'" data-n="'+n+'">'+n+'</button>').join('')+'</div>';
+  $('#evModalBox').innerHTML=
+    '<h3>'+esc(m.label)+' · '+C.formatMMSS(ev.totalElapsedSeconds)+'</h3>'+
+    '<div class="sub" style="margin-bottom:6px">'+esc(C.PERIOD_LABELS[ev.period]||ev.period)+' · '+esc(ev.associatedTeam)+(ev.registeredDuringPause?' · <span class="badge">durante pausa</span>':'')+'</div>'+
+    '<label>Sector del campo</label><select id="m_side">'+sideOpts+'</select>'+
+    '<label>Zona del campo</label><select id="m_zone">'+zoneOpts+'</select>'+
+    '<div class="grid g2"><div><label>Jugador ejecutor</label><input id="m_taker" value="'+esc(ev.taker)+'"></div>'+
+    '<div><label>Jugador involucrado</label><input id="m_involved" value="'+esc(ev.involvedPlayer)+'"></div></div>'+
+    '<label>Resultado del evento</label><select id="m_outcome">'+outOpts+'</select>'+
+    '<label>Nivel de riesgo (1–5)</label>'+stars('risk',ev.riskLevel)+
+    '<label>Nivel de efectividad (1–5)</label>'+stars('eff',ev.effectivenessLevel)+
+    '<label>Etiquetas tácticas (separadas por coma)</label><input id="m_tags" value="'+esc((ev.tacticalTags||[]).join(', '))+'">'+
+    '<label>Clip o URL de video</label><input id="m_video" value="'+esc(ev.videoUrl)+'" placeholder="https://…">'+
+    '<label>Observaciones tácticas</label><textarea id="m_notes">'+esc(ev.notes)+'</textarea>'+
+    '<div class="btnrow"><button class="btn primary" id="m_save">Guardar</button>'+
+    '<button class="btn" id="m_close">Cerrar</button>'+
+    '<button class="btn danger" id="m_del">Eliminar</button></div>';
+  let risk=ev.riskLevel, eff=ev.effectivenessLevel;
+  $('#evModalBox').querySelectorAll('[data-stars]').forEach(g=>{
+    g.querySelectorAll('.star').forEach(b=>b.onclick=()=>{
+      const n=+b.dataset.n, f=g.dataset.stars; const cur=(f==='risk'?risk:eff);
+      const val=(cur===n)?null:n; if(f==='risk')risk=val;else eff=val;
+      g.querySelectorAll('.star').forEach(x=>x.classList.toggle('on',val!=null&&+x.dataset.n<=val));
+    });
+  });
+  $('#m_save').onclick=()=>{
+    ev.fieldSide=$('#m_side').value; ev.fieldZone=$('#m_zone').value;
+    ev.taker=$('#m_taker').value.trim(); ev.involvedPlayer=$('#m_involved').value.trim();
+    ev.outcome=$('#m_outcome').value; ev.riskLevel=risk; ev.effectivenessLevel=eff;
+    ev.tacticalTags=$('#m_tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+    ev.videoUrl=$('#m_video').value.trim(); ev.notes=$('#m_notes').value.trim();
+    ev.updatedAt=new Date().toISOString();
+    closeModal();save();refreshTopbar();renderQuickTimeline();
+    if($('#v-eventos').classList.contains('active'))renderEvents();
+    toast('Evento actualizado','ok');
+  };
+  $('#m_close').onclick=closeModal;
+  $('#m_del').onclick=()=>{deleteEvent(ev.id);closeModal();};
+  $('#evModal').classList.add('show');
+}
+function closeModal(){$('#evModal').classList.remove('show');}
+$('#evModal').onclick=e=>{if(e.target.id==='evModal')closeModal();};
+
+/* ---------------- Eventos: tabla + filtros ---------------- */
+let evSortDir=1;
+function filteredEvents(){
+  let evs=State.events.filter(e=>!e.deleted);
+  const p=$('#flt_period').value, o=$('#flt_org').value, ty=$('#flt_type').value;
+  const mn=parseInt($('#flt_min').value,10), mx=parseInt($('#flt_max').value,10);
+  const q=$('#flt_text').value.trim().toLowerCase();
+  if(p)evs=evs.filter(e=>e.period===p);
+  if(o)evs=evs.filter(e=>C.organizationOf(e.eventType)===o);
+  if(ty)evs=evs.filter(e=>e.eventType===ty);
+  if(!isNaN(mn))evs=evs.filter(e=>Math.floor(e.totalElapsedSeconds/60)>=mn);
+  if(!isNaN(mx))evs=evs.filter(e=>Math.floor(e.totalElapsedSeconds/60)<=mx);
+  if(q)evs=evs.filter(e=>(e.notes||'').toLowerCase().includes(q)||(e.taker||'').toLowerCase().includes(q)||(e.involvedPlayer||'').toLowerCase().includes(q));
+  evs.sort((a,b)=>(a.totalElapsedSeconds-b.totalElapsedSeconds)*evSortDir);
+  return evs;
+}
+function fillFilterOptions(){
+  const per=$('#flt_period'); const periods=[...new Set(State.events.filter(e=>!e.deleted).map(e=>e.period))];
+  per.innerHTML='<option value="">Todos los períodos</option>'+periods.map(p=>'<option value="'+p+'">'+esc(C.PERIOD_LABELS[p]||p)+'</option>').join('');
+  const ty=$('#flt_type'); ty.innerHTML='<option value="">Todos los eventos</option>'+Object.keys(C.EVENT_TYPES).map(k=>'<option value="'+k+'">'+esc(C.EVENT_TYPES[k].label)+'</option>').join('');
+}
+function renderEvents(){
+  fillFilterOptions();
+  const evs=filteredEvents();
+  const empty=$('#eventosEmpty'), table=$('#eventsTable');
+  if(!State.events.filter(e=>!e.deleted).length){empty.hidden=false;table.innerHTML='';return;}
+  empty.hidden=true;
+  const cols=['Tiempo','Período','Org.','Evento','Equipo','Sector','Zona','Resultado','Jugador','Riesgo','Efect.','Obs.','Acciones'];
+  const head='<thead><tr>'+cols.map((c,i)=>'<th'+(i===0?' data-sort="1"':'')+'>'+c+'</th>').join('')+'</tr></thead>';
+  const body=evs.map(ev=>{
+    const m=C.EVENT_TYPES[ev.eventType];
+    return '<tr>'+
+      '<td class="num" style="font-weight:700">'+C.formatMMSS(ev.totalElapsedSeconds)+'</td>'+
+      '<td>'+esc(C.PERIOD_LABELS[ev.period]||ev.period)+(ev.registeredDuringPause?' <span class="badge">pausa</span>':'')+'</td>'+
+      '<td><span class="chip '+(m.org==='offensive'?'off':'def')+'">'+(m.org==='offensive'?'OF':'DEF')+'</span></td>'+
+      '<td>'+esc(m.label)+'</td>'+
+      '<td>'+esc(ev.associatedTeam)+'</td>'+
+      '<td>'+esc(C.FIELD_SIDES[ev.fieldSide]||'')+'</td>'+
+      '<td>'+esc(C.FIELD_ZONES[ev.fieldZone]||'')+'</td>'+
+      '<td>'+esc(ev.outcome||'')+'</td>'+
+      '<td>'+esc(ev.taker||ev.involvedPlayer||'')+'</td>'+
+      '<td class="num">'+(ev.riskLevel==null?'—':ev.riskLevel)+'</td>'+
+      '<td class="num">'+(ev.effectivenessLevel==null?'—':ev.effectivenessLevel)+'</td>'+
+      '<td style="max-width:180px;white-space:normal;color:var(--mut)">'+esc(ev.notes||'')+'</td>'+
+      '<td style="white-space:nowrap">'+
+        '<button class="mini" data-edit="'+ev.id+'">✎</button> '+
+        '<button class="mini" data-dup="'+ev.id+'">⎘</button> '+
+        '<button class="mini" data-del="'+ev.id+'">🗑</button></td></tr>';
+  }).join('');
+  table.innerHTML=head+'<tbody>'+body+'</tbody>';
+  table.querySelector('[data-sort]').onclick=()=>{evSortDir*=-1;renderEvents();};
+  table.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openEventModal(b.dataset.edit));
+  table.querySelectorAll('[data-dup]').forEach(b=>b.onclick=()=>duplicateEvent(b.dataset.dup));
+  table.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>deleteEvent(b.dataset.del));
+}
+$$('#v-eventos .filters select, #v-eventos .filters input').forEach(x=>x.oninput=renderEvents);
+$('#flt_clear').onclick=()=>{$$('#v-eventos .filters select,#v-eventos .filters input').forEach(x=>{if(x.tagName==='SELECT')x.selectedIndex=0;else x.value='';});renderEvents();};
+
+function deleteEvent(id){
+  const ev=State.events.find(e=>e.id===id); if(!ev)return;
+  const isGoal=ev.eventType==='goal_for'||ev.eventType==='goal_against';
+  if(!confirm('¿Eliminar este evento'+(isGoal?' (GOL — el marcador se recalculará)':'')+'? Puedes deshacer por 10 s.'))return;
+  ev.deleted=true; ev.updatedAt=new Date().toISOString(); ev.deletedAt=new Date().toISOString();
+  save();refreshTopbar();refreshCounters();
+  if($('#v-eventos').classList.contains('active'))renderEvents();
+  renderQuickTimeline();
+  toast('Evento eliminado'+(isGoal?' · marcador recalculado':''),'warn',()=>{
+    ev.deleted=false;save();refreshTopbar();refreshCounters();
+    if($('#v-eventos').classList.contains('active'))renderEvents();renderQuickTimeline();toast('Eliminación deshecha','ok');
+  });
+}
+function duplicateEvent(id){
+  const ev=State.events.find(e=>e.id===id); if(!ev)return;
+  const now=new Date().toISOString();
+  const copy=Object.assign({},ev,{id:C.genEventId(Date.now()),createdAt:now,updatedAt:now,deleted:false});
+  copy.tacticalTags=(ev.tacticalTags||[]).slice();
+  State.events.push(copy);save();refreshTopbar();refreshCounters();renderEvents();toast('Evento duplicado','ok');
+}
+
+/* ---------------- Dashboard ---------------- */
+function destroyChart(k){if(State.charts[k]){State.charts[k].destroy();delete State.charts[k];}}
+function renderDashboard(){
+  const s=C.aggregateStats(State.events);
+  const bal=s.setPieceBalance;
+  $('#dashKpis').innerHTML=[
+    ['Marcador',s.score.scoreFor+'-'+s.score.scoreAgainst],
+    ['Eventos ofensivos',s.totals.offensive],['Eventos defensivos',s.totals.defensive],
+    ['Córners a favor',s.corners.for],['Córners en contra',s.corners.against],
+    ['Tiros libres a favor',s.freeKicks.for],['Tiros libres en contra',s.freeKicks.against],
+    ['Goles a favor',s.goals.for],['Goles en contra',s.goals.against],
+    ['Balance balón parado',(bal>=0?'+':'')+bal],
+    ['Efectividad ofensiva',s.offensiveEffectiveness==null?'—':s.offensiveEffectiveness+'/5'],
+    ['Riesgo defensivo',s.defensiveRisk==null?'—':s.defensiveRisk+'/5']
+  ].map(k=>'<div class="kpi"><div class="v num">'+k[1]+'</div><div class="l">'+k[0]+'</div></div>').join('');
+
+  if(!window.Chart){return;}
+  const gridC='rgba(255,255,255,.07)', tick='#aab8c4';
+  // barras a favor vs en contra
+  destroyChart('fc');
+  State.charts.fc=new Chart($('#chFavContra'),{type:'bar',data:{
+    labels:['Córners','Tiros libres','Goles'],
+    datasets:[
+      {label:'A favor',data:[s.corners.for,s.freeKicks.for,s.goals.for],backgroundColor:'#4a90ff'},
+      {label:'En contra',data:[s.corners.against,s.freeKicks.against,s.goals.against],backgroundColor:'#f5a623'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tick}}},
+      scales:{x:{ticks:{color:tick},grid:{color:gridC}},y:{beginAtZero:true,ticks:{color:tick,precision:0},grid:{color:gridC}}}}});
+  // por período
+  const perLabels=Object.keys(s.byPeriod), perData=perLabels.map(p=>s.byPeriod[p]);
+  destroyChart('pd');
+  State.charts.pd=new Chart($('#chPeriodo'),{type:'bar',data:{labels:perLabels.map(p=>C.PERIOD_LABELS[p]||p),
+    datasets:[{label:'Eventos',data:perData,backgroundColor:'#3fd0c4'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:tick},grid:{color:gridC}},y:{beginAtZero:true,ticks:{color:tick,precision:0},grid:{color:gridC}}}}});
+  // línea de tiempo (scatter minuto)
+  const active=State.events.filter(e=>!e.deleted);
+  const pts=org=>active.filter(e=>C.organizationOf(e.eventType)===org).map(e=>({x:+(e.totalElapsedSeconds/60).toFixed(1),y:org==='offensive'?1:0}));
+  destroyChart('tl');
+  State.charts.tl=new Chart($('#chTimeline'),{type:'scatter',data:{datasets:[
+    {label:'Ofensiva',data:pts('offensive'),backgroundColor:'#4a90ff',pointRadius:6},
+    {label:'Defensiva',data:pts('defensive'),backgroundColor:'#f5a623',pointRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tick}}},
+      scales:{x:{title:{display:true,text:'Minuto',color:tick},ticks:{color:tick},grid:{color:gridC}},
+        y:{min:-1,max:2,ticks:{stepSize:1,color:tick,callback:v=>v===1?'OF':v===0?'DEF':''},grid:{color:gridC}}}}});
+  // zonas (pitch simplificado por tercios)
+  const zc=k=>s.byZone[k]||0;
+  $('#pitchZones').innerHTML=[
+    ['Último tercio / Área rival','final_third','opponent_box','rgba(56,217,138,.14)'],
+    ['Zona media','middle_third',null,'rgba(63,208,196,.10)'],
+    ['Campo propio / Área propia','own_half','own_box','rgba(245,166,35,.12)']
+  ].map(r=>{const n=zc(r[1])+(r[2]?zc(r[2]):0);
+    return '<div class="pzone" style="background:'+r[3]+'"><span>'+r[0]+'</span><b class="num">'+n+'</b></div>';}).join('');
+}
+
+/* ---------------- Informe ---------------- */
+function renderInforme(){
+  const box=$('#informeBody');
+  if(!State.session){box.innerHTML='<div class="empty"><div class="big">📝</div>No hay sesión activa.</div>';return;}
+  const s=State.session, stats=C.aggregateStats(State.events);
+  if(!State.report)State.report=emptyReport(s.id);
+  if(!State.report.executiveSummary)State.report.executiveSummary=C.generateExecutiveSummary(s,State.events,stats);
+  const crit=C.detectCriticalMoments(State.events);
+  const dur=C.formatMMSS(C.computeElapsedSeconds(s.clockSegments));
+  const field=(id,label,val)=>'<label>'+label+'</label><textarea id="'+id+'">'+esc(val||'')+'</textarea>';
+  box.innerHTML=
+    '<div class="card"><h3>Encabezado</h3>'+
+      '<div class="sub"><b style="color:var(--white);font-size:16px">'+esc(s.analyzedTeam)+' '+stats.score.scoreFor+' - '+stats.score.scoreAgainst+' '+esc(s.opponentTeam)+'</b></div>'+
+      '<div class="sub num">'+esc(s.matchDate)+(s.competition?' · '+esc(s.competition):'')+' · Analista: '+esc(s.analyst)+'</div>'+
+      '<div class="sub">Duración registrada: '+dur+' · Estado: '+esc(C.STATUS_LABELS[s.status])+' · Generado: '+new Date().toLocaleString('es-CL')+'</div></div>'+
+    '<div class="card"><h3>Resumen ejecutivo</h3>'+
+      '<div class="callout">Generado automáticamente a partir de los datos. Editable antes de exportar.</div>'+
+      '<textarea id="r_exec" style="min-height:110px">'+esc(State.report.executiveSummary)+'</textarea></div>'+
+    '<div class="card"><h3>Indicadores principales</h3><div class="kpis">'+
+      [['Goles a favor',stats.goals.for],['Goles en contra',stats.goals.against],
+       ['Córners a favor',stats.corners.for],['Córners en contra',stats.corners.against],
+       ['Tiros libres a favor',stats.freeKicks.for],['Tiros libres en contra',stats.freeKicks.against],
+       ['Ofensivos',stats.totals.offensive],['Defensivos',stats.totals.defensive],
+       ['Riesgo def. medio',stats.defensiveRisk==null?'—':stats.defensiveRisk+'/5'],
+       ['Efect. of. media',stats.offensiveEffectiveness==null?'—':stats.offensiveEffectiveness+'/5']
+      ].map(k=>'<div class="kpi"><div class="v num">'+k[1]+'</div><div class="l">'+k[0]+'</div></div>').join('')+'</div>'+
+      '<h3>Momentos críticos</h3>'+(crit.length?
+        '<div class="scroll-x"><table><thead><tr><th>Tiempo</th><th>Evento</th><th>Motivo</th></tr></thead><tbody>'+
+        crit.map(c=>'<tr><td class="num">'+C.formatMMSS(c.event.totalElapsedSeconds)+'</td><td>'+esc(C.EVENT_TYPES[c.event.eventType].label)+'</td><td>'+esc(c.reasons.join(' · '))+'</td></tr>').join('')+
+        '</tbody></table></div>' : '<div class="sub">Sin momentos críticos según las reglas (goles, riesgo ≥4, rachas defensivas, tramos finales).</div>')+'</div>'+
+    '<div class="card"><h3>Análisis táctico (editable)</h3>'+
+      field('r_off','Organización ofensiva',State.report.offensiveAnalysis)+
+      field('r_def','Organización defensiva',State.report.defensiveAnalysis)+
+      field('r_offsp','Balón detenido ofensivo',State.report.offensiveSetPieces)+
+      field('r_defsp','Balón detenido defensivo',State.report.defensiveSetPieces)+
+      field('r_str','Fortalezas observadas',State.report.strengths)+
+      field('r_imp','Aspectos a mejorar',State.report.improvementAreas)+
+      field('r_train','Recomendaciones para entrenamiento',State.report.trainingRecommendations)+
+      field('r_concl','Conclusión general',State.report.overallConclusion)+
+      '<div class="btnrow"><button class="btn primary" id="r_save">Guardar informe</button>'+
+      '<button class="btn" id="r_regen">Regenerar resumen automático</button>'+
+      '<button class="btn" data-goto="exportar">Ir a exportar →</button></div></div>';
+  $('#r_save').onclick=()=>{
+    const r=State.report;
+    r.executiveSummary=$('#r_exec').value; r.offensiveAnalysis=$('#r_off').value; r.defensiveAnalysis=$('#r_def').value;
+    r.offensiveSetPieces=$('#r_offsp').value; r.defensiveSetPieces=$('#r_defsp').value; r.strengths=$('#r_str').value;
+    r.improvementAreas=$('#r_imp').value; r.trainingRecommendations=$('#r_train').value; r.overallConclusion=$('#r_concl').value;
+    r.updatedAt=new Date().toISOString(); save(); toast('Informe guardado','ok');
+  };
+  $('#r_regen').onclick=()=>{State.report.executiveSummary=C.generateExecutiveSummary(s,State.events,stats);$('#r_exec').value=State.report.executiveSummary;toast('Resumen regenerado','ok');};
+}
+
+/* ---------------- Exportación ---------------- */
+function download(filename,content,mime){
+  const blob=(content instanceof Blob)?content:new Blob([content],{type:mime||'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=el('a',{href:url,download:filename});document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},400);
+}
+function exportCSV(){
+  const csv=C.buildCSV(State.session,State.events);
+  download(C.safeFileBase(State.session)+'.csv',csv,'text/csv;charset=utf-8');
+  toast('CSV exportado','ok');
+}
+function exportJSON(){
+  download(C.safeFileBase(State.session)+'.json',JSON.stringify(docOf(),null,2),'application/json');
+  toast('JSON exportado','ok');
+}
+function exportXLSX(){
+  if(!window.XLSX){toast('SheetJS no está disponible (sin conexión)','err');return;}
+  const s=State.session, stats=C.aggregateStats(State.events);
+  const wb=XLSX.utils.book_new();
+  // Resumen
+  const resumen=[
+    ['Partido',s.analyzedTeam+' vs '+s.opponentTeam],['Fecha',s.matchDate],['Competición',s.competition||''],
+    ['Analista',s.analyst||''],['Marcador final',stats.score.scoreFor+' - '+stats.score.scoreAgainst],[],
+    ['Indicador','Valor'],
+    ['Eventos ofensivos',stats.totals.offensive],['Eventos defensivos',stats.totals.defensive],
+    ['Córners a favor',stats.corners.for],['Córners en contra',stats.corners.against],
+    ['Tiros libres a favor',stats.freeKicks.for],['Tiros libres en contra',stats.freeKicks.against],
+    ['Goles a favor',stats.goals.for],['Goles en contra',stats.goals.against],
+    ['Balance balón parado',stats.setPieceBalance],
+    ['Efectividad ofensiva media',stats.offensiveEffectiveness==null?'—':stats.offensiveEffectiveness],
+    ['Riesgo defensivo medio',stats.defensiveRisk==null?'—':stats.defensiveRisk]
+  ];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumen),'Resumen');
+  // Eventos
+  const rows=State.events.filter(e=>!e.deleted).sort((a,b)=>a.totalElapsedSeconds-b.totalElapsedSeconds).map(ev=>C.eventToRow(s,ev));
+  const evSheet=XLSX.utils.json_to_sheet(rows,{header:C.CSV_COLUMNS.map(c=>c[0])});
+  XLSX.utils.sheet_add_aoa(evSheet,[C.CSV_COLUMNS.map(c=>c[1])],{origin:'A1'});
+  XLSX.utils.book_append_sheet(wb,evSheet,'Eventos');
+  // Informe táctico
+  const r=State.report||emptyReport(s.id);
+  const inf=[['Sección','Contenido'],['Resumen ejecutivo',r.executiveSummary],['Organización ofensiva',r.offensiveAnalysis],
+    ['Organización defensiva',r.defensiveAnalysis],['Balón detenido ofensivo',r.offensiveSetPieces],
+    ['Balón detenido defensivo',r.defensiveSetPieces],['Fortalezas',r.strengths],['Aspectos a mejorar',r.improvementAreas],
+    ['Recomendaciones',r.trainingRecommendations],['Conclusión',r.overallConclusion]];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(inf),'Informe táctico');
+  // Metadatos
+  const meta=[['Campo','Valor'],['ID de sesión',s.id],['Equipo analizado',s.analyzedTeam],['Equipo rival',s.opponentTeam],
+    ['Fecha',s.matchDate],['Competición',s.competition||''],['Categoría',s.category||''],['Estadio',s.venue||''],
+    ['Analista',s.analyst||''],['Sistema analizado',s.analyzedTeamFormation||''],['Sistema rival',s.opponentFormation||''],
+    ['Estado',C.STATUS_LABELS[s.status]],['Creado',s.createdAt],['Actualizado',s.updatedAt],['Observaciones previas',s.preMatchNotes||'']];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(meta),'Metadatos');
+  XLSX.writeFile(wb,C.safeFileBase(s)+'.xlsx');
+  toast('Excel (XLSX) exportado','ok');
+}
+function renderExport(){
+  const box=$('#exportBody');
+  if(!State.session){box.innerHTML='<div class="empty"><div class="big">📤</div>No hay sesión activa para exportar.</div>';return;}
+  const s=State.session, stats=C.aggregateStats(State.events);
+  const subject='Informe táctico – '+s.analyzedTeam+' vs '+s.opponentTeam+' – '+s.matchDate;
+  const bodyMail='Estimado/a:\n\nSe adjunta el informe táctico correspondiente al partido entre '+s.analyzedTeam+' y '+s.opponentTeam+', disputado el día '+s.matchDate+'.\n\nEl informe contiene el registro cronológico de eventos relevantes, indicadores de organización ofensiva y defensiva, resumen estadístico y observaciones tácticas.\n\nMarcador final: '+stats.score.scoreFor+' - '+stats.score.scoreAgainst+'.\n\nSaludos,\n'+(s.analyst||'');
+  box.innerHTML=
+    '<div class="card"><h3>Exportar sesión</h3>'+
+      '<div class="sub">Archivo base: <code style="color:var(--gold)">'+esc(C.safeFileBase(s))+'</code></div>'+
+      '<div class="btnrow"><button class="btn primary" id="x_csv">⬇ CSV</button>'+
+      '<button class="btn primary" id="x_xlsx">⬇ Excel (XLSX)</button>'+
+      '<button class="btn" id="x_json">⬇ JSON (respaldo)</button>'+
+      '<button class="btn" id="x_pdf">🖨 Informe PDF (imprimir)</button></div>'+
+      '<p class="sub" style="margin-top:8px">El CSV usa UTF-8 con BOM y separador «;» para que Excel interprete tildes y eñes. El PDF se genera con el diálogo de impresión del navegador (elige «Guardar como PDF»).</p></div>'+
+    '<div class="card"><h3>Finalizar sesión y compartir informe</h3>'+
+      '<div class="callout warn">Por seguridad, el envío directo con adjuntos requiere un backend. Sin él, se prepara el correo con asunto y cuerpo mediante <b>mailto</b> y se descargan los archivos para adjuntarlos manualmente. Nunca se guardan claves ni tokens en el navegador.</div>'+
+      '<label>Destinatarios (separados por coma)</label><input id="x_emails" placeholder="entrenador@club.cl, dt@club.cl">'+
+      '<div id="x_emailErr" class="err" hidden></div>'+
+      '<label>Asunto</label><input id="x_subject" value="'+esc(subject)+'">'+
+      '<label>Cuerpo del mensaje</label><textarea id="x_body" style="min-height:150px">'+esc(bodyMail)+'</textarea>'+
+      '<div class="btnrow"><button class="btn primary" id="x_share">✉ Preparar correo (mailto)</button>'+
+      '<button class="btn" id="x_finish">✔ Finalizar sesión y preparar todo</button></div>'+
+      '<p class="sub" style="margin-top:8px" id="x_sendState"></p></div>'+
+    '<div class="card"><h3>Integración de envío real (producción)</h3>'+
+      '<p class="sub">Hay una interfaz de servicio <code>EmailService</code> preparada. Para envío real con adjuntos, conectar un backend (Resend, SendGrid, AWS SES, Nodemailer o Supabase Edge Functions) con la clave en variables de entorno del servidor — nunca en el frontend — y validación de destinatarios.</p></div>';
+  $('#x_csv').onclick=exportCSV; $('#x_xlsx').onclick=exportXLSX; $('#x_json').onclick=exportJSON;
+  $('#x_pdf').onclick=()=>{go('informe');setTimeout(()=>window.print(),300);};
+  $('#x_share').onclick=()=>shareByEmail(false);
+  $('#x_finish').onclick=()=>{
+    if(!confirm('¿Finalizar la sesión? Se guardará definitivamente y se generarán los archivos.'))return;
+    if(State.session.status!=='finished'){State.session.status='finished';State.session.clockSegments=C.clockPause(State.session.clockSegments);State.session.finishedAt=new Date().toISOString();}
+    save();exportCSV();setTimeout(exportXLSX,300);shareByEmail(true);
+  };
+}
+function shareByEmail(afterFinish){
+  const emails=$('#x_emails').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const errBox=$('#x_emailErr');
+  const bad=emails.filter(e=>!C.isValidEmail(e));
+  if(emails.length&&bad.length){errBox.hidden=false;errBox.textContent='Correos inválidos: '+bad.join(', ');return;}
+  errBox.hidden=true;
+  const subject=$('#x_subject').value, body=$('#x_body').value;
+  const href='mailto:'+encodeURIComponent(emails.join(','))+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  const state=$('#x_sendState');
+  try{
+    window.location.href=href;
+    state.innerHTML='<span class="badge">MAILTO PREPARADO</span> Se abrió tu cliente de correo. Adjunta manualmente los archivos descargados (CSV/XLSX). '+(afterFinish?'Sesión finalizada y guardada.':'');
+    toast('Correo preparado','ok');
+  }catch(e){state.textContent='No se pudo abrir el cliente de correo.';toast('Error al preparar correo','err');}
+}
+
+/* ---------------- Historial ---------------- */
+function renderHistorial(){
+  const box=$('#historialBody'); box.innerHTML='<div class="sub">Cargando…</div>';
+  Repo.all().then(docs=>{
+    const q=$('#hist_text').value.trim().toLowerCase();
+    const arch=$('#hist_arch').value;
+    let list=docs.map(d=>d.session).filter(Boolean);
+    if(arch==='active')list=list.filter(s=>!s.archived);
+    else if(arch==='archived')list=list.filter(s=>s.archived);
+    if(q)list=list.filter(s=>[s.analyzedTeam,s.opponentTeam,s.analyst,s.competition,s.id].join(' ').toLowerCase().includes(q));
+    list.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+    if(!list.length){box.innerHTML='<div class="empty"><div class="big">🗂️</div>No hay sesiones guardadas.</div>';return;}
+    box.innerHTML=list.map(s=>{
+      const active=State.session&&State.session.id===s.id;
+      return '<div class="card" style="margin-top:10px">'+
+        '<div style="display:flex;justify-content:space-between;align-items:start;gap:10px;flex-wrap:wrap">'+
+        '<div><div style="font-family:var(--f-display);font-size:17px;color:var(--white)">'+esc(s.analyzedTeam)+' '+s.scoreFor+'-'+s.scoreAgainst+' '+esc(s.opponentTeam)+
+          (s.isDemo?' <span class="badge">DEMO</span>':'')+(active?' <span class="badge" style="background:rgba(56,217,138,.16);color:var(--green)">ACTIVA</span>':'')+(s.archived?' <span class="badge">ARCHIVADA</span>':'')+'</div>'+
+          '<div class="sub num">'+esc(s.id)+' · '+esc(s.matchDate)+(s.competition?' · '+esc(s.competition):'')+' · '+esc(C.STATUS_LABELS[s.status]||s.status)+'</div></div>'+
+        '<div class="btnrow" style="margin-top:0">'+
+          '<button class="mini" data-open="'+s.id+'">Abrir</button>'+
+          '<button class="mini" data-tpl="'+s.id+'">Duplicar como plantilla</button>'+
+          '<button class="mini" data-arch="'+s.id+'">'+(s.archived?'Desarchivar':'Archivar')+'</button>'+
+          '<button class="mini" data-delsess="'+s.id+'">Eliminar</button></div></div></div>';
+    }).join('');
+    box.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openSession(b.dataset.open));
+    box.querySelectorAll('[data-tpl]').forEach(b=>b.onclick=()=>duplicateSession(b.dataset.tpl));
+    box.querySelectorAll('[data-arch]').forEach(b=>b.onclick=()=>toggleArchive(b.dataset.arch));
+    box.querySelectorAll('[data-delsess]').forEach(b=>b.onclick=()=>deleteSession(b.dataset.delsess));
+  });
+}
+$('#hist_text').oninput=renderHistorial; $('#hist_arch').onchange=renderHistorial;
+
+function loadDoc(doc){
+  State.session=doc.session; State.events=doc.events||[]; State.report=doc.report||emptyReport(doc.session.id);
+  State.prevStatus=doc.session.status==='paused'?'first_half':doc.session.status;
+  localStorage.setItem(CURRENT_KEY,doc.session.id);
+  refreshTopbar(); renderActiveSessionCard();
+}
+function openSession(id){Repo.get(id).then(doc=>{if(!doc)return;loadDoc(doc);toast('Sesión abierta','ok');go('tracker');});}
+function duplicateSession(id){
+  Repo.get(id).then(doc=>{if(!doc)return;
+    const now=new Date();const s=Object.assign({},doc.session,{
+      id:C.genSessionId(now),status:'not_started',clockSegments:[],startedAt:null,finishedAt:null,
+      elapsedSeconds:0,scoreFor:0,scoreAgainst:0,archived:false,isDemo:false,createdAt:now.toISOString(),updatedAt:now.toISOString()});
+    const newDoc={id:s.id,session:s,events:[],report:emptyReport(s.id),archived:false};
+    Repo.put(newDoc).then(()=>{toast('Plantilla creada: '+s.id,'ok');renderHistorial();});
+  });
+}
+function toggleArchive(id){Repo.get(id).then(doc=>{if(!doc)return;doc.session.archived=!doc.session.archived;doc.archived=doc.session.archived;Repo.put(doc).then(renderHistorial);});}
+function deleteSession(id){
+  if(!confirm('¿Eliminar definitivamente esta sesión? No se puede deshacer.'))return;
+  Repo.del(id).then(()=>{
+    if(State.session&&State.session.id===id){State.session=null;State.events=[];State.report=null;localStorage.removeItem(CURRENT_KEY);refreshTopbar();renderActiveSessionCard();}
+    renderHistorial();toast('Sesión eliminada','warn');
+  });
+}
+
+/* ---------------- Demo ---------------- */
+$('#btnDemo').onclick=function(){
+  const now=new Date();
+  const s={id:C.genSessionId(now),analyzedTeam:'Coquimbo Unido',opponentTeam:'Colo-Colo',matchDate:todayISO(),
+    competition:'Primera División 2026 (DEMO)',category:'Adulto profesional',venue:'Estadio Sánchez Rumoroso',
+    analyst:'Analista Demo',analyzedTeamFormation:'1-4-4-2',opponentFormation:'1-4-3-3',preMatchNotes:'Sesión de demostración con eventos de ejemplo.',
+    status:'finished',clockSegments:[{start:now.getTime()-5700000,end:now.getTime()-2850000},{start:now.getTime()-2700000,end:now.getTime()}],
+    startedAt:new Date(now.getTime()-5700000).toISOString(),finishedAt:now.toISOString(),elapsedSeconds:0,scoreFor:0,scoreAgainst:0,
+    archived:false,isDemo:true,createdAt:now.toISOString(),updatedAt:now.toISOString()};
+  const mk=(type,totSec,period,extra)=>Object.assign({id:C.genEventId(Date.now()+Math.random()*1000),sessionId:s.id,eventType:type,
+    organization:C.organizationOf(type),associatedTeam:C.associatedTeam(type,s.analyzedTeam,s.opponentTeam),period,registeredDuringPause:false,
+    minute:Math.floor(totSec/60),second:totSec%60,totalElapsedSeconds:totSec,fieldSide:'unspecified',fieldZone:'unspecified',
+    taker:'',involvedPlayer:'',outcome:'',riskLevel:null,effectivenessLevel:null,tacticalTags:[],notes:'',videoUrl:'',
+    createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),deleted:false},extra||{});
+  State.session=s;
+  State.events=[
+    mk('corner_for',320,'first_half',{fieldSide:'right',fieldZone:'final_third',effectivenessLevel:3}),
+    mk('free_kick_for',740,'first_half',{fieldSide:'center',fieldZone:'final_third',effectivenessLevel:2}),
+    mk('goal_for',1490,'first_half',{fieldZone:'opponent_box',outcome:'Gol',effectivenessLevel:5,notes:'Córner rematado en el primer palo.'}),
+    mk('corner_against',2050,'first_half',{fieldZone:'own_box',riskLevel:4}),
+    mk('corner_against',2210,'first_half',{fieldZone:'own_box',riskLevel:3}),
+    mk('goal_against',3180,'second_half',{fieldZone:'own_box',outcome:'Gol',riskLevel:5,notes:'Tiro libre lateral no despejado.'}),
+    mk('free_kick_against',4020,'second_half',{fieldSide:'left',fieldZone:'middle_third',riskLevel:2}),
+    mk('goal_for',5150,'second_half',{fieldZone:'opponent_box',outcome:'Gol',effectivenessLevel:4,notes:'Contra tras recuperación.'})
+  ];
+  State.report=emptyReport(s.id);
+  localStorage.setItem(CURRENT_KEY,s.id);
+  save();refreshTopbar();renderActiveSessionCard();
+  toast('Sesión de demostración cargada','ok');go('dashboard');
+};
+
+/* ---------------- Atajos de teclado ---------------- */
+document.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;
+  if($('#evModal').classList.contains('show'))return;
+  const keyMap={'1':'corner_for','2':'free_kick_for','3':'goal_for','4':'corner_against','5':'free_kick_against','6':'goal_against'};
+  if(keyMap[e.key]){e.preventDefault();registerEvent(keyMap[e.key]);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();setSide('left');}
+  else if(e.key==='ArrowRight'){e.preventDefault();setSide('right');}
+  else if(e.key==='ArrowDown'){e.preventDefault();setSide('center');}
+  else if(e.code==='Space'){e.preventDefault();
+    if(!State.session)return;
+    if(C.isClockRunning(State.session.clockSegments))pause();
+    else if(State.session.status==='paused')resume();
+  }
+});
+
+/* ---------------- Arranque: recuperar sesión tras recarga ---------------- */
+Repo.open().then(()=>{
+  const cur=localStorage.getItem(CURRENT_KEY);
+  if(cur){Repo.get(cur).then(doc=>{if(doc){loadDoc(doc);toast('Sesión recuperada','ok');go('tracker');}else{refreshTopbar();}});}
+  else refreshTopbar();
+});
+refreshTopbar();
+window.addEventListener('beforeunload',()=>{if(State.session)save();});
+})();
+</script>
+</body>
+</html>
