@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TrazoXI · Informe del proyecto · Coquimbo Unido</title>
+<meta name="description" content="Informe técnico del proyecto TrazoXI: arquitectura por capas, revisión de los componentes, hallazgos de datos, fases, limitaciones y recomendaciones.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  :root{
+    --bg0:#0a0d11;--panel:#151b22;--panel2:#1b222b;--panel3:#212a34;
+    --gold:#ffd21f;--gold2:#e8bd00;--gold-ink:#0a0d11;
+    --white:#f4f7fa;--txt:#e3e9ee;--mut:#aab8c4;--mut2:#7f8c98;
+    --green:#38d98a;--amber:#f5a623;--red:#ff5f5f;--blue:#5aa8ff;
+    --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.14);--line-gold:rgba(255,210,0,.22);
+    --sh:inset 0 1px 0 rgba(255,255,255,.05),0 8px 22px rgba(0,0,0,.4);
+    --r:14px;--f-display:'Barlow Condensed','Segoe UI',system-ui,sans-serif;--f-body:'Inter','Segoe UI',system-ui,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--f-body);line-height:1.62;color:var(--txt);
+    background:radial-gradient(1100px 700px at 15% -10%,#131d27 0,#0d131a 52%,#090c10 100%) fixed}
+  h1,h2,h3,h4,.disp{font-family:var(--f-display);letter-spacing:.3px}
+  .num{font-variant-numeric:tabular-nums}
+  ::selection{background:var(--gold);color:#000}
+  a{color:var(--gold);text-decoration:none}
+  .prog{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));z-index:90;width:0}
+  .layout{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:230px 1fr;gap:34px;padding:0 20px}
+  /* TOC */
+  .toc{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:26px 0;border-right:1px solid var(--line)}
+  .toc .brand{display:flex;align-items:center;gap:9px;font-family:var(--f-display);font-weight:800;color:var(--white);font-size:16px;margin-bottom:4px}
+  .crest{width:24px;height:24px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);flex:none}
+  .toc .sub{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+  .toc a{display:block;color:var(--mut);font-size:13.5px;padding:6px 10px;border-radius:8px;border-left:2px solid transparent}
+  .toc a:hover{color:var(--white);background:rgba(255,255,255,.04)}
+  .toc a.on{color:var(--gold);border-left-color:var(--gold);background:rgba(255,210,0,.08)}
+  .toc .pr{margin-top:16px}
+  .printbtn{width:100%;background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--gold-ink);border:0;border-radius:9px;padding:10px;font-weight:800;font-family:var(--f-body);cursor:pointer;font-size:13px}
+  main{padding:40px 0 90px;min-width:0}
+  .doc-head{border-bottom:2px solid var(--gold);padding-bottom:22px;margin-bottom:10px}
+  .eyebrow{font-family:var(--f-display);font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-size:14px;margin:0 0 8px}
+  h1{font-size:clamp(34px,6vw,56px);line-height:1.02;margin:0;color:var(--white);font-weight:800}
+  .meta{display:flex;flex-wrap:wrap;gap:18px;margin-top:16px;font-size:14px;color:var(--mut)}
+  .meta b{color:var(--white)}
+  section{padding:30px 0;border-bottom:1px solid var(--line);scroll-margin-top:14px}
+  h2{font-size:clamp(23px,3.6vw,32px);color:var(--white);margin:0 0 4px;display:flex;align-items:center;gap:12px}
+  h2 .n{font-size:16px;color:var(--gold-ink);background:var(--gold);min-width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;font-weight:800}
+  h3{font-size:19px;color:var(--gold);margin:22px 0 6px}
+  p{margin:0 0 14px}
+  .lead{font-size:clamp(16px,2.4vw,19px);color:#eef2f0}
+  ul{margin:8px 0 14px;padding-left:22px}li{margin:5px 0}
+  .grid{display:grid;gap:14px;margin:16px 0}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+  .card h4{margin:0 0 8px;color:var(--white);font-size:17px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .kpi .v{font-family:var(--f-display);font-weight:800;font-size:30px;color:var(--gold);line-height:1}
+  .kpi .l{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:5px}
+  .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.07);padding:14px 18px;border-radius:0 12px 12px 0;margin:16px 0;font-size:15.5px}
+  .callout.warn{border-color:var(--amber);background:rgba(245,166,35,.08)}
+  .callout.ok{border-color:var(--green);background:rgba(56,217,138,.08)}
+  .badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(255,210,0,.15);color:var(--gold);border:1px solid var(--line-gold);white-space:nowrap}
+  .badge.g{background:rgba(56,217,138,.15);color:var(--green);border-color:rgba(56,217,138,.4)}
+  .badge.a{background:rgba(245,166,35,.15);color:var(--amber);border-color:rgba(245,166,35,.4)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--f-display);color:var(--gold);text-transform:uppercase;font-size:12px;letter-spacing:.5px}
+  .scroll-x{overflow-x:auto}
+  .st{font-weight:800;font-family:var(--f-display);white-space:nowrap}.st.d{color:var(--green)}.st.p{color:var(--amber)}.st.v{color:var(--mut2)}
+  .pros,.cons{border-radius:12px;padding:16px 18px}
+  .pros{background:rgba(56,217,138,.07);border:1px solid rgba(56,217,138,.25)}
+  .cons{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.25)}
+  .pros h4{color:var(--green)}.cons h4{color:var(--amber)}
+  .foot{color:var(--mut2);font-size:13px;margin-top:10px}
+  .credits{display:flex;flex-wrap:wrap;gap:24px;margin-top:8px}
+  .credits .who b{color:var(--white)}
+  @media(max-width:860px){
+    .layout{grid-template-columns:1fr;gap:0}
+    .toc{position:static;height:auto;overflow:visible;border-right:0;border-bottom:1px solid var(--line);padding:16px 0}
+    .toc .links{display:flex;flex-wrap:wrap;gap:4px}
+    .toc a{border-left:0;font-size:12.5px;padding:5px 9px}
+    .toc a.on{border-left:0}
+    main{padding:26px 0 70px}
+  }
+  @media print{
+    @page{margin:13mm}
+    .prog,.toc{display:none!important}
+    .layout{display:block;max-width:100%;padding:0}
+    html,body{background:#fff!important;color:#111!important}
+    h1{color:#111!important}h2{color:#111!important}h2 .n{background:#b78f00!important;color:#fff!important}
+    h3,.eyebrow{color:#8a6d00!important}p,li,.lead,td,th{color:#1c1c1c!important}
+    .doc-head{border-color:#b78f00!important}
+    .card,.kpi,.pros,.cons{background:#fff!important;border:1px solid #d6d6d6!important;box-shadow:none!important;break-inside:avoid}
+    .kpi .v{color:#111!important}.callout{background:#f5f1e3!important;color:#111!important}
+    section{break-inside:auto;border-color:#ddd!important}
+    .badge{border:1px solid #bbb!important;color:#333!important;background:#f3f3f3!important}
+  }
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<div class="layout">
+  <aside class="toc">
+    <div class="brand"><span class="crest"></span>TrazoXI</div>
+    <div class="sub">Informe del proyecto</div>
+    <nav class="links" id="toc">
+      <a href="#resumen">Resumen ejecutivo</a>
+      <a href="#contexto">1 · Contexto y propósito</a>
+      <a href="#arquitectura">2 · Arquitectura por capas</a>
+      <a href="#revision">3 · Revisión de componentes</a>
+      <a href="#datos">4 · Hallazgos de datos</a>
+      <a href="#partido">5 · El partido codificado</a>
+      <a href="#fases">6 · Fases del proyecto</a>
+      <a href="#limites">7 · Limitaciones y riesgos</a>
+      <a href="#reco">8 · Recomendaciones</a>
+      <a href="#conclusion">9 · Conclusión</a>
+    </nav>
+    <div class="pr"><button class="printbtn" onclick="window.print()">⎙ Imprimir / Guardar PDF</button></div>
+  </aside>
+
+  <main>
+    <header class="doc-head">
+      <p class="eyebrow">Informe técnico · Coquimbo Unido</p>
+      <h1>TrazoXI — Estado del proyecto y revisión del sistema</h1>
+      <div class="meta">
+        <span><b>Desarrollo:</b> Ismael Vásquez (bioestadística / datos) · Mario Rodríguez (análisis táctico/técnico, Coquimbo Unido)</span>
+        <span><b>Fecha:</b> 6 de octubre de 2026</span>
+        <span><b>Versión:</b> 1.0</span>
+      </div>
+    </header>
+
+    <!-- RESUMEN -->
+    <section id="resumen">
+      <h2><span class="n">§</span> Resumen ejecutivo</h2>
+      <p class="lead">TrazoXI es una capa de inteligencia técnico-táctica para Coquimbo Unido que une tres cosas hoy separadas: dato objetivo (CFDB + FBref), codificación observacional del juego (planilla y registro en vivo) y estadística aplicada. Su tesis —la estructura en posesión funciona como organización defensiva anticipada— es una hipótesis medible, no un eslogan.</p>
+      <p>A la fecha, <b>cuatro de las capas del sistema ya están construidas y operativas</b>: la capa de datos (el <i>Football Tactical Analysis Framework</i>, un dashboard que reconcilia dos fuentes con trazabilidad y modela escenarios con Monte Carlo y Poisson), la codificación manual (una planilla validada con un partido real), el registro de eventos en vivo (una aplicación offline para codificar desde el teléfono) y el cómputo de secuencias. Restan el instrumento estadístico (método definido), el pipeline de visión por computadora (prototipo) y la plataforma-producto (visión).</p>
+      <div class="callout ok"><b>Valoración.</b> Lo entregado es trabajo de nivel profesional, honesto con sus fuentes y sus límites. Las dos piezas revisadas en este informe —el dashboard y el registro en vivo— están bien arquitecturadas, son responsive, y declaran explícitamente qué es dato, qué es interpretación y qué es modelo. Esa honestidad es, hoy, la mayor fortaleza competitiva del proyecto.</div>
+    </section>
+
+    <!-- CONTEXTO -->
+    <section id="contexto">
+      <h2><span class="n">1</span> Contexto y propósito</h2>
+      <p>El análisis táctico de un club suele apoyarse en video y relato: valioso, pero subjetivo y difícil de comparar entre partidos. TrazoXI nace para cerrar esa brecha con método: traducir la observación en patrones con su efecto competitivo y su nivel de evidencia, de modo que el cuerpo técnico decida sobre datos y no solo sobre impresiones.</p>
+      <p>El enfoque es deliberado: <b>validar el método con datos reales y codificación manual antes de construir software</b>. Esto diferencia a TrazoXI de herramientas como Longomatch, cuyo centro es la aplicación; aquí el centro es el método, y las herramientas existen para servirlo.</p>
+      <h3>La tesis que todo mide</h3>
+      <p>La estructura en posesión <b>es</b> la organización defensiva anticipada: con buena ocupación de espacios, al perder el balón se recupera más rápido. Atacar ordenado y defender rápido no son fases distintas. El instrumento estadístico central (punto-biserial) existe precisamente para poner a prueba esa relación con datos de Coquimbo.</p>
+    </section>
+
+    <!-- ARQUITECTURA -->
+    <section id="arquitectura">
+      <h2><span class="n">2</span> Arquitectura por capas</h2>
+      <p>El sistema está desacoplado en capas, cada una con una responsabilidad y una interfaz clara, de modo que una pueda mejorarse sin rehacer el resto.</p>
+      <div class="scroll-x">
+      <table>
+        <tr><th>Capa</th><th>Función</th><th>Componente</th><th>Estado</th></tr>
+        <tr><td><b>Datos</b></td><td>El <i>qué</i> objetivo: resultados, rendimiento, proyecciones</td><td>Football Tactical Analysis Framework (<code>index_conapi</code>)</td><td class="st d">OPERATIVA</td></tr>
+        <tr><td><b>Codificación</b></td><td>El <i>cómo y porqué</i>: fases y patrones desde el video</td><td>Planilla TrazoXI + Registro en Vivo</td><td class="st d">OPERATIVA</td></tr>
+        <tr><td><b>Cómputo</b></td><td>Secuencias, métricas y estadística</td><td>Hoja de secuencias + instrumento</td><td class="st p">PARCIAL</td></tr>
+        <tr><td><b>Visualización</b></td><td>Tableros para decidir</td><td>Dashboard + informes</td><td class="st d">OPERATIVA</td></tr>
+        <tr><td><b>Automatización</b></td><td>Escalar la codificación (visión por computadora)</td><td>Pipeline de visión</td><td class="st p">PROTOTIPO</td></tr>
+      </table>
+      </div>
+      <div class="callout"><b>Macro ↔ micro.</b> El framework es la capa macro (qué pasó en la temporada); la codificación es la micro (cómo y por qué dentro del partido). El framework indica <i>dónde</i> mirar; la codificación explica <i>qué</i> hacer. Se alimentan mutuamente.</div>
+    </section>
+
+    <!-- REVISIÓN -->
+    <section id="revision">
+      <h2><span class="n">3</span> Revisión técnica de los componentes</h2>
+      <p class="lead">Evaluación honesta de las dos piezas entregadas, con fortalezas y puntos de mejora concretos.</p>
+
+      <h3>3.1 · Football Tactical Analysis Framework <span class="badge g">capa de datos</span></h3>
+      <p>Dashboard analítico de página única con la lógica de datos separada en módulos (<code>coquimbo_data.js</code>, <code>fixtures.js</code>, <code>analisis_cfdb.js</code>, <code>scouting.js</code>, <code>radares.js</code>, entre otros) y el render en el documento principal. Cubre reporte ejecutivo, identidad de juego, tendencia, métricas por partido, patrones, histórico y predicción, pre-match, proyección de tabla, Copa Chile, pizarra doble, scouting, mapa táctico de 18 zonas y plantel.</p>
+      <div class="grid g2">
+        <div class="pros"><h4>Fortalezas</h4><ul>
+          <li><b>Trazabilidad de fuentes</b>: cada cifra marca DATO / INTERPRETACIÓN / MODELO; reconcilia FBref (partido a partido) con CFDB (totales oficiales).</li>
+          <li><b>Modelación seria</b>: Monte Carlo (20.000 sims, Dixon-Coles), Poisson local/visita, validación leave-one-out. No es un dashboard decorativo.</li>
+          <li><b>Honestidad estructural</b>: declara que la liga chilena no publica datos posicionales (x,y), por lo que un heatmap espacial "sería inventado" — y construye en su lugar un heat-grid de intensidad real.</li>
+          <li><b>Ingeniería limpia</b>: módulos de datos aislados, guardas <code>typeof X==='undefined'</code>, modo Ejecutiva/Técnica, tema de impresión por sección, responsive con menú colapsable y foco accesible.</li>
+        </ul></div>
+        <div class="cons"><h4>Puntos de mejora</h4><ul>
+          <li><b>Dependencia de CDN</b> (Chart.js, fuentes): sin conexión, gráficos y tipografías se degradan. Vale la pena vendorizar las librerías para uso en estadio.</li>
+          <li><b>Capa de datos semi-manual</b>: actualizar implica editar los <code>.js</code> a mano. Es el cuello de botella natural y el principal candidato a automatizar (ingesta CFDB/FBref programada).</li>
+          <li><b>Taxonomía de zonas</b>: el dashboard usa 18 zonas; conviene unificar con las zonas del registro en vivo para que los datos fluyan entre herramientas.</li>
+          <li><b>Sin pruebas automatizadas</b> (esperable en esta etapa); a futuro, tests sobre los modelos evitarían regresiones silenciosas.</li>
+        </ul></div>
+      </div>
+
+      <h3>3.2 · Registro Táctico en Vivo <span class="badge g">capa de codificación</span></h3>
+      <p>Aplicación de captura de eventos en vivo, con la lógica pura separada (<code>registro_core.js</code>) de la capa de UI y persistencia. Pensada para teléfono y para funcionar sin internet.</p>
+      <div class="grid g2">
+        <div class="pros"><h4>Fortalezas</h4><ul>
+          <li><b>Offline-first real</b>: IndexedDB con <i>fallback</i> a localStorage, recuperación de sesión tras recarga y guardado antes de salir.</li>
+          <li><b>Diseñada para la cancha</b>: botones grandes, atajos de teclado (1–9, flechas, espacio), anti-doble-pulsación y deshacer de 10 s.</li>
+          <li><b>Del evento al entregable</b>: cronómetro con períodos, detalle por evento (sector, zona, riesgo/efectividad, etiquetas), informe auto-generado editable y export CSV (UTF-8 con BOM), XLSX multi-hoja, JSON y PDF.</li>
+          <li><b>Postura de seguridad correcta</b>: el envío por correo usa <code>mailto</code> y declara que las claves nunca van en el frontend; deja una interfaz lista para un backend de envío real.</li>
+        </ul></div>
+        <div class="cons"><h4>Puntos de mejora</h4><ul>
+          <li>Depende de <code>registro_core.js</code> (no incluido en esta revisión): conviene cubrir con pruebas la aritmética del cronómetro, la agregación y el armado de CSV.</li>
+          <li><b>Zonas por tercios + sector</b>, distintas a las 18 zonas de la planilla y el dashboard: unificarlas es clave para un dato continuo entre capas.</li>
+          <li>SheetJS/Chart.js desde CDN: el núcleo de datos es offline, pero export y gráficos requieren conexión — vendorizar cierra esa brecha.</li>
+          <li>Sincronización: hoy cada dispositivo guarda local; un respaldo/sincronización central sería el siguiente paso para trabajo en equipo.</li>
+        </ul></div>
+      </div>
+      <div class="callout ok"><b>Veredicto de la revisión.</b> Para un proyecto construido desde la bioestadística y el amor al club, el nivel de ingeniería es notable: separación de responsabilidades, defensa ante fallos, accesibilidad, responsive y una ética de datos explícita. Los puntos de mejora son de madurez (vendorizar, unificar zonas, sincronizar, probar), no de concepto.</div>
+    </section>
+
+    <!-- DATOS -->
+    <section id="datos">
+      <h2><span class="n">4</span> Hallazgos de datos — Coquimbo 2026</h2>
+      <p>Lectura de la capa de datos (temporada reconciliada FBref + CFDB). Son cifras con trazabilidad, no impresiones.</p>
+      <div class="grid g3">
+        <div class="kpi"><div class="v">8-5-9</div><div class="l">Liga · 29 pts · 10º</div></div>
+        <div class="kpi"><div class="v">≈ 0</div><div class="l">corr. posesión → puntos</div></div>
+        <div class="kpi"><div class="v">+0,71</div><div class="l">tiros concedidos → goles</div></div>
+        <div class="kpi"><div class="v">24,9</div><div class="l">centros por partido</div></div>
+        <div class="kpi"><div class="v">8</div><div class="l">rojas en liga</div></div>
+        <div class="kpi"><div class="v">2025</div><div class="l">campeón vigente</div></div>
+      </div>
+      <h3>Lectura</h3>
+      <ul>
+        <li><b>Equipo reactivo:</b> la posesión (~50%) no se traduce en puntos; rinde mejor cuando el rival propone y él golpea al espacio.</li>
+        <li><b>Firma lateral:</b> ataque muy de centro; cuando le cierran las bandas se vuelve previsible.</li>
+        <li><b>La deuda es atrás:</b> del campeón 2025 al 2026 el ataque se sostiene, pero la defensa y la disciplina (8 rojas) se deterioran. La palanca defensiva es reducir remates concedidos, no la posesión.</li>
+      </ul>
+      <p class="foot">Fuentes: FBref (match logs) + CFDB (totales, standings, H2H, contexto) + API-Football como segunda fuente. Muestra n=22: proyecciones indicativas, no certezas.</p>
+    </section>
+
+    <!-- PARTIDO -->
+    <section id="partido">
+      <h2><span class="n">5</span> El partido codificado — Cobreloa 1–2 Coquimbo</h2>
+      <p>Copa Chile 2026, octavos de final (ida), 22-09-2026, Estadio Zorros del Desierto (Calama). Capa documentada: 14 eventos verificados contra CFDB y dos videos.</p>
+      <div class="scroll-x">
+      <table>
+        <tr><th>Min</th><th>Gol</th><th>Detalle</th><th>Evidencia</th></tr>
+        <tr><td class="num">64'</td><td><b>0–1</b> Cabrera (as. Vadalá)</td><td>Tras recuperación de Pereira. Figura del partido (rating 8.32).</td><td><span class="badge g">ALTA</span></td></tr>
+        <tr><td class="num">70'</td><td><b>1–1</b> Orellana <span style="color:var(--amber)">EN CONTRA</span> (as. Méndez)</td><td>Central propio superado en el anticipo. Hallazgo defensivo.</td><td><span class="badge g">ALTA</span></td></tr>
+        <tr><td class="num">87'</td><td><b>1–2</b> Y. Blanco (as. Zavala)</td><td>Juvenil, debut. CFDB no registró este gol; reconstruido con video + prensa.</td><td><span class="badge a">MEDIA</span></td></tr>
+      </table>
+      </div>
+      <div class="callout warn"><b>Nota de integridad.</b> El dato de proveedor falló en este partido: CFDB no cargó el 3.er gol ni dos titulares. El autor del 1–2 se adoptó como <b>Y. Blanco</b> por mayor peso de evidencia (dos videos + Cooperativa), frente a una fuente que lo consignó como autogol. Esta clase de conflicto es exactamente la razón por la que el método triangula fuentes y etiqueta el nivel de evidencia.</div>
+    </section>
+
+    <!-- FASES -->
+    <section id="fases">
+      <h2><span class="n">6</span> Fases del proyecto</h2>
+      <div class="scroll-x">
+      <table>
+        <tr><th>Fase</th><th>Qué es</th><th>Estado</th></tr>
+        <tr><td><b>0 · Codificación manual</b></td><td>Planilla + diccionario + reglas, validada con partido real</td><td class="st d">HECHO</td></tr>
+        <tr><td><b>1 · Registro en vivo</b></td><td>Botonera de eventos offline + pre-tagger de momentos</td><td class="st d">HECHO</td></tr>
+        <tr><td><b>2 · Cómputo de secuencias</b></td><td>Las 4 preguntas de posesión, calculadas solas</td><td class="st d">HECHO</td></tr>
+        <tr><td><b>3 · Capa de datos (Framework)</b></td><td>Dashboard CFDB + FBref de Coquimbo, operativo</td><td class="st d">HECHO</td></tr>
+        <tr><td><b>4 · Instrumento estadístico</b></td><td>Punto-biserial sobre lo codificado</td><td class="st p">MÉTODO LISTO</td></tr>
+        <tr><td><b>5 · Visión por computadora</b></td><td>Pipeline detección / tracking / zonas</td><td class="st p">PROTOTIPO</td></tr>
+        <tr><td><b>6+ · Plataforma TrazoXI</b></td><td>Producto integrado, multi-partido, interfaz</td><td class="st v">VISIÓN</td></tr>
+      </table>
+      </div>
+    </section>
+
+    <!-- LIMITES -->
+    <section id="limites">
+      <h2><span class="n">7</span> Limitaciones y riesgos</h2>
+      <div class="grid g2">
+        <div class="card"><h4>Video de TV ≠ grabación táctica</h4><p>Paneos, zoom y cortes rompen el seguimiento: las zonas en pantalla no son zonas de la cancha. Sobre señal de TV, la visión por computadora entrega detecciones, no eventos tácticos.</p></div>
+        <div class="card"><h4>Sin datos posicionales (x,y)</h4><p>La liga chilena no publica tracking. Un mapa de calor espacial sería inventado; se usan proxies (heat-grid de intensidad) y se declara.</p></div>
+        <div class="card"><h4>Dato de proveedor incompleto</h4><p>CFDB/FBref pueden faltar eventos o jugadores (como el 1–2 de este partido). Mitigación: triangular fuentes y etiquetar evidencia.</p></div>
+        <div class="card"><h4>Capa de datos semi-manual</h4><p>Hoy se actualiza editando archivos; funciona y es trazable, pero escalarla (ingesta automática, sincronización) es trabajo pendiente.</p></div>
+        <div class="card"><h4>Codificación subjetiva</h4><p>Se mitiga con diccionario, reglas y acuerdo entre observadores (kappa ≥ 0,60): que dos personas codifiquen igual.</p></div>
+        <div class="card"><h4>Estado de prototipo</h4><p>Método validado y herramientas que funcionan — todavía no un producto terminado. Se dice de frente.</p></div>
+      </div>
+    </section>
+
+    <!-- RECO -->
+    <section id="reco">
+      <h2><span class="n">8</span> Recomendaciones</h2>
+      <h3>Para el cuerpo técnico (accionable y medible)</h3>
+      <ul>
+        <li><b>Elegir un partido de prueba</b> y codificarlo de punta a punta de cara a la vuelta; revisarlo juntos para fijar qué métricas mueven decisiones.</li>
+        <li><b>Definir 3–5 indicadores prioritarios</b> (p. ej. recuperación ≤5 s, centros por posesión, remates concedidos) y seguirlos partido a partido.</li>
+        <li><b>Vigilar la deuda defensiva y disciplinaria</b>: reducir remates concedidos y gestionar las amonestaciones es donde está el margen según los datos.</li>
+      </ul>
+      <h3>Para el sistema (madurez técnica)</h3>
+      <ul>
+        <li><b>Vendorizar</b> Chart.js/SheetJS/fuentes para operar sin conexión en estadio.</li>
+        <li><b>Unificar la taxonomía de zonas</b> (18 zonas) entre planilla, registro en vivo y dashboard para que el dato fluya.</li>
+        <li><b>Automatizar la ingesta</b> CFDB/FBref y añadir una sincronización central de sesiones del registro en vivo.</li>
+        <li><b>Cubrir con pruebas</b> la lógica crítica (cronómetro, agregación, modelos).</li>
+      </ul>
+      <h3>Para el salto de calidad</h3>
+      <ul>
+        <li>Una <b>cámara táctica fija</b> (panorámica) o el feed del club, con calibración de cancha — habilita zonas y seguimiento reales.</li>
+        <li>Acceso continuo a las grabaciones de los partidos de Coquimbo.</li>
+      </ul>
+    </section>
+
+    <!-- CONCLUSION -->
+    <section id="conclusion">
+      <h2><span class="n">9</span> Conclusión operativa</h2>
+      <p class="lead">TrazoXI ya no es una idea: es un sistema por capas con la mitad construida y desplegada, un método validado y una ética de datos explícita. La capa de datos funciona, la codificación en vivo funciona, y el partido de referencia está codificado y verificado.</p>
+      <p>Lo que falta —automatización, visión táctica real, producto— no es incertidumbre conceptual, sino tiempo y acceso. El próximo paso es pequeño y concreto: un partido de prueba elegido por el cuerpo técnico, revisado en conjunto, que convierta esta propuesta en una rutina de trabajo.</p>
+      <div class="credits">
+        <div class="who"><b>Ismael Vásquez</b> — bioestadística, ciencia de datos</div>
+        <div class="who"><b>Mario Rodríguez</b> — análisis táctico/técnico, Coquimbo Unido</div>
+      </div>
+      <p class="foot">Hecho desde el amor por Coquimbo y la ciencia de datos. Cifras con trazabilidad; cada afirmación, con su nivel de evidencia.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  var prog=document.getElementById('prog');
+  function onScroll(){var h=document.documentElement;var p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);prog.style.width=(p*100).toFixed(1)+'%';}
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  var links=[].slice.call(document.querySelectorAll('#toc a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){var i=secs.indexOf(e.target);links.forEach(function(l,j){l.classList.toggle('on',j===i);});}
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    secs.forEach(function(s){if(s)io.observe(s);});
+  }
+})();
+</script>
+</body>
+</html>

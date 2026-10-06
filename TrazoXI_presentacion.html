@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TrazoXI · Presentación del proyecto · Coquimbo Unido</title>
+<meta name="description" content="TrazoXI — inteligencia técnico-táctica para Coquimbo Unido. Presentación del proyecto: capas, fases, framework de datos y limitaciones.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  :root{
+    --bg0:#0a0d11;--panel:#151b22;--panel2:#1b222b;--panel3:#212a34;
+    --gold:#ffd21f;--gold2:#e8bd00;--gold-ink:#0a0d11;
+    --white:#f4f7fa;--txt:#dfe6ec;--mut:#aab8c4;--mut2:#7f8c98;
+    --green:#38d98a;--amber:#f5a623;--red:#ff5f5f;--blue:#5aa8ff;
+    --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.14);--line-gold:rgba(255,210,0,.22);
+    --sh:inset 0 1px 0 rgba(255,255,255,.05),0 10px 26px rgba(0,0,0,.42);
+    --r:16px;--f-display:'Barlow Condensed','Segoe UI',system-ui,sans-serif;--f-body:'Inter','Segoe UI',system-ui,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--f-body);line-height:1.55;color:var(--txt);
+    background:radial-gradient(1200px 760px at 20% -10%,#14202c 0,#0d131a 54%,#090c10 100%) fixed;-webkit-tap-highlight-color:transparent}
+  h1,h2,h3,.disp,.tag{font-family:var(--f-display);letter-spacing:.3px}
+  .num{font-variant-numeric:tabular-nums}
+  ::selection{background:var(--gold);color:#000}
+  /* progreso + marca */
+  .prog{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));z-index:90;width:0;transition:width .15s}
+  .topmark{position:fixed;top:12px;left:16px;z-index:80;display:flex;align-items:center;gap:9px;font-family:var(--f-display);
+    font-weight:800;font-size:14px;color:var(--white);background:rgba(8,11,15,.6);backdrop-filter:blur(8px);padding:6px 12px;border-radius:30px;border:1px solid var(--line-gold)}
+  .crest{width:22px;height:22px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);flex:none}
+  /* dots nav (desktop) */
+  .dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:11px}
+  .dots a{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);transition:.2s}
+  .dots a.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 10px rgba(255,210,0,.5)}
+  @media(max-width:900px){.dots{display:none}}
+  /* secciones tipo lámina */
+  .slide{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:92px 20px 64px;
+    border-bottom:1px solid var(--line);position:relative;scroll-margin-top:0}
+  .wrap{width:100%;max-width:1060px;margin:0 auto}
+  .eyebrow{font-family:var(--f-display);font-weight:700;font-size:clamp(13px,2.4vw,16px);letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin:0 0 10px}
+  h1{font-size:clamp(54px,15vw,150px);line-height:.92;margin:0;color:var(--gold);font-weight:800;letter-spacing:1px}
+  h2{font-size:clamp(28px,5.4vw,58px);line-height:1.05;margin:0 0 14px;color:var(--white);font-weight:700}
+  h3{font-size:clamp(19px,3vw,26px);margin:0 0 6px;color:var(--white);font-weight:700;font-family:var(--f-display)}
+  p{margin:0 0 12px}.lead{font-size:clamp(17px,2.7vw,23px);color:#eef2f0;max-width:46ch}
+  .muted{color:var(--mut)}
+  .big{font-size:clamp(30px,6vw,66px);line-height:1.05;color:var(--white);font-weight:700;font-family:var(--f-display);max-width:20ch}
+  .big u{text-decoration-color:var(--gold);text-underline-offset:6px}
+  .accent{color:var(--gold)}
+  .goldbar{width:84px;height:6px;background:var(--gold);border-radius:3px;margin:14px 0 22px}
+  /* grid de tarjetas */
+  .grid{display:grid;gap:16px;margin-top:22px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--sh)}
+  .card.top{border-top:5px solid var(--gold)}
+  .card h3{color:var(--gold)}
+  .card p{font-size:clamp(14px,2.2vw,17px);color:var(--txt);margin:0}
+  .k{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,7vw,58px);color:var(--gold);line-height:1}
+  .kl{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+  ul.clean{list-style:none;padding:0;margin:14px 0 0}
+  ul.clean li{padding:11px 0 11px 28px;position:relative;border-bottom:1px solid var(--line);font-size:clamp(15px,2.3vw,18px)}
+  ul.clean li::before{content:"▸";position:absolute;left:4px;color:var(--gold);font-weight:700}
+  .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.07);padding:16px 20px;border-radius:0 12px 12px 0;margin-top:20px;font-size:clamp(15px,2.3vw,18px)}
+  .callout.warn{border-color:var(--amber);background:rgba(245,166,35,.08)}
+  .callout.statement{background:var(--gold);color:var(--gold-ink);border:0;border-radius:14px;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{font-size:13px;font-weight:700;padding:5px 13px;border-radius:30px;background:var(--panel3);color:var(--mut);border:1px solid var(--line-strong)}
+  .chip.done{background:rgba(56,217,138,.15);color:var(--green);border-color:rgba(56,217,138,.4)}
+  .chip.prog{background:rgba(245,166,35,.15);color:var(--amber);border-color:rgba(245,166,35,.4)}
+  .chip.gold{background:rgba(255,210,0,.16);color:var(--gold);border-color:var(--line-gold)}
+  /* tabla fases */
+  .tbl{width:100%;border-collapse:collapse;margin-top:18px;font-size:clamp(13px,2.1vw,16px)}
+  .tbl th,.tbl td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{font-family:var(--f-display);color:var(--gold);text-transform:uppercase;font-size:13px;letter-spacing:.6px}
+  .st{font-weight:800;font-family:var(--f-display);white-space:nowrap}
+  .st.d{color:var(--green)}.st.p{color:var(--amber)}.st.v{color:var(--mut2)}
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px;margin-top:22px}
+  .flowbox{flex:1;min-width:200px;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:18px}
+  .flowbox .n{font-family:var(--f-display);font-weight:800;color:var(--gold);font-size:14px;letter-spacing:1px;text-transform:uppercase}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:30px;font-weight:800}
+  @media(max-width:720px){.arrow{transform:rotate(90deg);width:100%}}
+  .foot{color:var(--mut2);font-size:13px;margin-top:22px}
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  .credits{display:flex;flex-wrap:wrap;gap:22px;margin-top:20px}
+  .credits .who{min-width:220px}
+  .credits .who b{color:var(--white);font-size:17px}
+  a.link{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--line-gold)}
+  @media print{
+    @page{margin:12mm}
+    .prog,.dots,.topmark{display:none!important}
+    html,body{background:#fff!important;color:#111!important}
+    .slide{min-height:auto;padding:16px 0;border-bottom:1px solid #ccc;break-inside:avoid;page-break-inside:avoid}
+    h1{color:#b78f00!important;font-size:64px}h2{color:#111!important}h3,.eyebrow{color:#8a6d00!important}
+    .card,.flowbox{background:#fff!important;border:1px solid #d6d6d6!important;box-shadow:none!important}
+    .card h3,.k{color:#111!important}.callout{background:#f4f1e4!important;color:#111!important}
+    .callout.statement{background:#ffd21f!important}p,.lead,.muted,li{color:#222!important}
+    .reveal{opacity:1!important;transform:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<div class="topmark"><span class="crest"></span>TrazoXI</div>
+<nav class="dots" id="dots" aria-label="Navegación"></nav>
+
+<!-- 1 · PORTADA -->
+<section class="slide" id="s1">
+  <div class="wrap">
+    <p class="eyebrow">Inteligencia técnico-táctica · Coquimbo Unido</p>
+    <h1>TrazoXI</h1>
+    <div class="goldbar"></div>
+    <p class="lead">Del video al <b class="accent">dato accionable</b>. Método antes que software, dato antes que opinión.</p>
+    <p class="muted" style="margin-top:14px;max-width:46ch">Caso base real: <b style="color:var(--white)">Cobreloa 1–2 Coquimbo Unido</b> · Copa Chile 2026. Capa de datos ya operativa: <b style="color:var(--white)">Football Tactical Analysis Framework</b>.</p>
+    <div class="credits">
+      <div class="who"><b>Ismael Vásquez</b><br><span class="muted">Bioestadística · ciencia de datos</span></div>
+      <div class="who"><b>Mario Rodríguez</b><br><span class="muted">Análisis táctico/técnico · Coquimbo Unido</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · QUIÉN / POR QUÉ -->
+<section class="slide" id="s2">
+  <div class="wrap reveal">
+    <p class="eyebrow">Quiénes y por qué</p>
+    <h2>Ciencia de datos y cancha, juntas</h2>
+    <p class="lead">Un bioestadístico y un analista del club, trabajando sobre el mismo método: convertir lo que se observa en el juego en evidencia medible.</p>
+    <div class="grid g3">
+      <div class="card top"><h3>Rigor</h3><p>Cada conclusión con su nivel de evidencia: alta, media o baja.</p></div>
+      <div class="card top"><h3>Cancha</h3><p>La lectura táctica del club guía qué medir y qué sirve de verdad.</p></div>
+      <div class="card top"><h3>Honestidad</h3><p>Se dice lo que el dato permite y lo que no. Sin humo.</p></div>
+    </div>
+    <p class="foot">Hecho desde el amor por Coquimbo y la disciplina de la informática y la estadística.</p>
+  </div>
+</section>
+
+<!-- 3 · PROBLEMA -->
+<section class="slide" id="s3">
+  <div class="wrap reveal">
+    <p class="eyebrow">El problema</p>
+    <h2>El análisis vive de la opinión, no del dato</h2>
+    <p class="lead">Lo habitual es revisar video y relato: útil, pero subjetivo y difícil de comparar entre partidos. La pregunta que importa rara vez se responde con números.</p>
+    <div class="grid g3">
+      <div class="card"><h3>Hoy</h3><p>"Jugó bien", "dominó" — sin explicar el mecanismo.</p></div>
+      <div class="card"><h3>El salto</h3><p>Patrón → por qué ocurre → cómo se repite → qué efecto.</p></div>
+      <div class="card"><h3>El objetivo</h3><p>Observación convertida en dato accionable para el cuerpo técnico.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · QUÉ ES -->
+<section class="slide" id="s4">
+  <div class="wrap reveal">
+    <p class="eyebrow">Qué es</p>
+    <h2>TrazoXI, en una frase</h2>
+    <p class="lead">Una capa de inteligencia técnico-táctica que une tres cosas que hoy viven separadas.</p>
+    <div class="grid g3">
+      <div class="card top"><h3>Dato objetivo</h3><p>Resultados, goles, rendimiento y contexto desde bases del fútbol chileno (CFDB + FBref).</p></div>
+      <div class="card top"><h3>Codificación del juego</h3><p>Lo que el dato no ve: fases, patrones y decisiones, codificados desde el video — en planilla y en vivo.</p></div>
+      <div class="card top"><h3>Estadística aplicada</h3><p>Correlaciones que convierten patrones en evidencia con su nivel de confianza.</p></div>
+    </div>
+    <div class="callout"><b>Principio rector:</b> validar el método con datos reales antes de construir software. Diferenciado de herramientas como Longomatch porque el centro es el método, no la app.</div>
+  </div>
+</section>
+
+<!-- 5 · TESIS -->
+<section class="slide" id="s5">
+  <div class="wrap reveal">
+    <p class="eyebrow">La tesis central</p>
+    <p class="big">La estructura en posesión <u>es</u> la organización defensiva anticipada.</p>
+    <p class="lead" style="margin-top:22px">Si el equipo ocupa bien los espacios con el balón, al perderlo recupera más rápido. Atacar ordenado y defender rápido no son dos fases: son la misma.</p>
+    <p class="muted" style="margin-top:10px">Fundada en el modelo de Bielsa. Es una hipótesis <b style="color:var(--white)">medible</b> — y todo el método existe para ponerla a prueba con datos del propio equipo.</p>
+  </div>
+</section>
+
+<!-- 6 · 3 CAPAS -->
+<section class="slide" id="s6">
+  <div class="wrap reveal">
+    <p class="eyebrow">El método · capas metodológicas</p>
+    <h2>Tres capas que se completan</h2>
+    <div class="grid g3">
+      <div class="card top"><h3>Bielsa</h3><p><b style="color:var(--white)">El modelo de juego — qué jugar.</b> Progresión vertical, tercer hombre, conducir para provocar, presión para recuperar alto.</p></div>
+      <div class="card top"><h3>PEDF</h3><p><b style="color:var(--white)">La traducción al entrenamiento — cómo entrenarlo.</b> Principio → ejercicio medible → dato → feedback.</p></div>
+      <div class="card top"><h3>Srebro &amp; Dosil</h3><p><b style="color:var(--white)">El rendimiento mental — cómo sostenerlo.</b> Autoconfianza, control emocional y concentración bajo fatiga.</p></div>
+    </div>
+    <div class="callout">En una frase: <b>Bielsa define qué jugar, PEDF cómo entrenarlo y Srebro cómo sostenerlo</b> cuando el partido aprieta.</div>
+  </div>
+</section>
+
+<!-- 7 · ESTADÍSTICA -->
+<section class="slide" id="s7">
+  <div class="wrap reveal">
+    <p class="eyebrow">El método · instrumento estadístico</p>
+    <h2>Medir la tesis, no adivinarla</h2>
+    <div class="grid g2">
+      <div class="card top"><h3>Punto-biserial</h3><p>El test central: estructura en posesión <b style="color:var(--white)">(continua)</b> vs. recuperación ≤5 s tras pérdida <b style="color:var(--white)">(binaria)</b>. Mide directamente la tesis.</p></div>
+      <div class="card top"><h3>Apoyo</h3><p>Pearson y Spearman (carga ↔ decisión), V de Cramér (categóricas). Cada método para su tipo de pregunta.</p></div>
+    </div>
+    <div class="callout warn"><b>La trampa #1 en fútbol es el confundidor de marcador:</b> un equipo no juega igual ganando que perdiendo. Por eso segmentamos por marcador antes de concluir y etiquetamos cada hallazgo como evidencia alta / media / baja.</div>
+  </div>
+</section>
+
+<!-- 8 · ARQUITECTURA -->
+<section class="slide" id="s8">
+  <div class="wrap reveal">
+    <p class="eyebrow">Arquitectura · las capas del sistema</p>
+    <h2>Del dato crudo a la decisión</h2>
+    <div class="flow">
+      <div class="flowbox"><div class="n">1 · Datos <span class="chip done" style="margin-left:6px">operativa</span></div><p style="margin:8px 0 0">Framework de datos (CFDB + FBref): resultados, rendimiento, proyecciones. El <b style="color:var(--white)">qué</b>.</p></div>
+      <div class="arrow">→</div>
+      <div class="flowbox"><div class="n">2 · Codificación <span class="chip done" style="margin-left:6px">operativa</span></div><p style="margin:8px 0 0">Planilla + registro en vivo: fases y patrones desde el video. El <b style="color:var(--white)">cómo y por qué</b>.</p></div>
+      <div class="arrow">→</div>
+      <div class="flowbox"><div class="n">3 · Cómputo</div><p style="margin:8px 0 0">Secuencias, métricas y estadística. El <b style="color:var(--white)">patrón con su evidencia</b>.</p></div>
+      <div class="arrow">→</div>
+      <div class="flowbox" style="border-color:var(--line-gold)"><div class="n">4 · Decisión</div><p style="margin:8px 0 0">Tableros para el cuerpo técnico. La <b style="color:var(--white)">decisión</b> informada.</p></div>
+    </div>
+    <p class="foot">Capa transversal de automatización (visión por computadora): alimentaría la codificación a escala — hoy un prototipo.</p>
+  </div>
+</section>
+
+<!-- 9 · FRAMEWORK (CAPA DE DATOS RESUELTA) -->
+<section class="slide" id="s9">
+  <div class="wrap reveal">
+    <p class="eyebrow">La capa de datos · YA CONSTRUIDA</p>
+    <h2>Football Tactical Analysis Framework</h2>
+    <p class="lead">El dashboard de Coquimbo ya está operativo: reconcilia dos fuentes con trazabilidad y modela escenarios. No es una promesa — funciona.</p>
+    <div class="grid g2">
+      <div class="card"><h3>Lo que ya entrega</h3>
+        <ul class="clean">
+          <li>Reconciliación <b>FBref + CFDB</b> con badges DATO / INTERPRETACIÓN / MODELO</li>
+          <li>Proyección de tabla <b>Monte Carlo</b> (20.000 sims, Dixon-Coles) y modelo <b>Poisson</b> local/visita</li>
+          <li><b>Scouting</b> de liga con índice de encaje (FIT) por posición</li>
+          <li><b>Pizarra doble</b> y mapa táctico de <b>18 zonas</b> con posición real (no inventada)</li>
+          <li><b>Informe 7Q</b> de oposición y pre-match por rival</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:var(--line-gold)"><h3>Macro ↔ micro</h3>
+        <p style="margin-bottom:10px">El framework es la <b style="color:var(--white)">capa macro</b> (qué pasó en la temporada). La codificación de TrazoXI es la <b style="color:var(--white)">capa micro</b> (cómo y por qué dentro del partido).</p>
+        <p>Juntas cierran el círculo: el framework dice <i>dónde</i> mirar; la codificación explica <i>qué hacer</i>. El cuerpo técnico decide con las dos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · REGISTRO EN VIVO -->
+<section class="slide" id="s10">
+  <div class="wrap reveal">
+    <p class="eyebrow">La capa de codificación · en vivo</p>
+    <h2>Registro Táctico en Vivo</h2>
+    <p class="lead">La botonera de eventos: codificar el partido mientras ocurre, desde el teléfono, sin depender de internet.</p>
+    <div class="grid g4">
+      <div class="card"><div class="k">1 clic</div><div class="kl">por evento, con minuto y período</div></div>
+      <div class="card"><div class="k">offline</div><div class="kl">guarda en el dispositivo (IndexedDB)</div></div>
+      <div class="card"><div class="k">⌨ 1–9</div><div class="kl">atajos de teclado + deshacer</div></div>
+      <div class="card"><div class="k">CSV·XLSX·PDF</div><div class="kl">export + informe auto</div></div>
+    </div>
+    <div class="callout">Cronómetro con períodos, sectores y zonas, nivel de riesgo y efectividad, momentos críticos e informe editable. De la observación al archivo entregable, en el mismo lugar.</div>
+  </div>
+</section>
+
+<!-- 11 · FASES -->
+<section class="slide" id="s11">
+  <div class="wrap reveal">
+    <p class="eyebrow">Las fases · estado real</p>
+    <h2>Lo construido, lo que viene</h2>
+    <table class="tbl">
+      <tr><th>Fase</th><th>Qué es</th><th>Estado</th></tr>
+      <tr><td><b>0 · Codificación manual</b></td><td class="muted">Planilla + diccionario + reglas, validada con partido real</td><td class="st d">HECHO</td></tr>
+      <tr><td><b>1 · Registro en vivo</b></td><td class="muted">Botonera de eventos + pre-tagger de momentos</td><td class="st d">HECHO</td></tr>
+      <tr><td><b>2 · Cómputo de secuencias</b></td><td class="muted">Las 4 preguntas de posesión, calculadas solas</td><td class="st d">HECHO</td></tr>
+      <tr><td><b>3 · Capa de datos (Framework)</b></td><td class="muted">Dashboard CFDB + FBref de Coquimbo, operativo</td><td class="st d">HECHO</td></tr>
+      <tr><td><b>4 · Instrumento estadístico</b></td><td class="muted">Punto-biserial sobre lo codificado</td><td class="st p">MÉTODO LISTO</td></tr>
+      <tr><td><b>5 · Visión por computadora</b></td><td class="muted">Pipeline detección / tracking / zonas</td><td class="st p">PROTOTIPO</td></tr>
+      <tr><td><b>6+ · Plataforma TrazoXI</b></td><td class="muted">Producto integrado, multi-partido, interfaz</td><td class="st v">VISIÓN</td></tr>
+    </table>
+    <div class="callout">Lo honesto: <b>cuatro fases ya funcionan y están desplegadas.</b> Lo que falta no es magia — es tiempo y acceso a los partidos del club.</div>
+  </div>
+</section>
+
+<!-- 12 · PARTIDO CODIFICADO -->
+<section class="slide" id="s12">
+  <div class="wrap reveal">
+    <p class="eyebrow">Fase 0 en acción · Cobreloa 1–2 Coquimbo · Copa Chile 2026</p>
+    <h2>El partido, codificado</h2>
+    <div class="grid g2">
+      <div class="card"><h3>Los goles (verificados)</h3>
+        <ul class="clean">
+          <li><b class="accent">64'</b> Cabrera (as. Vadalá) · <b style="color:var(--white)">0–1</b>. Tras recuperación de Pereira: la tesis, viva.</li>
+          <li><b class="accent">70'</b> Orellana <b style="color:var(--white)">EN CONTRA</b> (as. Méndez) · 1–1. Central propio superado en el anticipo.</li>
+          <li><b class="accent">87'</b> Y. Blanco (as. Zavala) · <b style="color:var(--white)">1–2</b>. Juvenil, debut. Evidencia media.</li>
+        </ul>
+      </div>
+      <div class="card"><h3>Lo que entrega la planilla</h3>
+        <ul class="clean">
+          <li><b style="color:var(--white)">14 eventos</b> documentados, con zona, carril y marcador</li>
+          <li>Diccionario, reglas y 18 zonas — todos codifican igual</li>
+          <li>Resumen que <b style="color:var(--white)">se calcula solo</b>: evento × marcador</li>
+          <li>Tasa de <b class="accent">recuperación ≤5 s</b>: variable para el punto-biserial</li>
+        </ul>
+      </div>
+    </div>
+    <p class="foot">Figura del partido: Sebastián Cabrera, rating 8.32 (CFDB). Goles verificados contra CFDB + dos videos; el 1–2 se adopta como Blanco por mayor peso de evidencia.</p>
+  </div>
+</section>
+
+<!-- 13 · DATOS COQUIMBO -->
+<section class="slide" id="s13">
+  <div class="wrap reveal">
+    <p class="eyebrow">El framework, en vivo · temporada 2026</p>
+    <h2>Coquimbo, leído en cifras</h2>
+    <div class="grid g4">
+      <div class="card"><div class="k">2025</div><div class="kl">Campeón de Primera (vigente)</div></div>
+      <div class="card"><div class="k">8-5-9</div><div class="kl">Liga 2026 · 29 pts · 10º (reconciliado)</div></div>
+      <div class="card"><div class="k">≈0</div><div class="kl">correlación posesión → puntos</div></div>
+      <div class="card"><div class="k">24,9</div><div class="kl">centros por partido (ataque lateral)</div></div>
+    </div>
+    <div class="callout warn"><b>La lectura, no el número:</b> equipo <b>reactivo</b> (rinde mejor sin la obligación del balón) y con firma lateral. Del campeón 2025 al 2026 el ataque se sostiene; la <b>defensa</b> y la <b>disciplina</b> (8 rojas en liga) son la deuda. La vuelta con Cobreloa se juega en Coquimbo defendiendo el 2–1.</div>
+  </div>
+</section>
+
+<!-- 14 · LIMITACIONES -->
+<section class="slide" id="s14">
+  <div class="wrap reveal">
+    <p class="eyebrow">Honestidad científica · límites</p>
+    <h2>Lo que este método todavía no puede</h2>
+    <div class="grid g2">
+      <div class="card" style="border-left:5px solid var(--red)"><h3>Video de TV ≠ grabación táctica</h3><p>Paneos, zoom y cortes rompen el seguimiento: las "zonas" en pantalla no son zonas de la cancha. Sobre TV, la visión da <b style="color:var(--white)">detecciones, no eventos tácticos</b>.</p></div>
+      <div class="card" style="border-left:5px solid var(--red)"><h3>No hay datos posicionales (x,y)</h3><p>La liga chilena no publica tracking: un mapa de calor espacial <b style="color:var(--white)">sería inventado</b>. Por eso usamos proxies (heat-grid de intensidad) y lo decimos.</p></div>
+      <div class="card" style="border-left:5px solid var(--amber)"><h3>El dato de proveedor falla</h3><p>En este partido CFDB no registró el 3.er gol ni 2 titulares. Se reconstruyó con video + prensa. Cada dato lleva su nivel de evidencia.</p></div>
+      <div class="card" style="border-left:5px solid var(--amber)"><h3>La capa de datos es semi-manual</h3><p>Hoy se actualiza editando archivos. Funciona y es trazable — pero escalarla es el próximo trabajo, no un hecho.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · QUÉ NECESITAMOS -->
+<section class="slide" id="s15">
+  <div class="wrap reveal">
+    <p class="eyebrow">Qué necesitaríamos</p>
+    <h2>Para pasar de prototipo a herramienta</h2>
+    <ul class="clean" style="font-size:clamp(16px,2.6vw,20px)">
+      <li>Una <b style="color:var(--white)">cámara táctica fija</b> (panorámica) o el feed del club — recién ahí la visión da zonas y seguimiento reales.</li>
+      <li><b style="color:var(--white)">Acceso a las grabaciones</b> de los partidos de Coquimbo para codificar con continuidad.</li>
+      <li><b style="color:var(--white)">Validación con el cuerpo técnico</b>: que ustedes definan qué métricas mueven de verdad las decisiones.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 16 · CIERRE -->
+<section class="slide" id="s16">
+  <div class="wrap reveal">
+    <p class="eyebrow">TrazoXI</p>
+    <p class="big">Método antes que software. Dato antes que opinión.</p>
+    <div class="goldbar"></div>
+    <p class="lead">Próximo paso concreto: codificar un partido que elija el cuerpo técnico, de cara a la vuelta, y revisarlo juntos.</p>
+    <div class="credits">
+      <div class="who"><b>Ismael Vásquez</b><br><span class="muted">Bioestadística · ciencia de datos</span></div>
+      <div class="who"><b>Mario Rodríguez</b><br><span class="muted">Análisis táctico/técnico · Coquimbo Unido</span></div>
+    </div>
+    <p class="foot">Hecho desde el amor por Coquimbo y la ciencia de datos.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var dots=document.getElementById('dots');
+  slides.forEach(function(s,i){
+    var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label','Lámina '+(i+1));
+    dots.appendChild(a);
+  });
+  var dotEls=[].slice.call(dots.children);
+  var prog=document.getElementById('prog');
+  function onScroll(){
+    var h=document.documentElement;
+    var p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);
+    prog.style.width=(p*100).toFixed(1)+'%';
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.querySelectorAll('.reveal').forEach(function(r){r.classList.add('in');});
+          var idx=slides.indexOf(e.target);
+          dotEls.forEach(function(d,i){d.classList.toggle('on',i===idx);});
+        }
+      });
+    },{threshold:.35});
+    slides.forEach(function(s){io.observe(s);});
+  }else{
+    document.querySelectorAll('.reveal').forEach(function(r){r.classList.add('in');});
+  }
+})();
+</script>
+</body>
+</html>
