@@ -128,5 +128,25 @@ eq(C.genSessionId(new Date(2026, 8, 22, 20, 30, 0)), 'TRZ-20260922-203000', 'ID 
 eq(C.validateSession({ analyzedTeam: 'A', opponentTeam: '', matchDate: '2026-01-01', analyst: 'X' }).length, 1, 'valida rival faltante');
 ok(C.isValidEmail('a@b.cl') && !C.isValidEmail('mal'), 'validación email');
 
+/* 11) Motor de interpretación táctica */
+(function () {
+  const mk = (etq, extra) => Object.assign({ etiqueta: etq, zona: 'Z8', tercio: 'Creación', totalElapsedSeconds: 100 }, extra || {});
+  // contrapresión baja => alerta con recomendación de replegar
+  const evs = [
+    mk('perdida', { reaccion: 'Repliegue', apoyos: 1, marcador: 'Empatando' }),
+    mk('perdida', { reaccion: 'Contra concedida', apoyos: 2, marcador: 'Empatando' }),
+    mk('perdida', { reaccion: 'Repliegue', apoyos: 1, marcador: 'Perdiendo' }),
+    mk('perdida', { reaccion: 'Recuperada ≤5s', apoyos: 5, marcador: 'Ganando', zona: 'Z2', tercio: 'Iniciación' })
+  ];
+  const reads = C.tacticalReads(evs, [], { analyzedTeam: 'Coquimbo' });
+  ok(Array.isArray(reads) && reads.length > 0, 'devuelve lecturas');
+  const cp = reads.find(r => r.clave === 'Contrapresión tras pérdida');
+  ok(cp && /[DATO]/.test(cp.obs) && cp.rec.length > 0, 'lectura de contrapresión con obs+rec');
+  ok(reads.every(r => r.evidencia === 'baja' || r.evidencia === 'media'), 'evidencia acotada (baja/media)');
+  ok(C.dataHonestyNotes().length >= 3, 'notas de honestidad de datos');
+  // sin eventos => sin lecturas, sin romper
+  ok(Array.isArray(C.tacticalReads([], [], {})) && C.tacticalReads([], [], {}).length === 0, 'vacío => []');
+})();
+
 console.log('\n' + (fail === 0 ? '✓ TODAS OK' : '✗ CON FALLOS') + ' — ' + pass + ' pasaron, ' + fail + ' fallaron.');
 process.exit(fail === 0 ? 0 : 1);

@@ -237,6 +237,7 @@
       <div class="card"><h3>Mapa de 18 zonas · densidad de eventos</h3><div class="pitchwrap"><svg class="pitch" id="pitchHeat" viewBox="0 0 300 440"></svg></div></div>
       <div class="card"><h3>La tesis · recuperación tras pérdida</h3><div id="thesisPanel"></div></div>
     </div>
+    <div class="card"><h3>Interpretación táctica <span class="sub" style="text-transform:none;letter-spacing:0">· marco analista-futbol-pro</span></h3><div id="tacticRead"></div></div>
     <div class="grid g2">
       <div class="card"><h3>Eventos por etiqueta</h3><div class="chart-wrap"><canvas id="chEtq"></canvas></div></div>
       <div class="card"><h3>Línea de tiempo</h3><div class="chart-wrap"><canvas id="chTl"></canvas></div></div>
@@ -514,6 +515,20 @@ function renderDashboard(){var s=C.aggregateStats(State.events);var th=C.thesisA
   $('#thesisPanel').innerHTML='<div class="kpis"><div class="kpi"><div class="v num">'+(rec.rate==null?'—':rec.rate+'%')+'</div><div class="l">recupera ≤5s (n='+rec.n+')</div></div><div class="kpi"><div class="v num">'+(pb.r==null?'—':pb.r)+'</div><div class="l">point-biserial apoyos→recup.</div></div></div>'+
     '<h3>Recuperación por marcador <span class="sub" style="text-transform:none;letter-spacing:0">· control del confundidor</span></h3><table><thead><tr><th>Marcador</th><th>n</th><th>Tasa ≤5s</th></tr></thead><tbody>'+byM+'</tbody></table>'+
     (pb.r==null?'<div class="callout warn">Aún no hay muestra suficiente para el point-biserial ('+(pb.reason||'')+'). Codifica más pérdidas con <b>apoyos</b> y <b>reacción</b>.</div>':'<div class="callout '+(pb.r>0?'ok':'warn')+'">r='+pb.r+' (n='+pb.n+'): '+(pb.r>0.2?'más apoyos al perder se asocia a recuperar más rápido — coherente con la tesis':pb.r<-0.2?'relación inversa: a revisar':'relación débil')+'. Evidencia '+(pb.n>=20?'media':'baja')+' por tamaño muestral.</div>');
+  // Interpretación táctica (motor del núcleo · marco analista-futbol-pro)
+  var reads=C.tacticalReads(State.events,State.sequences,State.session||{});
+  var evClass=function(e){return e==='media'?'def':'neu';};
+  var trEl=$('#tacticRead');
+  if(trEl){
+    trEl.innerHTML=(reads.length?reads.map(function(r){
+      return '<div style="padding:10px 0;border-bottom:1px solid var(--line)">'+
+        '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><b style="color:var(--white)">'+esc(r.clave)+'</b><span class="chip '+evClass(r.evidencia)+'">evidencia '+esc(r.evidencia)+'</span></div>'+
+        '<div class="sub" style="margin-top:4px">'+esc(r.obs)+'</div>'+
+        '<div style="font-size:13.5px;margin-top:3px;color:var(--txt)">'+esc(r.interp)+'</div>'+
+        '<div style="font-size:13.5px;margin-top:3px;color:var(--gold)">▸ '+esc(r.rec)+'</div></div>';
+    }).join(''):'<div class="sub">Codifica eventos —sobre todo pérdidas con apoyos + reacción, y abre secuencias— y aquí aparecerá la lectura táctica automática.</div>')+
+      '<div class="callout" style="margin-top:10px"><b>Honestidad de datos.</b> '+C.dataHonestyNotes().map(esc).join(' · ')+'</div>';
+  }
   if(window.Chart){var tick='#aab8c4',gridC='rgba(255,255,255,.07)';
     var etqLabels=Object.keys(C.ETIQUETAS).filter(function(k){return s.byEtiqueta[k]>0;});
     destroy('etq');State.charts.etq=new Chart($('#chEtq'),{type:'bar',data:{labels:etqLabels.map(function(k){return C.ETIQUETAS[k].label;}),datasets:[{label:'Eventos',data:etqLabels.map(function(k){return s.byEtiqueta[k];}),backgroundColor:etqLabels.map(function(k){return C.ETIQUETAS[k].color;})}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tick,precision:0},grid:{color:gridC}},y:{ticks:{color:tick,font:{size:10}},grid:{display:false}}}}});
@@ -539,8 +554,9 @@ function exportXLSX(){if(!window.XLSX){toast('SheetJS no disponible (sin conexi�
   XLSX.writeFile(wb,C.safeFileBase(s)+'.xlsx');toast('Excel exportado (Registro+Secuencias+Resumen)','ok');}
 function renderExport(){var box=$('#exportBody');if(!State.session){box.innerHTML='<div class="empty"><div class="big">📤</div>No hay sesión activa.</div>';return;}
   box.innerHTML='<div class="card"><h3>Exportar</h3><div class="sub">Archivo: <code style="color:var(--gold)">'+esc(C.safeFileBase(State.session))+'</code></div>'+
-    '<div class="btnrow"><button class="btn primary" id="x_csv">⬇ CSV (esquema plantilla)</button><button class="btn primary" id="x_xlsx">⬇ Excel</button><button class="btn" id="x_json">⬇ JSON</button></div>'+
-    '<div class="callout ok">El CSV/Excel usa <b>exactamente las columnas de la hoja «Registro» de la plantilla TrazoXI</b> (ID, Clip, Min, Equipo, Jugador, Fase, Etiqueta, Tercio, Zona, Carril, Marcador, Presión, Resultado, Rompe línea, Reacción, Apoyos, Nota). Se pega 1:1 en la planilla.</div></div>';
+    '<div class="btnrow"><button class="btn primary" id="x_json">⬇ JSON (para la plantilla)</button><button class="btn primary" id="x_xlsx">⬇ Excel (datos)</button><button class="btn" id="x_csv">⬇ CSV</button></div>'+
+    '<div class="callout ok"><b>Entrega en formato plantilla TrazoXI.</b> Exporta <b>JSON</b> y pásalo por <code style="color:var(--gold)">trazoxi_a_plantilla.py</code>: rellena la plantilla real —con sus hojas, desplegables y la hoja «Resumen» que recalcula sola— con el Contexto, el Registro y las Secuencias de esta sesión.</div>'+
+    '<div class="sub">El <b>Excel/CSV</b> traen las 17 columnas exactas de la hoja «Registro» (ID, Clip, Min, Equipo, Jugador, Fase, Etiqueta, Tercio, Zona, Carril, Marcador, Presión, Resultado, Rompe línea, Reacción, Apoyos, Nota) para pegar 1:1 en una plantilla ya abierta.</div></div>';
   $('#x_csv').onclick=exportCSV;$('#x_xlsx').onclick=exportXLSX;$('#x_json').onclick=exportJSON;}
 
 /* ---------- Historial ---------- */

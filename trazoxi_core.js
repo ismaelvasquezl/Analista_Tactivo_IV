@@ -406,6 +406,127 @@
   }
   function isValidEmail(x) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(x || '').trim()); }
 
+  /* =========================================================================
+   * 12 · MOTOR DE INTERPRETACIÓN TÁCTICA (marco analista-futbol-pro)
+   *   Traduce las métricas codificadas en lecturas Observación → Interpretación
+   *   → Recomendación, con honestidad de datos ([DATO]/[INFERENCIA]/[HIPÓTESIS])
+   *   y nivel de evidencia por tamaño de muestra. Lentes: recuperación tras
+   *   pérdida (contrapresión / Juego de Posición), modelo de 18 zonas, sesgo de
+   *   carril, confundidor de marcador, secuencias de posesión.
+   * =======================================================================*/
+  function _evNivel(n) { return n >= 10 ? 'media' : 'baja'; }  // techo 'media' en un solo partido
+
+  function tacticalReads(events, sequences, session) {
+    const active = (events || []).filter(isActive);
+    const reads = [];
+    const th = thesisAnalysis(active);
+    const rec = th.recovery, pb = th.pointBiserial;
+    const perdidas = active.filter(e => e.etiqueta === 'perdida');
+
+    // 1 · Contrapresión tras pérdida (núcleo de la tesis)
+    if (rec.n >= 3) {
+      let interp, rc;
+      if (rec.rate >= 50) {
+        interp = '[INFERENCIA] Contrapresión efectiva: recuperás donde perdés, coherente con el principio de recuperación inmediata tras pérdida.';
+        rc = 'Sostener distancias de relación cortas en posesión para seguir recuperando arriba; mantener el gatillo de 5 s.';
+      } else if (rec.rate <= 35) {
+        interp = '[INFERENCIA] Reacción lenta tras pérdida: concedés transición. Las distancias en posesión probablemente quedan largas y no llega la segunda presión.';
+        rc = 'Achicar distancias de relación antes de progresar; si no se recupera en ≤5 s, repliegue en bloque ordenado (no perseguir suelto).';
+      } else {
+        interp = '[INFERENCIA] Contrapresión intermitente.';
+        rc = 'Fijar un disparador claro (jugador más cercano + tapar primer pase); si falla, replegar en bloque.';
+      }
+      reads.push({ clave: 'Contrapresión tras pérdida', prioridad: 10, evidencia: (rec.n >= 8 ? 'media' : 'baja'),
+        obs: `[DATO] Recuperás ≤5 s el ${rec.rate}% de las pérdidas (n=${rec.n}).`, interp, rec: rc });
+    }
+
+    // 2 · Confundidor de marcador (segmentación obligatoria del método)
+    const buckets = MARCADORES.map(m => ({ m, o: rec.byMarcador[m] })).filter(x => x.o.n >= 3);
+    if (buckets.length >= 2) {
+      const txt = buckets.map(x => `${x.m.toLowerCase()} ${x.o.rate}% (n=${x.o.n})`).join(' · ');
+      const gan = rec.byMarcador['Ganando'];
+      let interp = '[INFERENCIA] La intensidad de recuperación cambia con el marcador — por eso no se promedia todo junto.';
+      if (gan && gan.n >= 3 && gan.rate != null && gan.rate <= 35)
+        interp = '[INFERENCIA] Ganando bajás la contrapresión y gestionás el resultado; riesgo si hay que defender una ventaja ajustada.';
+      reads.push({ clave: 'Efecto marcador (confundidor)', prioridad: 9, evidencia: 'baja',
+        obs: `[DATO] Recuperación ≤5 s por marcador: ${txt}.`, interp,
+        rec: 'Leer la contrapresión siempre segmentada por marcador; decidir a propósito si al ir ganando se mantiene presión o se repliega.' });
+    }
+
+    // 3 · Apoyos → recuperación (point-biserial, la tesis cuantificada)
+    if (pb.r != null) {
+      const interp = pb.r > 0.2
+        ? '[INFERENCIA] Más apoyos cerca al perder se asocia a recuperar más rápido: la estructura en posesión funciona como defensa anticipada (tesis).'
+        : pb.r < -0.2
+          ? '[HIPÓTESIS] Relación inversa inesperada: revisar si con muchos apoyos se pierde en zonas malas.'
+          : '[INFERENCIA] Relación débil entre apoyos y recuperación en esta muestra.';
+      reads.push({ clave: 'Apoyos → recuperación', prioridad: 7, evidencia: (pb.n >= 20 ? 'media' : 'baja'),
+        obs: `[DATO] r = ${pb.r} (n=${pb.n}; apoyos medios: recupera ${pb.m1} vs no recupera ${pb.m0}).`, interp,
+        rec: 'Entrenar ocupación de espacios para asegurar ≥3 apoyos al poseedor; confirmar con más partidos (muestra chica).' });
+    }
+
+    // 4 · Zonas de pérdida (modelo de 18 zonas)
+    if (perdidas.length >= 4) {
+      const terc = { 'Iniciación': 0, 'Creación': 0, 'Finalización': 0 };
+      perdidas.forEach(e => { const t = e.tercio || tercioOfZone(e.zona); if (terc[t] != null) terc[t]++; });
+      const tot = perdidas.length;
+      if (terc['Iniciación'] / tot >= 0.4) {
+        reads.push({ clave: 'Pérdidas en salida', prioridad: 9, evidencia: _evNivel(tot),
+          obs: `[DATO] ${terc['Iniciación']} de ${tot} pérdidas en tu tercio de iniciación (Z1-6).`,
+          interp: '[INFERENCIA] Pérdida en salida = ocasión rival casi directa; la construcción no genera superioridad y entregás en zona crítica.',
+          rec: 'Salir con portero como +1 y pivote de tercer central para tener hombre libre; si presionan 1v1, saltar línea con el largo en vez de forzar.' });
+      } else {
+        reads.push({ clave: 'Zona de pérdida', prioridad: 5, evidencia: _evNivel(tot),
+          obs: `[DATO] Pérdidas: ${terc['Iniciación']} iniciación · ${terc['Creación']} creación · ${terc['Finalización']} finalización.`,
+          interp: '[INFERENCIA] Mayoría de pérdidas fuera de tu salida: menos peligrosas, habilitan contrapresión arriba.',
+          rec: 'Mantener la contrapresión alta tras pérdida en campo rival; vigilar coberturas por si saltan la presión.' });
+      }
+    }
+
+    // 5 · Sesgo de carril ofensivo (bandas vs half-spaces/central)
+    const offev = active.filter(e => orgOfEtiqueta(e.etiqueta) === 'offensive' && e.carril);
+    if (offev.length >= 6) {
+      let banda = 0, hs = 0, cen = 0;
+      offev.forEach(e => { if (e.carril === 'Banda izq' || e.carril === 'Banda der') banda++; else if (e.carril.indexOf('Half') === 0) hs++; else cen++; });
+      if (banda / offev.length >= 0.5) {
+        reads.push({ clave: 'Sesgo de ataque: bandas', prioridad: 6, evidencia: _evNivel(offev.length),
+          obs: `[DATO] ${Math.round(banda / offev.length * 100)}% de acciones ofensivas por banda (${banda}/${offev.length}); half-spaces ${hs}, central ${cen}.`,
+          interp: '[INFERENCIA] Ataque muy lateral; si el rival cierra las bandas te volvés previsible.',
+          rec: 'Fijar en banda para liberar el half-space / Z14 (fijar para liberar); un interior entre líneas como salida alternativa.' });
+      }
+    }
+
+    // 6 · Finalización y conversión
+    const fin = active.filter(e => e.etiqueta === 'finalizacion');
+    if (fin.length >= 2) {
+      const goles = fin.filter(e => e.resultado === 'Gol' && e.equipo !== 'rival').length;
+      reads.push({ clave: 'Finalización', prioridad: 4, evidencia: _evNivel(fin.length),
+        obs: `[DATO] ${fin.length} finalizaciones, ${goles} gol(es) (conversión ${Math.round(goles / fin.length * 100)}%).`,
+        interp: '[INFERENCIA] ' + (fin.length >= 5 && goles === 0 ? 'Generás y no convertís: dominio estéril; el margen está en la última decisión.' : 'Volumen de finalización en construcción.'),
+        rec: 'Buscar el último pase a Z14 / half-space para rematar con más claridad en vez del centro previsible.' });
+    }
+
+    // 7 · Posesión tras recuperar (secuencias)
+    const tr = sequenceStats(sequences)['Tras recuperación'];
+    if (tr && tr.n >= 2) {
+      reads.push({ clave: 'Posesión tras recuperar', prioridad: 5, evidencia: (tr.n >= 6 ? 'media' : 'baja'),
+        obs: `[DATO] Tras recuperar: ${tr.duracionMedia}s, ${tr.pasesMedio} pases, ${tr.pctRemate}% termina en remate (n=${tr.n}).`,
+        interp: '[INFERENCIA] ' + ((tr.duracionMedia != null && tr.duracionMedia < 8) ? 'Posesiones cortas tras robar: juego directo o pérdida rápida — primero hay que alejar el balón del acoso y recolocar.' : 'Retenés tras recuperar: elaboración.'),
+        rec: 'Tras robar: primer pase a zona segura para alejar del acoso, luego recolocar estructura y buscar el hombre libre.' });
+    }
+
+    reads.sort((a, b) => b.prioridad - a.prioridad);
+    return reads.slice(0, 6);
+  }
+
+  function dataHonestyNotes() {
+    return [
+      'Codificación observacional en vivo (un tiempo/partido): toda lectura es [INFERENCIA] sobre [DATO] propio; el techo de evidencia es "media" por tamaño de muestra.',
+      'Sin coordenadas (x,y) ni xG: no hay heatmap espacial ni xG; las zonas son el marco de 18 celdas poblado con tus eventos.',
+      'Para subir de [HIPÓTESIS] a [DATO]: cruzar con el marcador oficial (CFDB) y acumular más partidos.'
+    ];
+  }
+
   return {
     FASES, ETIQUETAS, TERCIOS, CARRILES, MARCADORES, PRESIONES, RESULTADOS, ROMPE, REACCIONES, EQUIPOS,
     SEQ_TIPOS, SEQ_RESULTADOS, STATUS_LABELS, PERIOD_LABELS, ZONAS, CSV_COLUMNS,
@@ -415,6 +536,7 @@
     orgOfFase, orgOfEtiqueta, faseSugerida, isActive, isGoal, computeScore, marcadorFromScore, marcadorAt,
     aggregateStats, avg, recoveryStats, pointBiserial, recoveryPairs, thesisAnalysis,
     sequenceDuration, sequenceStats, detectCriticalMoments,
+    tacticalReads, dataHonestyNotes,
     eventToRow, buildCSV, safeFileBase, generateExecutiveSummary, validateSession, isValidEmail
   };
 });
