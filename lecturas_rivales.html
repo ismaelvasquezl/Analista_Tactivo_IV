@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Lecturas de Rivales · Coquimbo Unido</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="wyscout.js"></script>
+<script src="rivales_prematch.js"></script>
+<script src="primera_equipos.js"></script>
+<script src="fixtures.js"></script>
+<script src="datalabs.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  :root{--bg0:#0a0d11;--bg1:#0e1319;--panel:#151b22;--panel2:#1b222b;--panel3:#212a34;
+    --gold:#ffd21f;--gold2:#e8bd00;--gold-ink:#0a0d11;--white:#f4f7fa;--txt:#dfe6ec;--mut:#aab8c4;--mut2:#7f8c98;
+    --blue:#4a90ff;--teal:#3fd0c4;--green:#38d98a;--amber:#f5a623;--red:#ff5f5f;
+    --line:rgba(255,255,255,.075);--line-strong:rgba(255,255,255,.14);--line-gold:rgba(255,210,0,.22);
+    --sh:inset 0 1px 0 rgba(255,255,255,.05),0 6px 18px rgba(0,0,0,.38);--r:14px;
+    --f-display:'Barlow Condensed','Segoe UI',system-ui,sans-serif;--f-body:'Inter','Segoe UI',system-ui,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--f-body);color:var(--txt);line-height:1.5;
+    background:radial-gradient(1200px 700px at 18% -8%,#14202c 0,#0d131a 52%,#090c10 100%) fixed}
+  h1,h2,h3,.brand,.disp{font-family:var(--f-display);letter-spacing:.3px}
+  a{color:var(--teal);text-decoration:none}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+  .num{font-variant-numeric:tabular-nums}
+  header{position:sticky;top:0;z-index:40;background:rgba(8,11,15,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-gold)}
+  .hin{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;color:var(--white)}
+  .crest{width:26px;height:26px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);flex:none}
+  .back{margin-left:auto;font-size:13px;color:var(--mut)}
+  main{max-width:1080px;margin:0 auto;padding:16px 16px 100px}
+  h2{font-size:22px;margin:6px 0 2px;display:flex;align-items:center;gap:9px}
+  h2::before{content:"";width:6px;height:20px;background:var(--gold);border-radius:3px}
+  h3{font-size:13px;color:var(--gold);text-transform:uppercase;letter-spacing:.7px;margin:18px 0 6px}
+  .sub{color:var(--mut);font-size:13.5px}
+  .fixrow{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 10px}
+  .fix{flex:0 0 auto;min-width:150px;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:12px;padding:11px 13px;cursor:pointer;transition:.15s;position:relative}
+  .fix:hover{border-color:var(--line-gold)}
+  .fix.active{border-color:var(--gold);box-shadow:0 0 16px rgba(255,210,0,.12)}
+  .fix .d{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+  .fix .o{font-family:var(--f-display);font-size:17px;font-weight:800;color:var(--white);margin:2px 0}
+  .fix .v{font-size:11px;font-weight:700}
+  .fix .hudl{position:absolute;top:8px;right:9px;font-size:9px;font-weight:800;color:var(--gold-ink);background:var(--gold);border-radius:4px;padding:1px 5px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-top:12px}
+  .grid{display:grid;gap:12px}
+  @media(min-width:680px){.g2{grid-template-columns:1fr 1fr}}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+  .kpi{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .kpi .v{font-family:var(--f-display);font-size:24px;font-weight:800;color:var(--gold)}
+  .kpi .l{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase}
+  .scroll-x{overflow-x:auto}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .b-hudl{background:rgba(255,210,0,.16);color:var(--gold);border:1px solid var(--line-gold)}
+  .b-dato{background:rgba(56,217,138,.16);color:var(--green);border:1px solid rgba(56,217,138,.4)}
+  .b-inf{background:rgba(74,144,255,.16);color:var(--blue);border:1px solid rgba(74,144,255,.4)}
+  .b-pend{background:rgba(245,166,35,.16);color:var(--amber);border:1px solid rgba(245,166,35,.4)}
+  .chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--panel3);color:var(--mut)}
+  .chip.tit{background:rgba(56,217,138,.16);color:var(--green)} .chip.rot{background:rgba(245,166,35,.16);color:var(--amber)} .chip.mix{background:rgba(127,176,255,.14);color:var(--blue)}
+  ul.clean{list-style:none;padding:0;margin:8px 0}
+  ul.clean li{padding:7px 0 7px 22px;position:relative;border-bottom:1px solid var(--line);font-size:13.5px}
+  ul.clean li::before{content:"▸";position:absolute;left:2px;color:var(--gold)}
+  ul.warn li::before{content:"▸";color:var(--red)} ul.rec li::before{content:"✔";color:var(--green)}
+  .chart-wrap{position:relative;height:240px}
+  .callout{border-left:4px solid var(--gold);background:rgba(255,210,0,.06);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0;font-size:13.5px}
+  .callout.warn{border-color:var(--amber);background:rgba(245,166,35,.07)}
+  .callout.info{border-color:var(--blue);background:rgba(74,144,255,.07)}
+  .thirds{display:flex;height:40px;border-radius:8px;overflow:hidden;border:1px solid var(--line-strong);margin-top:6px}
+  .thirds div{display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;color:#06131f}
+  .layerbtns{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+  .lbtn{background:var(--bg1);border:1px solid var(--line-strong);color:var(--mut);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:600;cursor:pointer;transition:.12s}
+  .lbtn:hover{color:var(--white)} .lbtn.on{background:var(--gold);color:#000;border-color:var(--gold)}
+  .hero{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .hero .vs{font-family:var(--f-display);font-size:30px;font-weight:800;color:var(--white)}
+  .foot{color:var(--mut);font-size:12px;margin-top:26px;border-top:1px solid var(--line);padding-top:12px}
+  .btn{display:inline-flex;align-items:center;gap:7px;background:var(--panel3);color:var(--white);border:1px solid var(--line-strong);border-radius:10px;padding:10px 15px;font-family:var(--f-body);font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
+  .btn:hover{border-color:var(--gold);background:var(--panel2)}
+  .btn.primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--gold-ink);border:0;font-weight:700}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  /* ---- menú de fixtures dinámico ---- */
+  .fixrow{position:sticky;top:49px;z-index:30;background:rgba(10,13,17,.82);backdrop-filter:blur(8px);border-radius:0 0 12px 12px}
+  .fix{transition:transform .15s,border-color .15s,box-shadow .25s}
+  .fix:hover{transform:translateY(-2px)}
+  .fix.active{animation:fixglow 2.4s ease-in-out infinite}
+  @keyframes fixglow{0%,100%{box-shadow:0 0 10px rgba(255,210,0,.10)}50%{box-shadow:0 0 20px rgba(255,210,0,.30)}}
+  .fix .days{position:absolute;bottom:7px;right:9px;font-size:9px;font-weight:800;color:var(--teal);letter-spacing:.3px}
+  .fix.next{border-color:var(--line-gold)}
+  .fix .next-tag{position:absolute;top:8px;left:9px;font-size:8.5px;font-weight:800;color:var(--gold-ink);background:var(--teal);border-radius:4px;padding:1px 5px}
+  @media print{
+    header,.fixrow,#invTable,.foot,.btnrow,.no-print,.lbtn,.layerbtns,.filters{display:none!important}
+    body{background:#fff!important;color:#111!important}
+    main{padding:0;max-width:100%}
+    h2{color:#111!important} h2::before{background:#b78f00!important}
+    .card{background:#fff!important;border:1px solid #ccc!important;box-shadow:none!important;break-inside:avoid;margin-top:10px}
+    h3,h4,.kpi .v,.vs{color:#111!important} .sub,td,th,li,p{color:#222!important}
+    .callout{background:#f6f6f6!important;border-left-color:#b78f00!important}
+    .kpi{background:#f6f6f6!important;border:1px solid #ddd!important}
+    .chart-wrap{height:220px!important}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="hin">
+    <div class="brand"><span class="crest"></span>CENTRO DE LECTURAS DE RIVALES</div>
+    <a class="back" href="index_conapi.html">← Volver al dashboard</a>
+  </div>
+</header>
+<main>
+  <h2>Partidos restantes · elige el rival</h2>
+  <p class="sub">Calendario de liga que resta a Coquimbo. El chip <span class="badge b-hudl">HUDL</span> indica cobertura Wyscout (dato de evento real). El resto usa proxies (CFDB + estilo datalabs), etiquetados.</p>
+  <div class="fixrow" id="fixrow"></div>
+  <div id="reading"></div>
+
+  <h2 style="margin-top:28px">Organización de datos · inventario de fuentes</h2>
+  <p class="sub">Qué información tenemos por club y de qué fuente. Guía para saber qué lectura es dato de evento y qué es proxy.</p>
+  <div class="scroll-x card"><table id="invTable"></table></div>
+  <p class="foot" id="foot"></p>
+</main>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const charts={};
+function destroy(k){if(charts[k]){charts[k].destroy();delete charts[k];}}
+
+/* ---- normalización de nombres entre fuentes ---- */
+function norm(s){return (s||'').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z]/g,'');}
+const ALIAS={ // nombre de fixture -> variantes
+  'colocolo':['colocolo'], 'nublense':['nublense'], 'ulacalera':['unionlacalera','ulacalera','ulacalera'],
+  'audaxitaliano':['audaxitaliano','aitaliano'], 'everton':['everton','evertondevina'],
+  'dlimache':['deporteslimache','dlimache','cdlimache'], 'ohiggins':['ohiggins'], 'cobreloa':['cobreloa']
+};
+function sameTeam(a,b){const na=norm(a),nb=norm(b);if(na===nb)return true;
+  for(const k in ALIAS){const set=ALIAS[k].concat(k);if(set.includes(na)&&set.includes(nb))return true;}return false;}
+
+/* ---- buscadores en cada fuente ---- */
+const RIV = (typeof RIVALES!=='undefined')?RIVALES:{fixture:[],rivales:[]};
+function rivProxy(opp){return (RIV.rivales||[]).find(r=>sameTeam(r.opp,opp));}
+function estilo(opp){if(typeof ESTILO==='undefined')return null;return ESTILO.teams.find(t=>sameTeam(t.team,opp));}
+function miResultado(opp){ // último enfrentamiento de Coquimbo esta temporada
+  if(typeof FIXTURES==='undefined')return null;
+  const ms=FIXTURES.filter(f=>f.comp==='LIG'&&sameTeam(f.opp,opp));
+  return ms.length?ms[ms.length-1]:null;
+}
+function hasHudl(opp){return typeof WYSCOUT!=='undefined' && Object.keys(WYSCOUT.equipos).some(t=>sameTeam(t,opp));}
+function hudl(opp){if(typeof WYSCOUT==='undefined')return null;const k=Object.keys(WYSCOUT.equipos).find(t=>sameTeam(t,opp));return k?WYSCOUT.equipos[k]:null;}
+
+/* ---- barra de fixtures ---- */
+let current=null;
+function renderFixtures(){
+  const row=$('#fixrow'); const fx=(RIV.fixture||[]).filter(f=>f.comp==='LIG');
+  const today=new Date(); today.setHours(0,0,0,0);
+  const future=fx.map((f,i)=>({i,dd:Math.round((new Date(f.date)-today)/864e5)})).filter(x=>x.dd>=0).sort((a,b)=>a.dd-b.dd);
+  const nextIdx=future.length?future[0].i:0;
+  row.innerHTML=fx.map((f,i)=>{
+    const hud=hasHudl(f.opp);
+    const dd=Math.round((new Date(f.date)-today)/864e5);
+    const dlabel=dd>0?('en '+dd+'d'):dd===0?'HOY':'jugado';
+    return `<div class="fix${i===nextIdx?' next':''}" data-i="${i}">`+
+      (i===nextIdx?'<span class="next-tag">PRÓXIMO</span>':'')+
+      (hud?'<span class="hudl">HUDL</span>':'')+
+      `<div class="d" style="margin-top:${(i===nextIdx||hud)?'12px':'0'}">${esc(f.date)}</div>`+
+      `<div class="o">${esc(f.opp)}</div>`+
+      `<div class="v" style="color:${f.ven==='H'?'var(--green)':'var(--amber)'}">${f.ven==='H'?'● Local':'○ Visita'}</div>`+
+      `<span class="days">${dlabel}</span></div>`;
+  }).join('');
+  [...row.querySelectorAll('.fix')].forEach(el=>el.onclick=()=>select(fx[+el.dataset.i],el));
+  if(fx.length)select(fx[nextIdx],row.querySelectorAll('.fix')[nextIdx]);
+}
+function select(f,el){
+  current=f;
+  [...document.querySelectorAll('.fix')].forEach(x=>x.classList.toggle('active',x===el));
+  hasHudl(f.opp)?renderHudl(f):renderProxy(f);
+  if(typeof window!=='undefined'&&window.scrollTo)window.scrollTo({top:220,behavior:'smooth'});
+}
+
+/* ================= LECTURA HUDL (Colo-Colo) ================= */
+function renderHudl(f){
+  const w=hudl(f.opp); const box=$('#reading');
+  const tit=w.partidos.filter(p=>p.xi==='Titular'), rot=w.partidos.filter(p=>p.xi!=='Titular');
+  const avg=(a,k)=>a.length?(a.reduce((s,p)=>s+p[k],0)/a.length):0;
+  box.innerHTML=
+    `<div class="card"><div class="hero">
+       <div><div class="sub">Próximo · ${esc(f.date)} · ${f.ven==='H'?'Coquimbo LOCAL':'Coquimbo VISITA'}</div>
+       <div class="vs">Coquimbo Unido <span style="color:var(--mut)">vs</span> ${esc(f.opp)}</div>
+       <div><span class="badge b-hudl">HUDL WYSCOUT</span> <span class="badge b-dato">DATO DE EVENTO</span> · ${w.nPartidos} partidos · DT ${esc(w.dt)} · ${esc(w.formacionBase)}</div></div>
+     </div>
+     <div class="callout">${esc(w.resumen)}</div>
+     <div class="btnrow no-print" style="margin-top:10px"><button class="btn primary" id="genReport">📄 Generar informe automático</button><button class="btn" id="printReading">🖨 Imprimir / PDF</button>${sameTeam(f.opp,'Colo-Colo')?'<a class="btn" href="onepager_balon_parado_colocolo.html" target="_blank" style="text-decoration:none">⚑ One-pager balón parado</a>':''}</div></div>`+
+
+    `<div class="card"><h3>Los 5 partidos (análisis longitudinal)</h3>
+       <div class="scroll-x"><table><thead><tr><th>J</th><th>Rival</th><th>L/V</th><th>Res</th><th>XI</th><th>xG</th><th>xG riv</th><th>Pos%</th><th>PPDA</th><th>Duelos</th></tr></thead><tbody>`+
+       w.partidos.map(p=>`<tr><td>${p.j}</td><td>${esc(p.rival)}</td><td>${p.loc}</td>
+         <td><b>${p.gf}-${p.ga}</b></td><td><span class="chip ${p.xi==='Titular'?'tit':p.xi==='Rotado'?'rot':'mix'}">${p.xi}</span></td>
+         <td class="num">${p.xg}</td><td class="num">${p.xgRival}</td><td class="num">${p.pos}</td><td class="num">${p.ppda}</td><td class="num">${p.duelos}%</td></tr>`).join('')+
+       `</tbody></table></div>
+       <div class="callout warn"><b>Hallazgo clave (efecto rotación):</b> con titulares (${tit.map(p=>p.rival).join(', ')}) promedia ${avg(tit,'xg').toFixed(2)} xG y ganó los dos. Rotando/mixto promedia ${avg(rot,'xg').toFixed(2)} xG y <b>no ganó ninguno</b> pese a dominar el balón. <b>Primero hay que anticipar qué once presenta.</b></div></div>`+
+
+    `<div class="grid g2">
+       <div class="card"><h3>xG por partido · Colo-Colo vs rival</h3><div class="chart-wrap"><canvas id="chXg"></canvas></div></div>
+       <div class="card"><h3>Centralidad de pases (vs Audax) — quién conecta el juego</h3><div class="chart-wrap"><canvas id="chHub"></canvas></div>
+         <div class="sub" style="margin-top:8px">Construcción por carriles: <b>${w.redPases.carriles.izq}%</b> izq · <b>${w.redPases.carriles.centro}%</b> centro · <b>${w.redPases.carriles.der}%</b> der.</div>
+         <div class="thirds"><div style="width:${w.redPases.carriles.izq}%;background:#6b7a88">${w.redPases.carriles.izq}%</div><div style="width:${w.redPases.carriles.centro}%;background:var(--gold)">${w.redPases.carriles.centro}%</div><div style="width:${w.redPases.carriles.der}%;background:#6b7a88">${w.redPases.carriles.der}%</div></div>
+         <div class="sub" style="margin-top:6px">Enlace más usado: <b>${esc(w.redPases.enlaceTop)}</b>.</div></div>
+     </div>`+
+
+    `<div class="card"><h3>Jugadores clave a neutralizar</h3><div class="scroll-x"><table><thead><tr><th>#</th><th>Jugador</th><th>Rol</th><th>Métrica Wyscout</th></tr></thead><tbody>`+
+       w.jugadores.map(j=>`<tr><td class="num">${j.d}</td><td><b>${esc(j.n)}</b></td><td>${esc(j.rol)}</td><td class="sub">${esc(j.metr)}</td></tr>`).join('')+
+       `</tbody></table></div></div>`+
+
+    (w.balonParado?`<div class="card"><h3>Balón parado y debilidad aérea</h3>
+       <div class="grid g2">
+         <div><h4 style="color:var(--green);margin:0 0 4px">● Ofensivo (a favor)</h4>
+           <div class="sub">${w.balonParado.ofensivo.cornersProm} córners/PJ · ${w.balonParado.ofensivo.pctRemate}% con remate · lanza: ${esc(w.balonParado.ofensivo.lanzador)}. ${esc(w.balonParado.ofensivo.rematadores)}.</div>
+           <div class="callout">${esc(w.balonParado.ofensivo.veredicto)}</div></div>
+         <div><h4 style="color:var(--red);margin:0 0 4px">● Defensivo (en contra)</h4>
+           <div class="sub">${w.balonParado.defensivo.cornersContraProm} córners en contra/PJ · ${w.balonParado.defensivo.pctRemateContra}% terminan en remate · aéreos del equipo ${w.balonParado.defensivo.aerialTeamProm}%.</div>
+           <div class="callout warn">${esc(w.balonParado.defensivo.veredicto)}</div></div>
+       </div>
+       <div class="scroll-x"><table><thead><tr><th>Rival</th><th>Córners a favor</th><th>→ remate</th><th>Córners en contra</th><th>→ remate</th><th>Aéreos %</th></tr></thead><tbody>`+
+         w.balonParado.porPartido.map(p=>`<tr><td>${esc(p.rival)}</td><td class="num">${p.cf}</td><td class="num">${p.cfRem}</td><td class="num">${p.caf}</td><td class="num">${p.cafRem}</td><td class="num">${p.aer==null?'—':p.aer+'%'}</td></tr>`).join('')+
+       `</tbody></table></div>
+       <div class="callout info"><b>Debilidad aérea:</b> ${esc(w.balonParado.debilidadAerea)} <span class="sub">(se ve en la capa «Debilidad defensiva» abajo)</span></div></div>`:'')+
+
+    `<div class="card"><h3>Ilustraciones tácticas por zonas</h3>
+       <div class="sub">Dirección de ataque ↑. Elige la capa; se irán mejorando con más partidos e informes. Lente Juego de Posición (FC Barcelona).</div>
+       <div class="layerbtns" id="layerBtns"></div>
+       <div class="grid g2" style="align-items:start">
+         <div id="pitchBox" style="text-align:center"></div>
+         <div><div class="callout" id="layerInterp"></div><div class="sub" id="layerLegend" style="margin-top:6px"></div></div>
+       </div></div>`+
+
+    (w.arquero?`<div class="card"><h3>Arquero rival · ${esc(w.arquero.nombre)}</h3>
+       <div class="sub">${esc(w.arquero.nota)}</div>
+       <div class="grid g2" style="align-items:start;margin-top:8px">
+         <div><h4 style="margin:0 0 4px;color:var(--teal)">¿Dónde y cómo inicia el juego?</h4>
+           <div class="sub">${esc(w.arquero.inicio)}</div>
+           <div class="kpis" style="margin-top:8px">
+             <div class="kpi"><div class="v num">${w.arquero.savePct}%</div><div class="l">Atajada (a puerta)</div></div>
+             <div class="kpi"><div class="v num">${w.arquero.tirosEnContra}</div><div class="l">Tiros en contra</div></div>
+             <div class="kpi"><div class="v num">${esc(w.arquero.aereos)}</div><div class="l">Duelos aéreos</div></div>
+             <div class="kpi"><div class="v num">${esc(w.arquero.distribucion.largo)}</div><div class="l">Pase largo</div></div>
+           </div>
+           <h4 style="margin:12px 0 4px;color:var(--red)">Falencias</h4><ul class="clean warn">${w.arquero.falencias.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+         <div style="text-align:center"><h4 style="margin:0 0 6px">Dónde rematar</h4>${goalSVG(w.arquero)}
+           <div class="callout" style="text-align:left;margin-top:8px">${esc(w.arquero.dondeRematar)}</div></div>
+       </div>
+       ${w.arquero.perfilCentros?`<div class="callout warn"><b>¿Qué perfil es más débil ante centros / al salir?</b> ${esc(w.arquero.perfilCentros)}</div>`:''}
+       <p class="sub" style="margin-top:6px">${esc(w.arquero.fuente)} · zonas del arco = DATO (dónde entraron los goles; n=4, muestra chica).</p></div>`:'')+
+
+    (w.pasesClave?`<div class="card"><h3>Pases clave · ${esc(w.pasesClave.zona)}</h3>
+       <div class="scroll-x"><table><thead><tr><th>#</th><th>Jugador</th><th>Pases clave</th><th>Asistencias</th></tr></thead><tbody>`+
+       w.pasesClave.leaders.map(l=>`<tr><td class="num">${l.d}</td><td><b>${esc(l.n)}</b></td><td class="num">${l.clave}</td><td class="num">${l.asist}</td></tr>`).join('')+
+       `</tbody></table></div><div class="callout info">${esc(w.pasesClave.interp)} <span class="sub">(ver la capa «Pases clave» en las ilustraciones)</span></div></div>`:'')+
+
+    `<div class="grid g2">
+       <div class="card"><h3>Fortalezas</h3><ul class="clean">${w.fortalezas.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+       <div class="card"><h3>Vulnerabilidades explotables</h3><ul class="clean warn">${w.vulnerabilidades.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+     </div>`+
+
+    `<div class="card"><h3>Plan para Coquimbo</h3><ul class="clean rec">${w.recomendaciones.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`+
+
+    `<div class="card"><h3>Validación cruzada de fuentes</h3>
+       <div class="kpis">
+         <div class="kpi"><div class="v num">${w.cross.wyscout.xgProm}</div><div class="l">xG/PJ · Wyscout</div></div>
+         <div class="kpi"><div class="v num">${w.cross.cfdb.gfpg}</div><div class="l">Goles/PJ · CFDB</div></div>
+         <div class="kpi"><div class="v num">${w.cross.wyscout.posProm}%</div><div class="l">Posesión · Wyscout</div></div>
+         <div class="kpi"><div class="v num">${w.cross.datalabs2025.posesion}%</div><div class="l">Posesión · datalabs '25</div></div>
+         <div class="kpi"><div class="v num">${w.cross.wyscout.duelosProm}%</div><div class="l">Duelos · Wyscout</div></div>
+       </div>
+       <div class="callout info">${esc(w.cross.veredicto)}</div></div>`+
+    `<div id="reportOut" class="card" style="display:none"></div>`;
+
+  // botones informe / imprimir
+  const gr=document.getElementById('genReport'); if(gr)gr.onclick=()=>genReport(w,f);
+  const pr=document.getElementById('printReading'); if(pr)pr.onclick=()=>window.print();
+
+  // gráfico xG
+  const gc='rgba(255,255,255,.07)',tk='#aab8c4';
+  destroy('xg');
+  charts.xg=new Chart($('#chXg'),{type:'bar',data:{labels:w.partidos.map(p=>p.rival),
+    datasets:[{label:'xG Colo-Colo',data:w.partidos.map(p=>p.xg),backgroundColor:'#ffd21f'},
+      {label:'xG rival',data:w.partidos.map(p=>p.xgRival),backgroundColor:'#4a90ff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tk}}},
+      scales:{x:{ticks:{color:tk,font:{size:10}},grid:{color:gc}},y:{beginAtZero:true,ticks:{color:tk},grid:{color:gc}}}}});
+  // gráfico centralidad
+  destroy('hub');
+  const cd=w.redPases.centralidad;
+  charts.hub=new Chart($('#chHub'),{type:'bar',data:{labels:cd.map(x=>x.n),
+    datasets:[{label:'Combinaciones',data:cd.map(x=>x.c),backgroundColor:cd.map(x=>x.c>=60?'#ffd21f':x.c>=35?'#3fd0c4':'#6b7a88')}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{beginAtZero:true,ticks:{color:tk},grid:{color:gc}},y:{ticks:{color:tk,font:{size:11}},grid:{display:false}}}}});
+  if(w.zonas){curLayer=w.zonas.capas[0].id;renderIllus(w);}
+}
+
+/* ---- ilustraciones por zonas (cancha SVG reutilizable, mejorable) ---- */
+let curLayer='creacion';
+function pitchSVG(w,layer){
+  const W=300,H=460,mx=12,my=12,pw=W-2*mx,ph=H-2*my,cols=3,bands=6,cw=pw/cols,bh=ph/bands;
+  let cells='';
+  if(layer.grid){
+    const red=(layer.color==='red'||layer.tipo==='red'); const base=red?[255,95,95]:[255,210,31];
+    for(let b=0;b<bands;b++)for(let c=0;c<cols;c++){
+      const v=layer.grid[b][c], x=mx+c*cw, y=my+(bands-1-b)*bh, a=(v*0.82).toFixed(2);
+      cells+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cw.toFixed(1)}" height="${bh.toFixed(1)}" fill="rgba(${base[0]},${base[1]},${base[2]},${a})"/>`;
+      if(v>=0.5)cells+=`<text x="${(x+cw/2).toFixed(1)}" y="${(y+bh/2+4).toFixed(1)}" text-anchor="middle" font-size="11" fill="#06131f" font-weight="800">${Math.round(v*100)}</text>`;
+    }
+  }
+  let net='';
+  if(layer.tipo==='net'&&w.zonas.nodos){
+    const byD={}; w.zonas.nodos.forEach(n=>byD[n.d]=n);
+    (w.zonas.edges||[]).forEach(e=>{const a=byD[e[0]],b=byD[e[1]];if(a&&b)net+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="rgba(255,210,31,${(0.18+e[2]*0.16).toFixed(2)})" stroke-width="${e[2]}"/>`;});
+    w.zonas.nodos.forEach(n=>{const r=(6+n.c/8).toFixed(1); const col=n.c>=60?'#ffd21f':n.c>=35?'#3fd0c4':'#9aa7b2';
+      net+=`<circle cx="${n.x}" cy="${n.y}" r="${r}" fill="#151b22" stroke="${col}" stroke-width="2"/><text x="${n.x}" y="${n.y+3.5}" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">${n.d}</text>`;});
+  }
+  if(layer.tipo==='weakdef'&&w.zonas.defensores){
+    w.zonas.defensores.forEach(n=>{ if(n.aer==null)return;
+      const col=n.aer<=30?'#ff5f5f':n.aer<=45?'#f5a623':'#38d98a'; const r=n.aer<=30?15:n.aer<=45?12:10;
+      net+=`<circle cx="${n.x}" cy="${n.y}" r="${r}" fill="${col}" fill-opacity="0.30" stroke="${col}" stroke-width="2.5"/>`+
+        `<text x="${n.x}" y="${n.y-r-3}" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">${n.d}</text>`+
+        `<text x="${n.x}" y="${(n.y+3.5)}" text-anchor="middle" font-size="9" fill="#fff" font-weight="800">${n.aer}%</text>`;});
+  }
+  const lines=`<rect x="${mx}" y="${my}" width="${pw}" height="${ph}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>`+
+    `<line x1="${mx}" y1="${my+ph/2}" x2="${mx+pw}" y2="${my+ph/2}" stroke="rgba(255,255,255,.22)"/>`+
+    `<circle cx="${W/2}" cy="${my+ph/2}" r="30" fill="none" stroke="rgba(255,255,255,.22)"/>`+
+    `<rect x="${W/2-46}" y="${my}" width="92" height="52" fill="none" stroke="rgba(255,255,255,.28)"/>`+
+    `<rect x="${W/2-46}" y="${my+ph-52}" width="92" height="52" fill="none" stroke="rgba(255,255,255,.28)"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:320px;background:linear-gradient(180deg,#123a1a,#0c2c13);border-radius:10px;border:1px solid var(--line-strong)">${cells}${lines}${net}<text x="${W-16}" y="20" font-size="9" fill="rgba(255,255,255,.65)" text-anchor="end">▲ ataque</text></svg>`;
+}
+function renderIllus(w){
+  const btns=document.getElementById('layerBtns'); if(!btns)return;
+  btns.innerHTML=w.zonas.capas.map(c=>`<button class="lbtn${c.id===curLayer?' on':''}" data-l="${c.id}">${esc(c.label)}</button>`).join('');
+  [...btns.querySelectorAll('.lbtn')].forEach(b=>b.onclick=()=>{curLayer=b.dataset.l;renderIllus(w);});
+  const layer=w.zonas.capas.find(c=>c.id===curLayer)||w.zonas.capas[0];
+  document.getElementById('pitchBox').innerHTML=pitchSVG(w,layer);
+  document.getElementById('layerInterp').innerHTML='<b>'+esc(layer.label)+'.</b> '+esc(layer.interp);
+  document.getElementById('layerLegend').innerHTML=esc(w.zonas.nota);
+}
+
+/* ---- arco: dónde rematar / falencias del arquero ---- */
+function goalSVG(ar){
+  const W=320,H=175,gx=30,gy=22,gw=260,gh=120,cw=gw/3,ch=gh/2; let cells='';
+  const drawRow=(arr,yTop)=>arr.forEach((v,c)=>{const x=gx+c*cw;
+    const col=v>=0.7?'56,217,138':v>=0.4?'245,166,35':'154,167,178';
+    cells+=`<rect x="${x}" y="${yTop}" width="${cw}" height="${ch}" fill="rgba(${col},${(v*0.5).toFixed(2)})" stroke="rgba(255,255,255,.12)"/>`;
+    if(v>=0.7)cells+=`<text x="${(x+cw/2)}" y="${(yTop+ch/2+6)}" text-anchor="middle" font-size="18" fill="#38d98a" font-weight="800">✓</text>`;});
+  drawRow(ar.goalZones.alto,gy); drawRow(ar.goalZones.bajo,gy+ch);
+  let net='';
+  for(let i=0;i<=6;i++)net+=`<line x1="${gx+i*gw/6}" y1="${gy}" x2="${gx+i*gw/6}" y2="${gy+gh}" stroke="rgba(255,255,255,.10)"/>`;
+  for(let i=0;i<=3;i++)net+=`<line x1="${gx}" y1="${gy+i*gh/3}" x2="${gx+gw}" y2="${gy+i*gh/3}" stroke="rgba(255,255,255,.10)"/>`;
+  const kx=W/2,ky=gy+gh-6;
+  const keeper=`<circle cx="${kx}" cy="${ky-30}" r="7" fill="#ffd21f"/><rect x="${kx-9}" y="${ky-24}" width="18" height="24" rx="4" fill="#ffd21f"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;background:linear-gradient(180deg,#0f1620,#0b1119);border-radius:10px;border:1px solid var(--line-strong)">${cells}${net}<rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" fill="none" stroke="#fff" stroke-width="4"/>${keeper}<line x1="8" y1="${gy+gh}" x2="${W-8}" y2="${gy+gh}" stroke="rgba(255,255,255,.3)"/><text x="${W/2}" y="${H-6}" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">✓ zonas donde más lo baten (DATO, n=4 goles)</text></svg>`;
+}
+
+/* ---- generador de informe automático (datos inferidos) ---- */
+function genReport(w,f){
+  const out=document.getElementById('reportOut'); if(!out)return;
+  const bp=w.balonParado, ar=w.arquero;
+  const li=a=>'<ul class="clean">'+a.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  out.innerHTML=
+    '<h3 style="color:var(--gold)">INFORME DE OPOSICIÓN · '+esc(f.opp).toUpperCase()+'</h3>'+
+    '<div class="sub">Coquimbo Unido vs '+esc(f.opp)+' · '+esc(f.date)+' · '+(f.ven==='H'?'Coquimbo LOCAL':'Coquimbo VISITA')+' · Fuente: Hudl Wyscout ('+w.nPartidos+' partidos) · DT '+esc(w.dt)+' · '+esc(w.formacionBase)+' · Generado '+new Date().toLocaleString('es-CL')+'</div>'+
+    '<h4 style="color:var(--gold)">1 · Resumen</h4><div class="sub">'+esc(w.resumen)+'</div>'+
+    '<h4 style="color:var(--gold)">2 · Fortalezas</h4>'+li(w.fortalezas)+
+    '<h4 style="color:var(--gold)">3 · Vulnerabilidades</h4>'+li(w.vulnerabilidades)+
+    (w.pasesClave?'<h4 style="color:var(--gold)">4 · Creación (pases clave)</h4><div class="sub">'+esc(w.pasesClave.interp)+'</div>':'')+
+    (bp?'<h4 style="color:var(--gold)">5 · Balón parado</h4><div class="sub"><b>Ofensivo:</b> '+esc(bp.ofensivo.veredicto)+'<br><b>Defensivo:</b> '+esc(bp.defensivo.veredicto)+'<br><b>Debilidad aérea:</b> '+esc(bp.debilidadAerea)+'</div>':'')+
+    (ar?'<h4 style="color:var(--gold)">6 · Arquero ('+esc(ar.nombre)+')</h4><div class="sub">'+esc(ar.inicio)+'<br><b>Dónde rematar:</b> '+esc(ar.dondeRematar)+(ar.perfilCentros?'<br><b>Ante centros/salidas:</b> '+esc(ar.perfilCentros):'')+'</div>':'')+
+    '<h4 style="color:var(--gold)">7 · Plan para Coquimbo</h4>'+li(w.recomendaciones)+
+    '<p class="sub" style="margin-top:10px">Informe autogenerado desde datos Hudl Wyscout. Las zonas de remate e ilustraciones combinan DATO (medido) e INFERENCIA (lectura táctica).</p>'+
+    '<div class="btnrow no-print"><button class="btn primary" onclick="window.print()">🖨 Imprimir este informe</button></div>';
+  out.style.display='block';
+  if(out.scrollIntoView)out.scrollIntoView({behavior:'smooth'});
+}
+
+/* ================= LECTURA PROXY (resto) ================= */
+function renderProxy(f){
+  const box=$('#reading'); const r=rivProxy(f.opp); const e=estilo(f.opp); const mine=miResultado(f.opp);
+  let html=`<div class="card"><div class="hero"><div>
+      <div class="sub">Próximo · ${esc(f.date)} · ${f.ven==='H'?'Coquimbo LOCAL':'Coquimbo VISITA'}</div>
+      <div class="vs">Coquimbo Unido <span style="color:var(--mut)">vs</span> ${esc(f.opp)}</div>
+      <div><span class="badge b-pend">PENDIENTE HUDL WYSCOUT</span> <span class="badge b-dato">CFDB</span> <span class="badge b-inf">INFERENCIA</span></div></div></div>
+      <div class="callout warn">Sin informe de evento Wyscout para este rival todavía. Esta lectura se basa en proxies oficiales (CFDB) + estilo datalabs 2025 + nuestro propio enfrentamiento. <b>El balón parado y la debilidad aérea por jugador/zona</b> necesitan dato de evento (Wyscout) y <b>no</b> están en los FBref/CFDB actuales. Súbeme su informe Hudl y esta página se eleva sola a lectura de evento real (xG, redes de pase, láminas y debilidad aérea).</div></div>`;
+  if(r){
+    html+=`<div class="card"><h3>Informe 7 preguntas (CFDB)</h3><ul class="clean">`+
+      r.q7.map(q=>`<li><b>${esc(q.q)}</b><br><span class="sub">${esc(q.a)}</span></li>`).join('')+`</ul>`+
+      `<div class="kpis" style="margin-top:10px">
+        <div class="kpi"><div class="v num">${r.pos}º</div><div class="l">Posición</div></div>
+        <div class="kpi"><div class="v num">${r.gfpg}</div><div class="l">Goles/PJ</div></div>
+        <div class="kpi"><div class="v num">${r.gapg}</div><div class="l">GC/PJ</div></div>
+        <div class="kpi"><div class="v num">${esc(r.forma||'—')}</div><div class="l">Forma (últ.5)</div></div>
+      </div>
+      <div class="callout info"><b>Lectura:</b> ${esc(r.lectura||'—')}</div></div>`;
+  }
+  if(e){
+    const bars=[['Posesión',e.posesion,ESTILO.avg.posesion,'%'],['Tiros/PJ',e.tiros,ESTILO.avg.tiros,''],
+      ['% pases',e.pases,ESTILO.avg.pases,'%'],['Córners',e.corners,ESTILO.avg.corners,'']];
+    html+=`<div class="card"><h3>Estilo de equipo (datalabs 2025 · 2ª fuente)</h3>
+      <div class="sub" style="margin-bottom:6px">Barra = ${esc(f.opp)} · línea = media de la liga 2025.</div>`+
+      bars.map(b=>{const mx=Math.max(b[1],b[2])*1.15;const vp=Math.round(b[1]/mx*100),ap=Math.round(b[2]/mx*100);
+        return `<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${b[0]}</span><b style="color:var(--gold)">${b[1]}${b[3]}</b></div>
+        <div style="position:relative;height:9px;background:rgba(255,255,255,.06);border-radius:6px;margin-top:3px">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:${vp}%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:6px"></div>
+          <div style="position:absolute;left:${ap}%;top:-3px;bottom:-3px;width:2px;background:var(--teal)"></div></div></div>`;}).join('')+
+      `<div class="sub" style="margin-top:6px">${e.inA2026?'':'<span class="badge b-pend">Nota: en el set 2025 este club difiere del plantel 2026.</span>'}</div></div>`;
+  }
+  if(mine){
+    html+=`<div class="card"><h3>Nuestro último cruce esta temporada</h3>
+      <div class="hero"><div class="vs">${mine.ven==='H'?'Coquimbo':esc(f.opp)} ${mine.gf}-${mine.ga} ${mine.ven==='H'?esc(f.opp):'Coquimbo'}</div></div>
+      <div class="sub">${esc(mine.date)} · ${mine.ven==='H'?'Local':'Visita'} · Coquimbo ${mine.res==='W'?'ganó':mine.res==='D'?'empató':'perdió'} · posesión ${mine.poss??'—'}% · tiros ${mine.shf??'—'} (${mine.sof??'—'} a puerta)${mine.nota?' · '+esc(mine.nota):''}</div></div>`;
+  }
+  if(!r&&!e&&!mine)html+=`<div class="card"><div class="sub">No hay datos proxy cargados para este rival todavía.</div></div>`;
+  box.innerHTML=html;
+}
+
+/* ================= INVENTARIO DE DATOS ================= */
+function renderInventory(){
+  const fx=(RIV.fixture||[]).filter(f=>f.comp==='LIG');
+  const rows=fx.map(f=>{
+    const h=hasHudl(f.opp)?'<span class="badge b-dato">✓ 5 partidos</span>':'<span class="badge b-pend">—</span>';
+    const c=rivProxy(f.opp)?'<span class="badge b-dato">✓</span>':'—';
+    const d=estilo(f.opp)?'<span class="badge b-dato">✓ 2025</span>':'—';
+    const m=miResultado(f.opp)?'<span class="badge b-dato">✓</span>':'—';
+    return `<tr><td><b>${esc(f.opp)}</b></td><td>${h}</td><td>${c}</td><td>${d}</td><td>${m}</td></tr>`;
+  }).join('');
+  $('#invTable').innerHTML='<thead><tr><th>Club (rival restante)</th><th>Hudl Wyscout (evento)</th><th>CFDB (pre-match)</th><th>datalabs (estilo)</th><th>Cruce propio</th></tr></thead><tbody>'+rows+'</tbody>';
+  $('#foot').innerHTML='Fuentes: <b>Hudl Wyscout</b> (xG, PPDA, redes de pase — dato de evento real), <b>CFDB</b> (tabla/forma/H2H oficiales), <b>datalabs/API-Football</b> (estilo agregado, temporada 2025), y <b>cruce propio</b> (resultados de Coquimbo esta temporada, fixtures.js). El objetivo: elevar cada rival a lectura Wyscout a medida que lleguen sus informes.';
+}
+
+renderFixtures();
+renderInventory();
+})();
+</script>
+</body>
+</html>
