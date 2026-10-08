@@ -6,6 +6,7 @@
 <title>Centro de Lecturas de Rivales · Coquimbo Unido</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="wyscout.js"></script>
+<script src="liga_wyscout.js"></script>
 <script src="rivales_prematch.js"></script>
 <script src="primera_equipos.js"></script>
 <script src="fixtures.js"></script>
@@ -117,6 +118,13 @@
   <div class="fixrow" id="fixrow"></div>
   <div id="reading"></div>
 
+  <section id="ligaPanorama" style="margin-top:24px">
+    <h2>Panorama de liga · Puntos vs xPoints <span class="badge b-hudl" style="font-size:10px">HUDL WYSCOUT 2026</span></h2>
+    <p class="sub">Dato de evento de liga: cuántos puntos “merece” cada equipo según su xG/xGA, vs los que tiene. La diferencia revela quién rinde por encima o por debajo de su juego.</p>
+    <div class="card"><div class="chart-wrap" style="height:360px"><canvas id="chLiga"></canvas></div>
+      <div class="callout" id="ligaNote"></div></div>
+  </section>
+
   <h2 style="margin-top:28px">Organización de datos · inventario de fuentes</h2>
   <p class="sub">Qué información tenemos por club y de qué fuente. Guía para saber qué lectura es dato de evento y qué es proxy.</p>
   <div class="scroll-x card"><table id="invTable"></table></div>
@@ -152,6 +160,27 @@ function miResultado(opp){ // último enfrentamiento de Coquimbo esta temporada
 }
 function hasHudl(opp){return typeof WYSCOUT!=='undefined' && Object.keys(WYSCOUT.equipos).some(t=>sameTeam(t,opp));}
 function hudl(opp){if(typeof WYSCOUT==='undefined')return null;const k=Object.keys(WYSCOUT.equipos).find(t=>sameTeam(t,opp));return k?WYSCOUT.equipos[k]:null;}
+function ligaWy(opp){if(typeof LIGA_WY==='undefined')return null;return LIGA_WY.teams.find(t=>sameTeam(t.team,opp));}
+function ligaLeaders(opp){if(typeof LIGA_WY==='undefined')return{};const L=LIGA_WY.leaders,p=a=>a.filter(x=>sameTeam(x.team,opp));return{gol:p(L.goleadores),clave:p(L.jugadasClave),area:p(L.toquesArea),def:p(L.duelosDef)};}
+function ligaCard(opp){
+  const lw=ligaWy(opp); if(!lw)return '';
+  const ld=ligaLeaders(opp);
+  const perf=lw.xptsD>1.5?`<span style="color:var(--amber)">INFRARRINDE (+${lw.xptsD} pts de margen: merece más)</span>`:lw.xptsD<-1.5?`<span style="color:var(--green)">SOBRERRINDE (${lw.xptsD}: saca más de lo que juega)</span>`:`<span style="color:var(--mut)">rinde acorde a su juego</span>`;
+  const names=a=>a.length?a.map(x=>esc(x.n)+(x.g!=null?` (${x.g}G)`:x.p90!=null?` (${x.p90}/90)`:'')).join(' · '):'—';
+  const e=(typeof LIGA_WY!=='undefined'&&LIGA_WY.estilo)?LIGA_WY.estilo[lw.team]:null;
+  const estiloHtml=e?`<div class="callout"><b>Estilo (Wyscout liga):</b> formación <b>${esc(e.form)}</b> (${e.formPct}%) · centros ${e.cross90}/90 · toques de área ${e.box90}/90 · duelos defensivos ganados <b>${e.def}%</b> · ofensivos ${e.of}% · aéreos ${e.aer}%.</div>`:'';
+  return `<div class="card"><h3>Rendimiento real · Hudl Wyscout liga 2026 <span class="badge b-dato">DATO DE EVENTO</span></h3>
+    <div class="kpis">
+      <div class="kpi"><div class="v num">${lw.pos}º</div><div class="l">Posición real</div></div>
+      <div class="kpi"><div class="v num">${lw.xg}</div><div class="l">xG temporada</div></div>
+      <div class="kpi"><div class="v num">${lw.xga}</div><div class="l">xG en contra</div></div>
+      <div class="kpi"><div class="v num">${lw.xgdif>=0?'+':''}${lw.xgdif}</div><div class="l">Dif. xG</div></div>
+      <div class="kpi"><div class="v num">${lw.xpts}</div><div class="l">xPoints</div></div>
+    </div>
+    <div class="callout ${lw.xptsD>1.5?'warn':'info'}"><b>${esc(opp)}</b>: ${lw.pts} pts reales vs ${lw.xpts} xPoints → ${perf}. Goles ${lw.gf} (xG ${lw.xg}) · recibidos ${lw.ga} (xGA ${lw.xga}).</div>
+    ${estiloHtml}
+    <div class="sub"><b>Goleadores:</b> ${names(ld.gol)} · <b>Creadores (pases clave/90):</b> ${names(ld.clave)} · <b>Toques en área/90:</b> ${names(ld.area)} · <b>Muro defensivo (duelos/90):</b> ${names(ld.def)}</div></div>`;
+}
 
 /* ---- barra de fixtures ---- */
 let current=null;
@@ -195,6 +224,7 @@ function renderHudl(f){
      </div>
      <div class="callout">${esc(w.resumen)}</div>
      <div class="btnrow no-print" style="margin-top:10px"><button class="btn primary" id="genReport">📄 Generar informe automático</button><button class="btn" id="printReading">🖨 Imprimir / PDF</button>${sameTeam(f.opp,'Colo-Colo')?'<a class="btn" href="onepager_balon_parado_colocolo.html" target="_blank" style="text-decoration:none">⚑ One-pager balón parado</a>':''}</div></div>`+
+    ligaCard(f.opp)+
 
     `<div class="card"><h3>Los 5 partidos (análisis longitudinal)</h3>
        <div class="scroll-x"><table><thead><tr><th>J</th><th>Rival</th><th>L/V</th><th>Res</th><th>XI</th><th>xG</th><th>xG riv</th><th>Pos%</th><th>PPDA</th><th>Duelos</th></tr></thead><tbody>`+
@@ -388,8 +418,9 @@ function renderProxy(f){
   let html=`<div class="card"><div class="hero"><div>
       <div class="sub">Próximo · ${esc(f.date)} · ${f.ven==='H'?'Coquimbo LOCAL':'Coquimbo VISITA'}</div>
       <div class="vs">Coquimbo Unido <span style="color:var(--mut)">vs</span> ${esc(f.opp)}</div>
-      <div><span class="badge b-pend">PENDIENTE HUDL WYSCOUT</span> <span class="badge b-dato">CFDB</span> <span class="badge b-inf">INFERENCIA</span></div></div></div>
-      <div class="callout warn">Sin informe de evento Wyscout para este rival todavía. Esta lectura se basa en proxies oficiales (CFDB) + estilo datalabs 2025 + nuestro propio enfrentamiento. <b>El balón parado y la debilidad aérea por jugador/zona</b> necesitan dato de evento (Wyscout) y <b>no</b> están en los FBref/CFDB actuales. Súbeme su informe Hudl y esta página se eleva sola a lectura de evento real (xG, redes de pase, láminas y debilidad aérea).</div></div>`;
+      <div><span class="badge b-hudl">HUDL WYSCOUT (LIGA)</span> <span class="badge b-dato">CFDB</span> <span class="badge b-inf">INFERENCIA</span></div></div></div>
+      <div class="callout info">Ahora hay <b>dato de evento de LIGA</b> para este rival (xG, xGA, xPoints, líderes). Falta su <b>informe de partido</b> Wyscout para las láminas por zonas, el arquero y la debilidad aérea por jugador — cuando lo subas, esta página se eleva al nivel de Colo-Colo.</div></div>`+
+    ligaCard(f.opp);
   if(r){
     html+=`<div class="card"><h3>Informe 7 preguntas (CFDB)</h3><ul class="clean">`+
       r.q7.map(q=>`<li><b>${esc(q.q)}</b><br><span class="sub">${esc(q.a)}</span></li>`).join('')+`</ul>`+
@@ -426,18 +457,31 @@ function renderProxy(f){
 function renderInventory(){
   const fx=(RIV.fixture||[]).filter(f=>f.comp==='LIG');
   const rows=fx.map(f=>{
-    const h=hasHudl(f.opp)?'<span class="badge b-dato">✓ 5 partidos</span>':'<span class="badge b-pend">—</span>';
+    const h=hasHudl(f.opp)?'<span class="badge b-dato">✓ partido (5)</span>':(ligaWy(f.opp)?'<span class="badge b-dato">✓ liga</span>':'<span class="badge b-pend">—</span>');
     const c=rivProxy(f.opp)?'<span class="badge b-dato">✓</span>':'—';
     const d=estilo(f.opp)?'<span class="badge b-dato">✓ 2025</span>':'—';
     const m=miResultado(f.opp)?'<span class="badge b-dato">✓</span>':'—';
     return `<tr><td><b>${esc(f.opp)}</b></td><td>${h}</td><td>${c}</td><td>${d}</td><td>${m}</td></tr>`;
   }).join('');
   $('#invTable').innerHTML='<thead><tr><th>Club (rival restante)</th><th>Hudl Wyscout (evento)</th><th>CFDB (pre-match)</th><th>datalabs (estilo)</th><th>Cruce propio</th></tr></thead><tbody>'+rows+'</tbody>';
-  $('#foot').innerHTML='Fuentes: <b>Hudl Wyscout</b> (xG, PPDA, redes de pase — dato de evento real), <b>CFDB</b> (tabla/forma/H2H oficiales), <b>datalabs/API-Football</b> (estilo agregado, temporada 2025), y <b>cruce propio</b> (resultados de Coquimbo esta temporada, fixtures.js). El objetivo: elevar cada rival a lectura Wyscout a medida que lleguen sus informes.';
+  $('#foot').innerHTML='Fuentes: <b>Hudl Wyscout</b> (liga + partidos: xG, xGA, xPoints, PPDA, redes de pase — dato de evento real), <b>CFDB</b> (tabla/forma/H2H oficiales), <b>datalabs</b> (estilo 2025, solo contraste) y <b>cruce propio</b> (fixtures.js). Objetivo: elevar cada rival a lectura Wyscout de partido a medida que lleguen sus informes.';
+}
+function renderLigaPanorama(){
+  if(typeof LIGA_WY==='undefined'||!window.Chart)return;
+  const ts=[...LIGA_WY.teams].sort((a,b)=>b.xpts-a.xpts), gc='rgba(255,255,255,.07)', tk='#aab8c4';
+  destroy('liga');
+  charts.liga=new Chart(document.getElementById('chLiga'),{type:'bar',data:{labels:ts.map(t=>t.team),
+    datasets:[{label:'Puntos reales',data:ts.map(t=>t.pts),backgroundColor:ts.map(t=>sameTeam(t.team,'Coquimbo Unido')?'#ffd21f':'#4a90ff')},
+      {label:'xPoints (merecidos)',data:ts.map(t=>t.xpts),backgroundColor:ts.map(t=>sameTeam(t.team,'Coquimbo Unido')?'rgba(255,210,0,.5)':'rgba(63,208,196,.65)')}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tk}}},
+      scales:{x:{ticks:{color:tk,font:{size:9},maxRotation:60,minRotation:45},grid:{color:gc}},y:{beginAtZero:true,ticks:{color:tk},grid:{color:gc}}}}});
+  const coq=ligaWy('Coquimbo Unido');
+  if(coq)document.getElementById('ligaNote').innerHTML='<span class="badge b-hudl">HALLAZGO CLAVE</span> <b>Coquimbo es el equipo que MÁS infrarrinde de la liga: xPoints '+coq.xpts+' vs '+coq.pts+' puntos reales (+'+coq.xptsD+').</b> Con xG '+coq.xg+' (4º ataque) y diferencia de xG +'+coq.xgdif+' (top-4), su juego es de zona alta de tabla pese a ir '+coq.pos+'º. El margen se pierde en definición (marcó '+coq.gf+' con '+coq.xg+' de xG) y en goles encajados por encima de lo esperado ('+coq.ga+' recibidos vs '+coq.xga+' de xGA). Es el dato más accionable del proyecto: el proceso está; falta convertir y sostener.';
 }
 
 renderFixtures();
 renderInventory();
+renderLigaPanorama();
 })();
 </script>
 </body>

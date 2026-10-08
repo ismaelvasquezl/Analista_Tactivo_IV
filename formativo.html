@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fútbol Formativo · Coquimbo Unido</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="formativo_roster.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  :root{--bg0:#0a0d11;--bg1:#0e1319;--panel:#151b22;--panel2:#1b222b;--panel3:#212a34;--gold:#ffd21f;--gold2:#e8bd00;--gold-ink:#0a0d11;
+    --white:#f4f7fa;--txt:#dfe6ec;--mut:#aab8c4;--mut2:#7f8c98;--blue:#4a90ff;--teal:#3fd0c4;--green:#38d98a;--amber:#f5a623;--red:#ff5f5f;--violet:#a78bfa;
+    --line:rgba(255,255,255,.075);--line-strong:rgba(255,255,255,.14);--line-gold:rgba(255,210,0,.22);
+    --sh:inset 0 1px 0 rgba(255,255,255,.05),0 6px 18px rgba(0,0,0,.38);--r:14px;
+    --f-display:'Barlow Condensed','Segoe UI',system-ui,sans-serif;--f-body:'Inter','Segoe UI',system-ui,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--f-body);color:var(--txt);line-height:1.5;background:radial-gradient(1200px 700px at 18% -8%,#14202c 0,#0d131a 52%,#090c10 100%) fixed}
+  h1,h2,h3,.brand,.disp{font-family:var(--f-display);letter-spacing:.3px}
+  a{color:var(--teal);text-decoration:none}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+  .num{font-variant-numeric:tabular-nums}
+  .stickytop{position:sticky;top:0;z-index:40}
+  header{background:rgba(8,11,15,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-gold)}
+  .hin{max-width:1140px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;color:var(--white)}
+  .crest{width:26px;height:26px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);flex:none}
+  .back{margin-left:auto;font-size:13px;color:var(--mut)}
+  .catsel{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 16px;background:rgba(8,11,15,.9);border-bottom:1px solid var(--line);max-width:1140px;margin:0 auto}
+  .catsel button{background:var(--bg1);border:1px solid var(--line-strong);color:var(--mut);border-radius:9px;padding:7px 13px;font-family:var(--f-display);font-weight:800;font-size:14px;cursor:pointer;letter-spacing:.5px}
+  .catsel button.on{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--gold-ink);border:0}
+  .tabs{background:rgba(8,11,15,.9);border-bottom:1px solid var(--line);overflow-x:auto}
+  .tabsin{max-width:1140px;margin:0 auto;display:flex;gap:2px;padding:6px 10px}
+  .tab{flex:0 0 auto;background:none;border:0;color:var(--mut);font-family:var(--f-display);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:8px 13px;border-radius:9px;cursor:pointer;white-space:nowrap}
+  .tab:hover{color:var(--white);background:rgba(255,255,255,.04)}.tab.on{color:var(--gold-ink);background:linear-gradient(180deg,var(--gold),var(--gold2))}
+  main{max-width:1140px;margin:0 auto;padding:16px 14px 110px}
+  .view{display:none}.view.on{display:block;animation:fade .2s}@keyframes fade{from{opacity:0}to{opacity:1}}
+  h2{font-size:22px;margin:4px 0 2px;display:flex;align-items:center;gap:9px}h2::before{content:"";width:6px;height:20px;background:var(--gold);border-radius:3px}
+  h3{font-size:13px;color:var(--gold);text-transform:uppercase;letter-spacing:.7px;margin:14px 0 6px}
+  .sub{color:var(--mut);font-size:13px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--sh);margin-top:12px}
+  .grid{display:grid;gap:12px}@media(min-width:720px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:10px}
+  .kpi{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:11px 12px;text-align:center}
+  .kpi .v{font-family:var(--f-display);font-size:26px;font-weight:800;color:var(--gold)}.kpi .l{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.3px}
+  .chart-wrap{position:relative;height:220px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  th{color:var(--mut);font-size:10.5px;text-transform:uppercase}
+  tr:hover td{background:rgba(255,210,0,.04)}
+  .scroll-x{overflow-x:auto}
+  .chip{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}
+  .chip.ARQ{background:rgba(255,210,0,.16);color:var(--gold)}.chip.DEF{background:rgba(74,144,255,.16);color:var(--blue)}
+  .chip.LAT{background:rgba(63,208,196,.16);color:var(--teal)}.chip.VOL{background:rgba(56,217,138,.16);color:var(--green)}.chip.DEL{background:rgba(245,166,35,.16);color:var(--amber)}.chip.SIN{background:var(--panel3);color:var(--mut)}
+  label{display:block;font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.3px;margin:8px 0 3px;font-weight:600}
+  input,select{width:100%;background:var(--bg1);border:1px solid var(--line-strong);color:var(--white);border-radius:8px;padding:8px 10px;font-family:var(--f-body);font-size:14px}
+  .btn{display:inline-flex;align-items:center;gap:7px;background:var(--panel3);color:var(--white);border:1px solid var(--line-strong);border-radius:9px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+  .btn.primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--gold-ink);border:0;font-weight:700}
+  .btn.mini{padding:4px 9px;font-size:12px;border-radius:7px}
+  .btn.danger{border-color:rgba(255,95,95,.45);color:var(--red)}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .stars{display:flex;gap:5px}.star{flex:1;background:var(--bg1);border:1px solid var(--line-strong);color:var(--mut);border-radius:7px;padding:7px;cursor:pointer;font-weight:700;text-align:center}.star.on{background:var(--gold);color:#000;border-color:var(--gold)}
+  .modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}.modal.show{display:flex}
+  @media(min-width:640px){.modal{align-items:center}}
+  .modal .box{background:var(--panel);border:1px solid var(--line-gold);border-radius:18px 18px 0 0;width:100%;max-width:580px;max-height:90vh;overflow:auto;padding:18px}@media(min-width:640px){.modal .box{border-radius:18px}}
+  .pitch{display:grid;grid-template-rows:repeat(5,1fr);gap:5px;height:300px;border:1px solid var(--line-strong);border-radius:10px;background:linear-gradient(180deg,#123a1a,#0c2c13);padding:8px}
+  .pz{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--f-display);font-weight:800;color:#fff}
+  .pz .b{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:3px 10px}
+  .alert{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);margin-top:6px;font-size:13px}
+  .alert .dot{width:10px;height:10px;border-radius:50%;flex:none}
+  .alert.r{background:rgba(255,95,95,.07);border-color:rgba(255,95,95,.3)}.alert.a{background:rgba(245,166,35,.07);border-color:rgba(245,166,35,.3)}.alert.g{background:rgba(56,217,138,.07);border-color:rgba(56,217,138,.3)}
+  .savepill{font-size:11px;color:var(--mut)}
+  .legend{font-size:11px;color:var(--mut);margin-top:6px}
+  .foot{color:var(--mut);font-size:11.5px;margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+  @media print{header,.catsel,.tabs,.btnrow,.no-print{display:none!important}.view{display:block!important}body{background:#fff!important;color:#111!important}.card,.kpi{background:#fff!important;border:1px solid #ccc!important;box-shadow:none!important}h2,h3,.kpi .v{color:#111!important}}
+</style>
+</head>
+<body>
+<div class="stickytop">
+<header><div class="hin"><div class="brand"><span class="crest"></span>FÚTBOL FORMATIVO · COQUIMBO UNIDO</div><a class="back" href="index_conapi.html">← Dashboard</a></div></header>
+<div class="catsel" id="catsel"></div>
+<nav class="tabs"><div class="tabsin"><button class="tab on" data-v="panel">Panel</button><button class="tab" data-v="plantel">Plantel y registro</button><button class="tab" data-v="ficha">Ficha del jugador</button><button class="tab" data-v="datos">Datos / respaldo</button></div></nav>
+</div>
+<main>
+  <section class="view on" id="v-panel"></section>
+  <section class="view" id="v-plantel"></section>
+  <section class="view" id="v-ficha"></section>
+  <section class="view" id="v-datos"></section>
+</main>
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
+<script>
+(function(){
+'use strict';
+const R=FORMATIVO_ROSTER, $=s=>document.querySelector(s), esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const charts={}; const destroy=k=>{if(charts[k]){charts[k].destroy();delete charts[k];}};
+const GCOL={ARQ:'#ffd21f',DEF:'#4a90ff',LAT:'#3fd0c4',VOL:'#38d98a',DEL:'#f5a623',SIN:'#7f8c98'};
+const GLAB={ARQ:'Arqueros',DEF:'Defensas',LAT:'Laterales',VOL:'Volantes',DEL:'Delanteros',SIN:'Sin asignar'};
+const CATLIST=['SUB 20','SUB 18','SUB 16','SUB 15','SUB 14','SUB 13','SUB 9'];
+function grupoDe(p1){ if(!p1)return 'SIN'; const p=(''+p1).toUpperCase();
+  if(p.startsWith('POR')||p==='ARQ')return 'ARQ';
+  if(p.startsWith('CT')||p.startsWith('DF')||['CDL','CDR','DFC'].includes(p))return 'DEF';
+  if(p.startsWith('LT')||['LD','LI','CAR'].includes(p))return 'LAT';
+  if(p.startsWith('VC')||p.startsWith('MC')||['ENG','MCO','VOL','PIV'].includes(p))return 'VOL';
+  if(p.startsWith('EX')||p.startsWith('DC')||p.startsWith('CF')||['DEL','PT'].includes(p))return 'DEL';
+  return 'VOL'; }
+function edadDe(d){ if(!d)return null; const m=/(\d{4})-(\d{2})-(\d{2})/.exec(''+d); if(!m)return null; const b=new Date(+m[1],+m[2]-1,+m[3]),t=new Date(); let a=t.getFullYear()-b.getFullYear(); if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--; return a; }
+function anioDe(d){const m=/(\d{4})/.exec(''+d);return m?+m[1]:null;}
+
+/* ================= Capa de datos editable (localStorage) ================= */
+const DB={ rk:'ftaf_form_roster_v2', ek:'ftaf_form_entries_v2', _rc:null,
+  roster(){ if(this._rc)return this._rc; let r=null; try{r=JSON.parse(localStorage.getItem(this.rk));}catch(e){}
+    if(!Array.isArray(r)){ r=this.seed(); try{localStorage.setItem(this.rk,JSON.stringify(r));}catch(e){} } this._rc=r; return r; },
+  seed(){ let id=1,out=[]; Object.keys(R.categorias).forEach(cat=>{ (R.categorias[cat].players||[]).forEach(p=>{
+      out.push({id:'P'+(id++),cat,num:p.num,n:p.n,nac:p.nac,nacimiento:p.nac_birth,edad:p.edad,anio:p.anio,pos1:p.pos1,pos2:p.pos2,grupo:p.grupo,activo:true}); }); }); return out; },
+  saveRoster(){ try{localStorage.setItem(this.rk,JSON.stringify(this._rc));return true;}catch(e){return false;} },
+  entries(){ try{return JSON.parse(localStorage.getItem(this.ek)||'{}');}catch(e){return{};} },
+  saveEntries(e){ try{localStorage.setItem(this.ek,JSON.stringify(e));return true;}catch(e){return false;} } };
+function players(cat){ return DB.roster().filter(p=>p.cat===cat&&p.activo!==false).sort((a,b)=>(a.num||99)-(b.num||99)); }
+function playerById(id){ return DB.roster().find(p=>p.id===id); }
+function entriesOf(id){ const e=DB.entries(); return (e[id]&&e[id].entries)||[]; }
+function setEntries(id,arr){ const e=DB.entries(); e[id]={entries:arr}; DB.saveEntries(e); }
+function agg(id){ const e=entriesOf(id); const played=e.filter(x=>+x.min>0);
+  const evals=e.filter(x=>x.tec||x.tac||x.fis||x.act).map(x=>((+x.tec||0)+(+x.tac||0)+(+x.fis||0)+(+x.act||0))/([x.tec,x.tac,x.fis,x.act].filter(Boolean).length||1));
+  const em=f=>{const v=e.map(x=>+x[f]||0).filter(Boolean);return v.length?+(v.reduce((a,b)=>a+b)/v.length).toFixed(1):0;};
+  const lastOf=f=>{for(let i=e.length-1;i>=0;i--)if(e[i][f])return e[i][f];return null;};
+  let trend=0; if(evals.length>=2){const h=Math.ceil(evals.length/2);const first=evals.slice(0,h),last=evals.slice(-h);const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;trend=+(avg(last)-avg(first)).toFixed(2);}
+  return {entries:e,minTotal:e.reduce((s,x)=>s+(+x.min||0),0),pj:played.length,titulares:e.filter(x=>x.estado==='titular').length,
+    convoc:e.filter(x=>x.estado!=='no_conv').length,tec:em('tec'),tac:em('tac'),fis:em('fis'),act:em('act'),
+    evalProm:evals.length?+(evals.reduce((a,b)=>a+b)/evals.length).toFixed(1):0,evalTrend:trend,
+    estatura:lastOf('estatura'),peso:lastOf('peso'),evalsSerie:evals}; }
+
+let cat='SUB 20';
+function existingCats(){ const s=new Set(DB.roster().map(p=>p.cat)); return CATLIST.filter(c=>s.has(c)); }
+
+/* ---- selector de categoría + tabs ---- */
+function renderCatsel(){ const cats=existingCats(); if(!cats.includes(cat))cat=cats[0]||'SUB 20';
+  $('#catsel').innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}" data-c="${c}">${c}</button>`).join('')+'<button data-add-cat style="margin-left:auto;background:none;color:var(--teal);border:1px dashed var(--line-strong)">+ Jugador</button>';
+  $('#catsel').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{cat=b.dataset.c;renderCatsel();renderAll();});
+  $('#catsel').querySelector('[data-add-cat]').onclick=()=>openPlayer(null); }
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+t.dataset.v)); renderAll(); window.scrollTo({top:100,behavior:'smooth'});});
+
+/* ================= PANEL ================= */
+function renderPanel(){
+  const P=players(cat);
+  const byG={}; P.forEach(p=>byG[p.grupo]=(byG[p.grupo]||0)+1);
+  const nacs={}; P.forEach(p=>nacs[p.nac]=(nacs[p.nac]||0)+1);
+  const anios={}; P.forEach(p=>{const y=p.anio||anioDe(p.nacimiento);if(y)anios[y]=(anios[y]||0)+1;});
+  const withData=P.map(p=>({p,a:agg(p.id)})).filter(x=>x.a.minTotal>0).sort((a,b)=>b.a.minTotal-a.a.minTotal);
+  // presencias por mes
+  const mes={}; P.forEach(p=>entriesOf(p.id).forEach(e=>{const m=(e.fecha||'').slice(0,7);if(!m)return;mes[m]=mes[m]||{tit:0,sup:0};if(e.estado==='titular')mes[m].tit++;else if(e.estado==='suplente')mes[m].sup++;}));
+  const meses=Object.keys(mes).sort();
+  // alertas
+  const al=alertas(P);
+  $('#v-panel').innerHTML=
+    `<h2>Panel · ${cat}</h2><p class="sub">${P.length} jugadores. Minutos, presencias, antropometría y evaluaciones se cargan en «Plantel y registro» y se acumulan aquí.</p>
+     <div class="kpis">
+       <div class="kpi"><div class="v num">${P.length}</div><div class="l">Número total</div></div>
+       ${['ARQ','DEF','LAT','VOL','DEL'].map(g=>`<div class="kpi"><div class="v num">${byG[g]||0}</div><div class="l">${GLAB[g]}</div></div>`).join('')}
+       <div class="kpi"><div class="v num">${Object.keys(nacs).length}</div><div class="l">Nacionalidades</div></div>
+     </div>
+     ${al.length?`<div class="card"><h3>⚠ Semáforo de alertas</h3>${al.map(x=>`<div class="alert ${x.c}"><span class="dot" style="background:${x.c==='r'?'var(--red)':x.c==='a'?'var(--amber)':'var(--green)'}"></span><b>${esc(x.p.n)}</b> · ${esc(x.txt)}</div>`).join('')}</div>`:''}
+     <div class="grid g2">
+       <div class="card"><h3>Edades (año de nacimiento)</h3><div class="chart-wrap"><canvas id="chEdad"></canvas></div></div>
+       <div class="card"><h3>Posicionamiento (por línea)</h3>
+         <div class="pitch">
+           <div class="pz"><span class="b">DEL · ${byG.DEL||0}</span></div>
+           <div class="pz"><span class="b">VOL · ${byG.VOL||0}</span></div>
+           <div class="pz"><span class="b" style="margin-right:auto">LAT · ${byG.LAT||0}</span><span class="b" style="margin-left:auto">LAT</span></div>
+           <div class="pz"><span class="b">DEF · ${byG.DEF||0}</span></div>
+           <div class="pz"><span class="b">ARQ · ${byG.ARQ||0}</span></div>
+         </div><div class="legend">Códigos del Excel (POR/CT/LT/VC/EX…) agrupados por línea.</div></div>
+     </div>
+     <div class="grid g2">
+       <div class="card"><h3>Comparativa de presencias por mes</h3>${meses.length?'<div class="chart-wrap"><canvas id="chMes"></canvas></div>':'<div class="sub" style="padding:14px 0">Aún sin registros con fecha.</div>'}</div>
+       <div class="card"><h3>Minutos acumulados por jugador</h3>${withData.length?'<div class="chart-wrap" style="height:280px"><canvas id="chMin"></canvas></div>':'<div class="sub" style="padding:14px 0">Todavía sin minutos cargados.</div>'}</div>
+     </div>`;
+  if(!window.Chart)return; const tk='#aab8c4',gc='rgba(255,255,255,.07)';
+  const ay=Object.keys(anios).sort();
+  destroy('ed'); charts.ed=new Chart($('#chEdad'),{type:'doughnut',data:{labels:ay,datasets:[{data:ay.map(y=>anios[y]),backgroundColor:['#4a90ff','#38d98a','#f5a623','#a78bfa','#3fd0c4','#ff5f5f','#ffd21f','#6b7a88']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:tk,font:{size:11}}}}}});
+  if(meses.length){destroy('ms');charts.ms=new Chart($('#chMes'),{type:'bar',data:{labels:meses,datasets:[{label:'Titular',data:meses.map(m=>mes[m].tit),backgroundColor:'#4a90ff'},{label:'Suplente',data:meses.map(m=>mes[m].sup),backgroundColor:'#38d98a'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tk}}},scales:{x:{ticks:{color:tk,font:{size:10}},grid:{color:gc}},y:{beginAtZero:true,ticks:{color:tk,precision:0},grid:{color:gc}}}}});}
+  if(withData.length){destroy('mn');charts.mn=new Chart($('#chMin'),{type:'bar',data:{labels:withData.map(x=>x.p.n.split(' ').slice(0,2).join(' ')),datasets:[{label:'Min',data:withData.map(x=>x.a.minTotal),backgroundColor:withData.map(x=>GCOL[x.p.grupo])}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tk},grid:{color:gc}},y:{ticks:{color:tk,font:{size:10}},grid:{display:false}}}}});}
+}
+function alertas(P){ const out=[]; const maxMin=Math.max(1,...P.map(p=>agg(p.id).minTotal));
+  P.forEach(p=>{const a=agg(p.id);
+    if(a.convoc>=2&&a.minTotal<0.25*maxMin)out.push({p,c:'r',txt:'Carga baja: '+a.convoc+' convocatorias, solo '+a.minTotal+' min acumulados'});
+    else if(a.evalProm&&a.evalProm<2.5)out.push({p,c:'a',txt:'Evaluación media baja ('+a.evalProm+'/5)'});
+    else if(a.evalTrend<=-0.5)out.push({p,c:'a',txt:'Evaluación a la baja (tendencia '+a.evalTrend+')'});
+    else if(a.evalTrend>=0.5)out.push({p,c:'g',txt:'En alza (tendencia +'+a.evalTrend+')'});
+  }); return out.slice(0,10); }
+
+/* ================= PLANTEL + CRUD ================= */
+function renderPlantel(){
+  const P=players(cat);
+  const rows=P.map(p=>{const a=agg(p.id);
+    return `<tr><td class="num">${p.num??'—'}</td><td><b>${esc(p.n)}</b></td><td><span class="chip ${p.grupo}">${esc(p.pos1||p.grupo)}</span></td>
+      <td>${esc(p.nac)}</td><td class="num">${p.edad??edadDe(p.nacimiento)??'—'}</td>
+      <td class="num">${a.minTotal}'</td><td class="num">${a.pj}</td><td class="num">${a.estatura||'—'}</td><td class="num">${a.peso||'—'}</td>
+      <td class="num">${a.evalProm||'—'}</td>
+      <td style="white-space:nowrap"><button class="btn mini primary" data-add="${p.id}">+ Registro</button>
+        <button class="btn mini" data-edit="${p.id}">✎</button>
+        <button class="btn mini" data-trans="${p.id}">⇄</button>
+        <button class="btn mini danger" data-del="${p.id}">🗑</button></td></tr>`;}).join('');
+  $('#v-plantel').innerHTML=`<h2>Plantel y registro · ${cat}</h2>
+    <p class="sub">Carga partido a partido (minutos, titular/suplente, estatura, peso, evaluación 1–5). <b>✎</b> editar jugador · <b>⇄</b> traspasar de categoría · <b>🗑</b> eliminar. Todo editable.</p>
+    <div class="btnrow"><button class="btn primary" id="btnAddP">+ Agregar jugador</button></div>
+    <div class="scroll-x card"><table><thead><tr><th>#</th><th>Jugador</th><th>Pos</th><th>Nac.</th><th>Edad</th><th>Min</th><th>PJ</th><th>Est</th><th>Peso</th><th>Eval</th><th>Acciones</th></tr></thead><tbody>${rows||'<tr><td colspan="11" class="sub">Sin jugadores en esta categoría.</td></tr>'}</tbody></table></div>`;
+  $('#btnAddP').onclick=()=>openPlayer(null);
+  $('#v-plantel').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>openEntry(b.dataset.add));
+  $('#v-plantel').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openPlayer(b.dataset.edit));
+  $('#v-plantel').querySelectorAll('[data-trans]').forEach(b=>b.onclick=()=>transfer(b.dataset.trans));
+  $('#v-plantel').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delPlayer(b.dataset.del));
+}
+function openPlayer(id){
+  const p=id?playerById(id):{cat,num:'',n:'',nac:'Chilena',nacimiento:'',pos1:'',pos2:''};
+  const catOpts=CATLIST.map(c=>`<option value="${c}"${p.cat===c?' selected':''}>${c}</option>`).join('');
+  $('#modalBox').innerHTML=`<h3 style="margin-top:0">${id?'Editar jugador':'Agregar jugador'}</h3>
+    <div class="grid g3"><div><label>N°</label><input id="p_num" type="number" value="${p.num??''}"></div>
+      <div style="grid-column:span 2"><label>Apellidos, Nombres</label><input id="p_n" value="${esc(p.n||'')}"></div></div>
+    <div class="grid g3"><div><label>Categoría</label><select id="p_cat">${catOpts}</select></div>
+      <div><label>Nacionalidad</label><input id="p_nac" value="${esc(p.nac||'Chilena')}"></div>
+      <div><label>F. nacimiento</label><input id="p_fn" type="date" value="${(p.nacimiento||'').slice(0,10)}"></div></div>
+    <div class="grid g2"><div><label>Posición 1 (código)</label><input id="p_p1" value="${esc(p.pos1||'')}" placeholder="POR, CT, LT, VC, EX..."></div>
+      <div><label>Posición 2</label><input id="p_p2" value="${esc(p.pos2||'')}"></div></div>
+    <div class="btnrow"><button class="btn primary" id="p_save">Guardar</button><button class="btn" id="p_close">Cerrar</button></div>`;
+  $('#p_save').onclick=()=>{ const r=DB.roster();
+    const fn=$('#p_fn').value||null, p1=$('#p_p1').value.trim()||null;
+    const data={num:+$('#p_num').value||null,n:$('#p_n').value.trim(),cat:$('#p_cat').value,nac:$('#p_nac').value.trim()||'Chilena',
+      nacimiento:fn,edad:edadDe(fn),anio:anioDe(fn),pos1:p1,pos2:$('#p_p2').value.trim()||null,grupo:grupoDe(p1),activo:true};
+    if(!data.n){alert('Falta el nombre.');return;}
+    if(id){Object.assign(playerById(id),data);} else {data.id='P'+Date.now().toString(36)+Math.floor(Math.random()*999);r.push(data);}
+    DB.saveRoster(); cat=data.cat; closeModal(); renderCatsel(); renderAll(); };
+  $('#p_close').onclick=closeModal; $('#modal').classList.add('show');
+}
+function transfer(id){ const p=playerById(id); const dest=prompt('Traspasar a categoría ('+CATLIST.join(' / ')+'):',p.cat); if(!dest)return;
+  const d=CATLIST.find(c=>c.toUpperCase().replace(/\s/g,'')===dest.toUpperCase().replace(/\s/g,'')); if(!d){alert('Categoría no válida.');return;}
+  p.cat=d; DB.saveRoster(); renderCatsel(); renderAll(); }
+function delPlayer(id){ const p=playerById(id); if(!confirm('¿Eliminar a '+p.n+' y sus registros? No se puede deshacer.'))return;
+  const r=DB.roster(); const i=r.indexOf(p); if(i>=0)r.splice(i,1); DB.saveRoster();
+  const e=DB.entries(); delete e[id]; DB.saveEntries(e); renderCatsel(); renderAll(); }
+
+/* ---- registro (añadir/editar) ---- */
+function openEntry(id,idx){
+  const arr=entriesOf(id).slice(); const ex=(idx!=null)?arr[idx]:{};
+  const today=new Date().toISOString().slice(0,10);
+  const vals={tec:+ex.tec||0,tac:+ex.tac||0,fis:+ex.fis||0,act:+ex.act||0};
+  const stars=f=>`<div class="stars" data-st="${f}">${[1,2,3,4,5].map(n=>`<button type="button" class="star${vals[f]&&n<=vals[f]?' on':''}" data-n="${n}">${n}</button>`).join('')}</div>`;
+  const estSel=v=>['titular','suplente','no_conv'].map(o=>`<option value="${o}"${ex.estado===o?' selected':''}>${o==='titular'?'Titular':o==='suplente'?'Suplente (ingresó)':'No convocado'}</option>`).join('');
+  $('#modalBox').innerHTML=`<h3 style="margin-top:0">${idx!=null?'Editar registro':'Nuevo registro'} · ${esc(playerById(id).n)}</h3>
+    <div class="grid g3"><div><label>Fecha</label><input id="e_fecha" type="date" value="${ex.fecha||today}"></div>
+      <div><label>Rival/sesión</label><input id="e_rival" value="${esc(ex.rival||'')}"></div>
+      <div><label>Minutos</label><input id="e_min" type="number" min="0" max="120" value="${ex.min||0}"></div></div>
+    <label>Participación</label><select id="e_estado">${estSel()}</select>
+    <div class="grid g2"><div><label>Estatura (cm)</label><input id="e_est" type="number" value="${ex.estatura||''}"></div>
+      <div><label>Peso (kg)</label><input id="e_peso" type="number" value="${ex.peso||''}"></div></div>
+    <label>Técnica</label>${stars('tec')}<label>Táctica</label>${stars('tac')}<label>Física</label>${stars('fis')}<label>Actitud</label>${stars('act')}
+    <label>Observación</label><input id="e_nota" value="${esc(ex.nota||'')}">
+    <div class="btnrow"><button class="btn primary" id="e_save">Guardar</button>${idx!=null?'<button class="btn danger" id="e_del">Eliminar registro</button>':''}<button class="btn" id="e_close">Cerrar</button></div>`;
+  $('#modalBox').querySelectorAll('[data-st]').forEach(g=>g.querySelectorAll('.star').forEach(b=>b.onclick=()=>{const f=g.dataset.st,n=+b.dataset.n;vals[f]=(vals[f]===n?0:n);g.querySelectorAll('.star').forEach(x=>x.classList.toggle('on',vals[f]&&+x.dataset.n<=vals[f]));}));
+  $('#e_save').onclick=()=>{ const rec={fecha:$('#e_fecha').value,rival:$('#e_rival').value.trim(),min:+$('#e_min').value||0,estado:$('#e_estado').value,
+      estatura:+$('#e_est').value||null,peso:+$('#e_peso').value||null,tec:vals.tec,tac:vals.tac,fis:vals.fis,act:vals.act,nota:$('#e_nota').value.trim()};
+    if(idx!=null)arr[idx]=rec; else arr.push(rec); arr.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+    setEntries(id,arr); closeModal(); renderAll(); };
+  if(idx!=null)$('#e_del').onclick=()=>{arr.splice(idx,1);setEntries(id,arr);closeModal();renderAll();};
+  $('#e_close').onclick=closeModal; $('#modal').classList.add('show');
+}
+function closeModal(){$('#modal').classList.remove('show');}
+$('#modal').onclick=e=>{if(e.target.id==='modal')closeModal();};
+
+/* ================= FICHA ================= */
+let fsel=null;
+function renderFicha(){
+  const P=players(cat); if(!fsel||!P.find(p=>p.id===fsel))fsel=P[0]&&P[0].id;
+  const opts=P.map(p=>`<option value="${p.id}"${p.id===fsel?' selected':''}>${esc(p.n)}</option>`).join('');
+  const p=P.find(x=>x.id===fsel)||{}; const a=fsel?agg(fsel):{entries:[]};
+  const serie=a.entries.filter(e=>e.estatura||e.peso);
+  $('#v-ficha').innerHTML=`<h2>Ficha del jugador · ${cat}</h2>
+    <select id="fsel" style="max-width:360px">${opts||'<option>—</option>'}</select>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div style="font-family:var(--f-display);font-size:24px;font-weight:800;color:var(--white)">${esc(p.n||'')}</div>
+      <span class="chip ${p.grupo||'SIN'}">${esc(p.pos1||p.grupo||'')}${p.pos2?' / '+esc(p.pos2):''}</span>
+      <span class="sub">${esc(p.nac||'')} · ${p.edad??edadDe(p.nacimiento)??'—'} años${p.anio?' ('+p.anio+')':''}</span></div>
+      <div class="kpis" style="margin-top:10px">
+        <div class="kpi"><div class="v num">${a.minTotal||0}'</div><div class="l">Minutos</div></div>
+        <div class="kpi"><div class="v num">${a.pj||0}</div><div class="l">PJ</div></div>
+        <div class="kpi"><div class="v num">${a.titulares||0}</div><div class="l">Titular</div></div>
+        <div class="kpi"><div class="v num">${a.convoc||0}</div><div class="l">Convocatorias</div></div>
+        <div class="kpi"><div class="v num">${a.estatura||'—'}</div><div class="l">Estatura</div></div>
+        <div class="kpi"><div class="v num">${a.peso||'—'}</div><div class="l">Peso</div></div>
+        <div class="kpi"><div class="v num">${a.evalProm||'—'}</div><div class="l">Eval media</div></div>
+      </div></div>
+    <div class="grid g2">
+      <div class="card"><h3>Evaluación acumulada (1–5)</h3>${a.entries.length?'<div class="chart-wrap"><canvas id="chEval"></canvas></div>':'<div class="sub" style="padding:14px 0">Sin evaluaciones aún.</div>'}</div>
+      <div class="card"><h3>Antropometría (progreso)</h3>${serie.length>=1?'<div class="chart-wrap"><canvas id="chAntro"></canvas></div>':'<div class="sub" style="padding:14px 0">Sin registros de estatura/peso.</div>'}</div>
+    </div>
+    <div class="card"><h3>Historial de registros (partido a partido · editable)</h3>
+      ${a.entries.length?`<div class="scroll-x"><table><thead><tr><th>Fecha</th><th>Rival</th><th>Part.</th><th>Min</th><th>Est</th><th>Peso</th><th>Téc</th><th>Tác</th><th>Fís</th><th>Act</th><th></th></tr></thead><tbody>${a.entries.map((e,i)=>`<tr><td class="num">${esc(e.fecha||'')}</td><td>${esc(e.rival||'')}</td><td>${e.estado==='titular'?'Tit.':e.estado==='suplente'?'Supl.':'No c.'}</td><td class="num">${e.min}</td><td class="num">${e.estatura||'—'}</td><td class="num">${e.peso||'—'}</td><td class="num">${e.tec||'—'}</td><td class="num">${e.tac||'—'}</td><td class="num">${e.fis||'—'}</td><td class="num">${e.act||'—'}</td><td><button class="btn mini" data-edite="${i}">✎</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="sub" style="padding:10px 0">Sin registros.</div>'}
+      <div class="btnrow no-print"><button class="btn primary" data-addf="${fsel}">+ Nuevo registro</button><button class="btn" onclick="window.print()">🖨 Imprimir ficha</button></div></div>`;
+  $('#fsel').onchange=e=>{fsel=e.target.value;renderFicha();};
+  $('#v-ficha').querySelectorAll('[data-addf]').forEach(b=>b.onclick=()=>openEntry(b.dataset.addf));
+  $('#v-ficha').querySelectorAll('[data-edite]').forEach(b=>b.onclick=()=>openEntry(fsel,+b.dataset.edite));
+  if(!window.Chart||!fsel)return; const tk='#aab8c4',gc='rgba(255,255,255,.07)';
+  if(a.entries.length){destroy('ev');charts.ev=new Chart($('#chEval'),{type:'radar',data:{labels:['Técnica','Táctica','Física','Actitud'],datasets:[{data:[a.tec,a.tac,a.fis,a.act],backgroundColor:'rgba(255,210,0,.2)',borderColor:'#ffd21f',pointBackgroundColor:'#ffd21f'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:5,ticks:{color:tk,backdropColor:'transparent',stepSize:1},grid:{color:gc},angleLines:{color:gc},pointLabels:{color:tk,font:{size:11}}}}}});}
+  if(serie.length>=1){destroy('an');charts.an=new Chart($('#chAntro'),{type:'line',data:{labels:serie.map(e=>e.fecha),datasets:[{label:'Estatura',data:serie.map(e=>e.estatura),borderColor:'#4a90ff',yAxisID:'y',tension:.3},{label:'Peso',data:serie.map(e=>e.peso),borderColor:'#38d98a',yAxisID:'y2',tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tk}}},scales:{x:{ticks:{color:tk,font:{size:9}},grid:{color:gc}},y:{position:'left',ticks:{color:'#4a90ff'},grid:{color:gc}},y2:{position:'right',ticks:{color:'#38d98a'},grid:{display:false}}}}});}
+}
+
+/* ================= DATOS / RESPALDO ================= */
+function renderDatos(){
+  const r=DB.roster(), e=DB.entries();
+  const nEnt=Object.values(e).reduce((s,x)=>s+((x.entries||[]).length),0);
+  $('#v-datos').innerHTML=`<h2>Datos y respaldo</h2>
+    <div class="card"><div class="sub">Plantel: <b>${r.length}</b> jugadores · Registros cargados: <b>${nEnt}</b>. Todo se guarda en este navegador.</div>
+      <div class="btnrow"><button class="btn primary" id="d_exp">⬇ Exportar respaldo (JSON)</button>
+        <label class="btn" style="cursor:pointer">⬆ Importar respaldo<input id="d_imp" type="file" accept="application/json" style="display:none"></label>
+        <button class="btn danger" id="d_reset">↺ Restaurar nómina original</button></div>
+      <div class="callout" style="border-left:4px solid var(--amber);background:rgba(245,166,35,.07);padding:10px 14px;border-radius:0 10px 10px 0;margin-top:12px;font-size:13px">
+        <b>Salto de calidad sugerido:</b> hoy los datos viven solo en este equipo. Para que <b>varios profes carguen desde distintos dispositivos y se sincronice</b>, el siguiente paso es un backend (Supabase): la capa de datos ya está aislada y lista para enchufarlo. Mientras tanto, usa Exportar/Importar para respaldar y mover la información entre computadores.</div></div>`;
+  $('#d_exp').onclick=()=>{const blob=new Blob([JSON.stringify({roster:r,entries:e,v:2},null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='formativo_coquimbo_respaldo.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},300);};
+  $('#d_imp').onchange=ev=>{const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const o=JSON.parse(rd.result);if(Array.isArray(o.roster)){localStorage.setItem(DB.rk,JSON.stringify(o.roster));DB._rc=o.roster;}if(o.entries)localStorage.setItem(DB.ek,JSON.stringify(o.entries));renderCatsel();renderAll();alert('Respaldo importado.');}catch(e){alert('Archivo inválido.');}};rd.readAsText(f);};
+  $('#d_reset').onclick=()=>{if(!confirm('¿Restaurar la nómina original del Excel? Se perderán los cambios de plantel (los registros se conservan).'))return;DB._rc=DB.seed();DB.saveRoster();renderCatsel();renderAll();};
+}
+
+function renderAll(){ const on=document.querySelector('.view.on').id;
+  if(on==='v-panel')renderPanel();else if(on==='v-plantel')renderPlantel();else if(on==='v-ficha')renderFicha();else renderDatos(); }
+renderCatsel(); renderAll();
+})();
+</script>
+</body>
+</html>

@@ -185,7 +185,7 @@
     </div>
     <div class="navgrp">
       <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Predicción</span><span class="chev">›</span></button>
-      <div class="navsub"><a href="#cfdb">Histórico &amp; Predicción</a><a href="#simtabla">Proyección tabla</a><a href="#copachile">Copa Chile</a></div>
+      <div class="navsub"><a href="#cfdb">Histórico &amp; Predicción</a><a href="#simtabla">Proyección tabla</a><a href="#ligaxg">xG de liga (Wyscout)</a><a href="#copachile">Copa Chile</a></div>
     </div>
     <div class="navgrp">
       <button class="navhead" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="2.5"/></svg><span>Rival</span><span class="chev">›</span></button>
@@ -199,7 +199,9 @@
   <div class="side-foot"><div class="modewrap"><span>Ejecutiva</span><div class="switch" id="modeSwitch"><div class="knob"></div></div><span>Técnica</span></div>
     <button class="printbtn" id="printAll">⎙ Imprimir / PDF (todo)</button>
     <a class="printbtn" href="registro_en_vivo.html" style="display:block;text-align:center;text-decoration:none;margin-top:8px;background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--gold-ink)">⏱ Registro Táctico en Vivo →</a>
-    <a class="printbtn" href="lecturas_rivales.html" style="display:block;text-align:center;text-decoration:none;margin-top:8px;background:var(--panel3);color:var(--teal);border-color:var(--line-gold)">🎯 Lecturas de Rivales (Hudl) →</a></div>
+    <a class="printbtn" href="lecturas_rivales.html" style="display:block;text-align:center;text-decoration:none;margin-top:8px;background:var(--panel3);color:var(--teal);border-color:var(--line-gold)">🎯 Lecturas de Rivales (Hudl) →</a>
+    <a class="printbtn" href="lectura_de_nosotros.html" style="display:block;text-align:center;text-decoration:none;margin-top:8px;background:var(--panel3);color:var(--green);border-color:var(--line-gold)">🔍 Lectura de Nosotros (Hudl) →</a>
+    <a class="printbtn" href="formativo.html" style="display:block;text-align:center;text-decoration:none;margin-top:8px;background:var(--panel3);color:var(--violet);border-color:var(--line-gold)">⚽ Fútbol Formativo →</a></div>
 </aside>
 <main>
 <div id="execStrip" class="exec-strip"></div>
@@ -370,6 +372,14 @@
     <p class="foot" id="ccFoot"></p>
   </section>
 
+  <section id="ligaxg">
+    <h2>xG de liga 2026 · Hudl Wyscout</h2>
+    <p class="sub">Dato de evento de los 16 equipos: xG, xG en contra y <b>xPoints</b> (puntos merecidos según el juego). <span class="badge b-dato">DATO</span> Wyscout · reemplaza a los proxies.</p>
+    <div class="callout" id="ligaxgNote"></div>
+    <div class="scroll-x"><table id="ligaxgTable" style="width:100%;border-collapse:collapse;font-size:13px"></table></div>
+    <p class="foot">Fuente: Hudl Wyscout — Resumen Informe Primera División 2026 (23 fechas). xPoints = puntos esperados según xG/xGA · Δ = xPoints − puntos reales (+ = merece más de los que tiene).</p>
+  </section>
+
   <!-- ===== PIZARRA DOBLE ===== -->
   <section id="pizarra">
     <h2>Pizarra doble · Coquimbo vs. rival</h2>
@@ -531,6 +541,7 @@
 <script src="copa_chile.js"></script>
 <script src="primera_equipos.js"></script>
 <script src="primera_creadores.js"></script>
+<script src="liga_wyscout.js"></script>
 <script src="rivales_prematch.js"></script>
 <script src="plantel.js"></script>
 <script src="formaciones.js"></script>
@@ -1444,6 +1455,25 @@ $('#modeSwitch').onclick=function(){this.classList.toggle('on');document.body.cl
   const pa=$('#plArquero');const A=PL.arquero;
   if(pa)pa.innerHTML=`<span class="badge b-dato">ARQUERO</span> <b>${A.nombre}</b> — ${A.MP} PJ, rating ${A.rating}, ${A.saves} atajadas, ${A.savepct}% de paradas, ${A.pass_pct}% de pase. <span class="badge b-hip">LECTURA</span> ${A.lectura}`;
   const pff=$('#plFoot');if(pff)pff.innerHTML=`<b>Fuente y límite.</b> ${PL.meta.fuente} ${PL.meta.limite} (${PL.meta.n} jugadores de campo con minutos).`;
+})();
+
+/* ===== xG DE LIGA (Hudl Wyscout) ===== */
+(function(){
+  if(typeof LIGA_WY==='undefined')return;
+  const box=document.getElementById('ligaxgTable'); if(!box)return;
+  const ts=[...LIGA_WY.teams].sort((a,b)=>b.xpts-a.xpts);
+  const head='<thead><tr style="color:var(--gold);text-align:left"><th>#</th><th>Equipo</th><th>Pos</th><th>Pts</th><th>xPoints</th><th>Δ</th><th>xG</th><th>xGA</th><th>Dif xG</th></tr></thead>';
+  const body=ts.map((t,i)=>{const coq=t.team==='Coquimbo Unido';const dcol=t.xptsD>1.5?'var(--green)':t.xptsD<-1.5?'var(--red)':'var(--mut)';
+    return '<tr style="border-top:1px solid var(--line)'+(coq?';background:rgba(255,210,0,.10)':'')+'">'+
+      '<td>'+(i+1)+'</td><td>'+(coq?'<b style="color:var(--gold)">'+t.team+'</b>':t.team)+'</td>'+
+      '<td class="num">'+t.pos+'º</td><td class="num">'+t.pts+'</td><td class="num"><b>'+t.xpts+'</b></td>'+
+      '<td class="num" style="color:'+dcol+';font-weight:700">'+(t.xptsD>=0?'+':'')+t.xptsD+'</td>'+
+      '<td class="num">'+t.xg+'</td><td class="num">'+t.xga+'</td><td class="num">'+(t.xgdif>=0?'+':'')+t.xgdif+'</td></tr>';}).join('');
+  box.innerHTML=head+'<tbody>'+body+'</tbody>';
+  const c=LIGA_WY.teams.find(t=>t.team==='Coquimbo Unido'), n=document.getElementById('ligaxgNote');
+  const e=(LIGA_WY.estilo||{})['Coquimbo Unido'];
+  if(c&&n)n.innerHTML='<span class="badge b-clave">HALLAZGO</span> <b>Coquimbo es el equipo que MÁS infrarrinde de la liga: xPoints '+c.xpts+' vs '+c.pts+' reales (+'+c.xptsD+').</b> xG '+c.xg+' (4º ataque) y diferencia de xG +'+c.xgdif+' (top-4): juego de zona alta pese a ir '+c.pos+'º. El margen se pierde en definición ('+c.gf+' goles con '+c.xg+' de xG) y en encajar sobre lo esperado ('+c.ga+' GC vs '+c.xga+' xGA). El proceso está; falta convertir y sostener.'+
+    (e?'<div style="margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><b>Perfil Wyscout Coquimbo</b> — <span style="color:var(--green)">Fortalezas:</span> <b>1º de la liga en duelos defensivos ganados ('+e.def+'%)</b>, 3º en centros ('+e.cross90+'/90) y toques de área ('+e.box90+'/90), aéreo '+e.aer+'% (4º), '+e.golBP+'% de los goles de balón parado. Formación '+e.form+' ('+e.formPct+'%). <span style="color:var(--amber)">A mejorar:</span> conversión y duelo ofensivo (35%, 14º).</div>':'');
 })();
 
 /* ===== COPA CHILE ===== */
