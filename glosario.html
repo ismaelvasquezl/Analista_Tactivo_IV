@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Glosario · Coquimbo Unido · por TrazoXI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  :root{--bg0:#0a0d11;--bg1:#0e1319;--panel:#151b22;--panel2:#1b222b;--panel3:#212a34;--gold:#ffd21f;--gold2:#e8bd00;--gold-ink:#0a0d11;
+    --white:#f4f7fa;--txt:#dfe6ec;--mut:#aab8c4;--mut2:#7f8c98;--blue:#4a90ff;--teal:#3fd0c4;--green:#38d98a;--amber:#f5a623;--red:#ff5f5f;
+    --line:rgba(255,255,255,.075);--line-strong:rgba(255,255,255,.14);--line-gold:rgba(255,210,0,.22);
+    --sh:inset 0 1px 0 rgba(255,255,255,.05),0 6px 18px rgba(0,0,0,.38);--r:14px;
+    --f-display:'Barlow Condensed','Segoe UI',system-ui,sans-serif;--f-body:'Inter','Segoe UI',system-ui,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--f-body);color:var(--txt);line-height:1.5;background:radial-gradient(1200px 700px at 18% -8%,#14202c 0,#0d131a 52%,#090c10 100%) fixed}
+  h1,h2,h3,.brand,.disp{font-family:var(--f-display);letter-spacing:.3px}
+  a{color:var(--teal);text-decoration:none}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+  header{position:sticky;top:0;z-index:40;background:rgba(8,11,15,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-gold)}
+  .hin{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;color:var(--white)}
+  .crest{width:26px;height:26px;border-radius:50%;background:repeating-conic-gradient(var(--gold) 0 25%,#000 0 50%);border:2px solid var(--gold);flex:none}
+  .back{margin-left:auto;font-size:13px;color:var(--mut)}
+  .tabs{position:sticky;top:47px;z-index:39;background:rgba(8,11,15,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);overflow-x:auto}
+  .tabsin{max-width:1080px;margin:0 auto;display:flex;gap:2px;padding:6px 10px}
+  .tab{flex:0 0 auto;background:none;border:0;color:var(--mut);font-family:var(--f-display);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:8px 13px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:.15s}
+  .tab:hover{color:var(--white);background:rgba(255,255,255,.04)} .tab.active{color:var(--gold-ink);background:linear-gradient(180deg,var(--gold),var(--gold2))}
+  main{max-width:1080px;margin:0 auto;padding:16px 14px 110px}
+  .intro{color:var(--mut);font-size:14px;margin:4px 0 14px}
+  .searchbar{display:flex;gap:10px;align-items:center;margin:0 0 6px}
+  .searchbar input{flex:1;background:var(--bg1);border:1px solid var(--line-strong);border-radius:12px;color:var(--white);padding:11px 14px;font-size:15px;font-family:var(--f-body)}
+  .searchbar input::placeholder{color:var(--mut2)}
+  .count{font-size:12px;color:var(--mut);white-space:nowrap}
+  h2{font-size:22px;margin:22px 0 2px;display:flex;align-items:center;gap:9px;scroll-margin-top:110px}h2::before{content:"";width:6px;height:20px;background:var(--gold);border-radius:3px}
+  .sechint{color:var(--mut);font-size:13px;margin:2px 0 4px}
+  .glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;margin-top:10px}
+  .term{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;padding:13px 15px;box-shadow:var(--sh)}
+  .term .t{font-family:var(--f-display);font-size:17px;font-weight:800;color:var(--white);line-height:1.1;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .term .abbr{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.3px}
+  .term .d{font-size:13.5px;color:var(--txt);margin-top:6px}
+  .term .ex{font-size:12.5px;color:var(--mut);margin-top:7px;border-top:1px dashed var(--line);padding-top:7px}
+  .term .ex b{color:var(--teal);font-weight:600}
+  .lvl{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+  .lvl.dato{background:rgba(56,217,138,.16);color:var(--green)}
+  .lvl.infer{background:rgba(74,144,255,.16);color:var(--blue)}
+  .lvl.hipo{background:rgba(245,166,35,.16);color:var(--amber)}
+  .nores{color:var(--mut);font-size:14px;padding:30px 0;text-align:center}
+  .foot{color:var(--mut);font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:12px}
+  .badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:rgba(255,210,0,.16);color:var(--gold);border:1px solid var(--line-gold)}
+</style>
+</head>
+<body>
+<header>
+  <div class="hin">
+    <div class="brand"><span class="crest"></span> Glosario de Análisis <span style="color:var(--mut);font-size:10px;font-weight:700;letter-spacing:1px;margin-left:4px">· COQUIMBO UNIDO · por TrazoXI</span></div>
+    <a class="back" href="index_conapi.html">← Volver al panel</a>
+  </div>
+</header>
+<nav class="tabs"><div class="tabsin" id="tabs"></div></nav>
+<main>
+  <p class="intro">Diccionario de términos usado en todos los informes del club (Wyscout, lecturas de rivales, lectura de nosotros y fútbol formativo). Pensado para que cuerpo técnico, scouting, formativo y dirigencia lean e interpreten los análisis con el mismo lenguaje. <b>Busca</b> cualquier término o navega por secciones.</p>
+  <div class="searchbar">
+    <input id="q" type="search" placeholder="Buscar término… (ej: xG, PPDA, tercer hombre, zona 14)" autocomplete="off">
+    <span class="count" id="count"></span>
+  </div>
+  <div id="legend" class="sechint" style="margin-bottom:4px">
+    Niveles de evidencia en los mapas:
+    <span class="lvl dato">DATO</span> medido por Wyscout ·
+    <span class="lvl infer">INFERENCIA</span> ubicado por posición/rol ·
+    <span class="lvl hipo">HIPÓTESIS</span> lectura a confirmar con video.
+  </div>
+  <div id="out"></div>
+  <div class="foot">Centro de Alto Rendimiento y Análisis · Coquimbo Unido · por <b style="color:var(--gold)">TrazoXI</b>. Fuente de métricas avanzadas: Hudl Wyscout. Actualizable a medida que se incorporen nuevos conceptos.</div>
+</main>
+<script>
+const GLOS=[
+ {sec:"Métricas avanzadas (datos de evento · Wyscout)", hint:"Números medidos a partir de los eventos del partido. Son el salto de calidad respecto a estimaciones: miden lo que realmente pasó.", items:[
+   {t:"Goles esperados", abbr:"xG", lvl:"dato", d:"Probabilidad de que un remate termine en gol según su contexto (distancia, ángulo, tipo de jugada). Suma la calidad de las ocasiones, no solo la cantidad.", ex:"Un xG de 1.4 en un partido = las ocasiones generadas valían, en promedio, 1,4 goles. Si se marcó 0, hubo infra-rendimiento en la definición."},
+   {t:"Asistencias esperadas", abbr:"xA", lvl:"dato", d:"Probabilidad de que un pase se convierta en asistencia según el xG del remate que habilita. Mide la calidad de creación de un jugador.", ex:"Zavala con <b>1.76 xA</b> es el principal generador: sus pases habilitan ocasiones de alto valor, marque o no el compañero."},
+   {t:"Goles esperados en contra", abbr:"xGA", lvl:"dato", d:"xG que un equipo concede a sus rivales. Mide la solidez defensiva real, más allá del marcador.", ex:"xGA bajo + muchos goles encajados = mala suerte o fallos puntuales del arquero, no un problema estructural."},
+   {t:"Diferencia de goles esperados", abbr:"xGDif", lvl:"dato", d:"xG a favor menos xG en contra. Resume el dominio de ocasiones en un número.", ex:"xGDif positivo sostenido indica un equipo que merece más puntos de los que saca."},
+   {t:"Puntos esperados", abbr:"xPTS", lvl:"dato", d:"Puntos que un equipo 'debería' haber sumado según el xG de cada partido. Revela sobre/infra-rendimiento en la tabla.", ex:"Coquimbo con <b>36.6 xPTS vs 29 pts reales</b> = infra-rendimiento de +7,6: el juego genera más de lo que refleja la tabla."},
+   {t:"Pases por acción defensiva permitidos", abbr:"PPDA", lvl:"dato", d:"Pases que el rival completa antes de que el equipo haga una acción defensiva (presión). A menor PPDA, presión más intensa y alta.", ex:"PPDA bajo = equipo que presiona arriba y agresivo; PPDA alto = bloque que espera."},
+   {t:"Toques en el área", abbr:"Toques área /90", lvl:"dato", d:"Veces que un jugador toca el balón dentro del área rival por cada 90 minutos. Indica presencia y peligro ofensivo.", ex:"Johansen es <b>3º de la liga</b> en toques de área (5.16/90): se asocia a volumen de ocasiones."},
+   {t:"Jugadas clave", abbr:"KP /90", lvl:"dato", d:"Pases que generan directamente un remate (sin ser necesariamente gol). Mide creación de ocasiones.", ex:"Cornejo: 2.14 jugadas clave/90, 3º de la liga entre los perfiles de su rol."},
+   {t:"Duelos defensivos (% ganados)", abbr:"Duelos def %", lvl:"dato", d:"Porcentaje de enfrentamientos defensivos 1v1 que un jugador gana. Mide fiabilidad en la recuperación.", ex:"Cordero: 8.01 duelos def/90 al 58% ganados — alto volumen y eficacia."},
+   {t:"Duelos aéreos (% ganados)", abbr:"Aéreo %", lvl:"dato", d:"Porcentaje de disputas por alto que un jugador gana. Clave en centrales, delanteros referencia y balón parado.", ex:"Cornejo 68% aéreo vs Cabrera 29%: perfiles muy distintos ante centros y despejes."},
+   {t:"Precisión de pase", abbr:"Pase %", lvl:"dato", d:"Porcentaje de pases completados. Debe leerse junto al volumen y al riesgo (no es lo mismo en salida que en último tercio).", ex:"Gazzolo 87% con alto volumen = fiabilidad en la primera fase de construcción."},
+   {t:"Recuperaciones", abbr:"Recuperac.", lvl:"dato", d:"Balones recuperados por un jugador. Mide trabajo defensivo y capacidad de corte.", ex:"Camargo: 86 recuperaciones — motor de reciclaje en el mediocampo."},
+   {t:"Regates completados", abbr:"Regates", lvl:"dato", d:"Conducciones que superan a un rival en 1v1. Mide desequilibrio individual.", ex:"Zavala: 34 regates completados en 5 partidos — recurso para romper bloques."},
+ ]},
+ {sec:"Fases del juego", hint:"Todo partido se divide en estas fases. Analizar por fase evita el 'jugó bien' y señala dónde exactamente se gana o se pierde.", items:[
+   {t:"Organización ofensiva", d:"Equipo con balón y rival ordenado. Cómo se construye, progresa y se crea ante una defensa colocada."},
+   {t:"Transición ofensiva", d:"Momento inmediato tras recuperar el balón. Decisión entre atacar rápido el espacio o asegurar y organizar."},
+   {t:"Organización defensiva", d:"Equipo sin balón y ordenado. Altura del bloque, coberturas y cómo se protege la portería ante un ataque colocado."},
+   {t:"Transición defensiva", d:"Momento inmediato tras perder el balón. Reacción para recuperar (contrapresión) o replegar y ordenarse."},
+   {t:"Balón parado (ABP)", abbr:"BP", d:"Acciones detenidas: córners, tiros libres, laterales largos y penales, ofensivos y defensivos. Fuente muy rentable de goles.", ex:"Coquimbo genera el <b>16% de sus goles</b> desde balón parado."},
+ ]},
+ {sec:"Principios tácticos", hint:"Las ideas que ordenan el juego dentro de cada fase. Son el 'por qué' detrás de cada movimiento.", items:[
+   {t:"Progresión", d:"Avanzar el balón hacia la portería rival superando líneas de presión."},
+   {t:"Amplitud", d:"Ocupar el ancho del campo para estirar al rival y abrir espacios interiores."},
+   {t:"Profundidad", d:"Amenazar el espacio a la espalda de la defensa para fijarla y no dejarla subir."},
+   {t:"Fijación", d:"Atraer a uno o varios rivales para liberar a un compañero en otra zona."},
+   {t:"Juego entre líneas", d:"Recibir en el espacio entre la defensa y el mediocampo rival, zona de máximo daño."},
+   {t:"Tercer hombre", d:"Jugada de tres: A pasa a B y aparece C, que llega libre al espacio que generó el movimiento. Rompe marcas.", ex:"Patrón típico para progresar ante bloques que presionan al receptor directo."},
+   {t:"Cambio de orientación", d:"Mover el balón de un costado al otro para atacar el lado débil del rival."},
+   {t:"Temporización", d:"Retrasar la acción defensiva para ganar tiempo a que lleguen las coberturas."},
+   {t:"Presión", d:"Acción coordinada para recuperar el balón e incomodar la salida rival. Puede ser alta, media o baja según la altura."},
+   {t:"Cobertura", d:"Un defensor se coloca por detrás de un compañero para cubrir si éste es superado."},
+   {t:"Permuta", d:"Dos defensores intercambian marcas tras un desajuste para no dejar a nadie libre."},
+   {t:"Vigilancia", d:"Atención preventiva sobre un rival peligroso aun sin marcarlo, anticipando la transición."},
+   {t:"Basculación", d:"Desplazamiento en bloque de todo el equipo hacia el lado del balón para compactar."},
+ ]},
+ {sec:"Mapas, zonas y niveles de evidencia", hint:"Cómo leer los mapas de los informes. No tenemos coordenadas (x,y) en los PDF, así que trabajamos por ZONAS y siempre etiquetamos el nivel de certeza.", items:[
+   {t:"Modelo de 18 zonas", d:"La cancha se divide en 6 bandas (de portería propia a rival) × 3 columnas (izquierda / centro / derecha) = 18 zonas. Permite ubicar dónde ocurren las acciones sin coordenadas exactas."},
+   {t:"Tercios", d:"División en tercio defensivo, medio y ofensivo. Marco rápido para ubicar la fase y la altura del juego."},
+   {t:"Carriles", d:"Columnas verticales del campo (lateral izq., interior izq., centro, interior der., lateral der.). Clave en el juego de posición."},
+   {t:"Zona 14", d:"El espacio central justo por delante del área rival (frontal). Zona de máxima generación de ocasiones; quien la ocupa y asiste desde ahí es determinante.", ex:"Recibir en Zona 14 entre líneas es el objetivo del enganche/mediapunta."},
+   {t:"Nivel DATO", lvl:"dato", d:"El valor está medido directamente por Wyscout (p. ej. % aéreo de un jugador). Máxima confianza."},
+   {t:"Nivel INFERENCIA", lvl:"infer", d:"La ubicación en el mapa se deduce por la posición y el rol del jugador, no por una coordenada medida. Confianza media."},
+   {t:"Nivel HIPÓTESIS", lvl:"hipo", d:"Lectura táctica a confirmar con video. Es una interpretación razonada, no un hecho medido. Marcada siempre como tal."},
+   {t:"Mapa de calor", d:"Representa dónde se concentra la actividad (de un jugador o del equipo). Muestra tendencias de ocupación de espacio."},
+   {t:"Mapa de pérdidas", d:"Dónde se pierde el balón. Pérdidas en zona propia o en el carril central son las más peligrosas (habilitan transición rival)."},
+   {t:"Red de pases", abbr:"Pass network", lvl:"dato", d:"Grafo que une a los jugadores según los pases entre ellos: el grosor indica volumen y la posición, la ubicación media. Revela por dónde circula el juego y quién es el nudo."},
+ ]},
+ {sec:"Fútbol formativo", hint:"Conceptos del módulo de formativo: seguimiento individual de cada jugador partido a partido, incluyendo su desarrollo integral.", items:[
+   {t:"Momento educativo (1–10)", abbr:"Educ", d:"Indicador OPCIONAL de qué tan conectado está el jugador con sus estudios. 10 = muy conectado; ≤4 = riesgo de repetir el año. Convierte el desarrollo integral en un dato seguible.", ex:"Un valor <b>≤4</b> dispara una alerta roja para coordinar con el área educativa / apoderado antes de que sea tarde."},
+   {t:"Evaluación 1–5 (Téc/Tác/Fís/Act)", abbr:"Eval", d:"Nota por partido en cuatro dimensiones: Técnica, Táctica, Física y Actitud. El promedio y su tendencia muestran la curva de desarrollo.", ex:"Tendencia a la baja (≤ −0,5) = señal de seguimiento; en alza (≥ +0,5) = jugador en progreso."},
+   {t:"Carga de minutos", abbr:"Min", d:"Minutos acumulados. Cruzado con las convocatorias detecta jugadores convocados pero sin minutos (riesgo de estancamiento)."},
+   {t:"Antropometría", d:"Registro de estatura y peso en el tiempo para seguir el crecimiento físico, clave en edades formativas."},
+   {t:"Grupo de posición", d:"Clasificación del jugador en POR / DEF / LAT / VOL / DEL para agrupar y comparar perfiles dentro de su rol."},
+   {t:"Carga rápida de jornada", d:"Pantalla única para registrar a toda una categoría de un partido/sesión de una sola vez (minutos, participación, eval y educ). Forma estandarizada y práctica de rellenar las fichas."},
+ ]},
+ {sec:"Posiciones y abreviaturas", hint:"Códigos de posición usados en plantillas y fichas.", items:[
+   {t:"Portero", abbr:"POR / GK", d:"Guardameta."},
+   {t:"Central", abbr:"CT / DFC", d:"Defensa central."},
+   {t:"Lateral", abbr:"LT / LD-LI", d:"Defensa de banda (derecho o izquierdo)."},
+   {t:"Volante / Mediocampista", abbr:"VC / MC", d:"Centrocampista central. Puede ser de contención, mixto o de creación."},
+   {t:"Extremo", abbr:"EX", d:"Atacante de banda."},
+   {t:"Delantero", abbr:"DEL / DC", d:"Punta o referencia de área."},
+   {t:"Por 90 minutos", abbr:"/90", d:"Métrica normalizada por 90 minutos jugados. Permite comparar a jugadores con distinta cantidad de minutos de forma justa."},
+   {t:"Partidos jugados", abbr:"PJ", d:"Número de partidos en que el jugador participó."},
+ ]},
+];
+
+const out=document.getElementById('out'), tabs=document.getElementById('tabs'), q=document.getElementById('q'), count=document.getElementById('count');
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+
+tabs.innerHTML='<button class="tab active" data-g="__all">Todo</button>'+GLOS.map(s=>`<button class="tab" data-g="${slug(s.sec)}">${esc(s.sec.replace(/\s*\(.*/,''))}</button>`).join('');
+
+function termHTML(it){
+  const lvl=it.lvl?`<span class="lvl ${it.lvl}">${it.lvl==='dato'?'DATO':it.lvl==='infer'?'INFERENCIA':'HIPÓTESIS'}</span>`:'';
+  return `<div class="term"><div class="t">${esc(it.t)} ${it.abbr?`<span class="abbr">${esc(it.abbr)}</span>`:''} ${lvl}</div>
+    <div class="d">${it.d}</div>${it.ex?`<div class="ex"><b>Cómo leerlo:</b> ${it.ex}</div>`:''}</div>`;
+}
+function render(filter, term){
+  const qn=(term||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+  let total=0, html='';
+  GLOS.forEach(s=>{
+    if(filter!=='__all' && slug(s.sec)!==filter) return;
+    const items=s.items.filter(it=>{
+      if(!qn) return true;
+      const hay=(it.t+' '+(it.abbr||'')+' '+it.d+' '+(it.ex||'')).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+      return hay.includes(qn);
+    });
+    if(!items.length) return;
+    total+=items.length;
+    html+=`<h2 id="${slug(s.sec)}">${esc(s.sec)}</h2><div class="sechint">${esc(s.hint)}</div><div class="glist">${items.map(termHTML).join('')}</div>`;
+  });
+  out.innerHTML = html || `<div class="nores">Sin resultados para “${esc(term)}”. Prueba otro término.</div>`;
+  count.textContent = total+' término'+(total===1?'':'s');
+}
+let curG='__all';
+tabs.addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;
+  tabs.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+  curG=b.dataset.g; render(curG,q.value); window.scrollTo({top:0,behavior:'smooth'});});
+q.addEventListener('input',()=>render(curG,q.value));
+render('__all','');
+</script>
+</body>
+</html>
